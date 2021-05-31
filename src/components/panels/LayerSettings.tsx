@@ -26,7 +26,7 @@ export const LayerSettingsSetting: React.FC<{
               <span>X</span>
               <Slider
                 value={value[0]}
-                step={0.01}
+                step={setting.step || 0.01}
                 min={-1}
                 max={1}
                 onChange={v => {
@@ -39,7 +39,7 @@ export const LayerSettingsSetting: React.FC<{
               <span>Y</span>
               <Slider
                 value={value[1]}
-                step={0.01}
+                step={setting.step || 0.01}
                 min={-1}
                 max={1}
                 onChange={v => {
@@ -55,7 +55,7 @@ export const LayerSettingsSetting: React.FC<{
           <>
             <Slider
               value={value}
-              step={1}
+              step={setting.step || 1}
               min={setting.minValue ?? -1}
               max={setting.maxValue ?? 1}
               onChange={v => {
@@ -70,7 +70,7 @@ export const LayerSettingsSetting: React.FC<{
           <>
             <Slider
               value={value}
-              step={0.01}
+              step={setting.step || 0.01}
               min={setting.minValue ?? -1}
               max={setting.maxValue ?? 1}
               onChange={v => {

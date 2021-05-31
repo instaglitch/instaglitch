@@ -28,6 +28,7 @@ export interface FilterSetting {
   minValue?: number;
   maxValue?: number;
   color?: string;
+  step?: number;
 }
 
 export interface Filter {

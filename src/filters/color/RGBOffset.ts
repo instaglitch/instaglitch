@@ -1,23 +1,7 @@
-import {
-  WebGLRenderer,
-  Vector2,
-  Vector3,
-  ShaderMaterial,
-  Uniform,
-  Texture,
-} from 'three';
-import { Filter, FilterSettingType } from '../../types';
-import { renderShaderFilter } from '../functions';
+import { FilterSettingType } from '../../types';
+import { buildShaderFilter } from '../buildShaderFilter';
 
-const fragmentShader = `#include <common>
-
-uniform sampler2D iTexture;
-uniform vec3 iResolution;
-uniform vec2 iROffset;
-uniform vec2 iGOffset;
-uniform vec2 iBOffset;
-
-void main()
+const fragmentShader = `void main()
 {
 	vec2 uv = gl_FragCoord.xy / iResolution.xy;
 
@@ -29,61 +13,31 @@ void main()
   gl_FragColor = vec4(col,1.0);
 }`;
 
-let uniforms = {
-  iROffset: new Uniform(new Vector2()),
-  iGOffset: new Uniform(new Vector2()),
-  iBOffset: new Uniform(new Vector2()),
-  iResolution: new Uniform(new Vector3()),
-  iTexture: new Uniform(null),
-};
-
-const shaderMaterial: ShaderMaterial = new ShaderMaterial({
-  uniforms,
-  fragmentShader,
-});
-
-function pass(
-  renderer: WebGLRenderer,
-  texture: Texture,
-  width: number,
-  height: number,
-  final: boolean,
-  settings?: Record<string, any>
-) {
-  uniforms.iResolution.value.set(width, height, 1);
-  uniforms.iTexture.value = texture;
-  uniforms.iROffset.value.set(...settings!.r_offset);
-  uniforms.iGOffset.value.set(...settings!.g_offset);
-  uniforms.iBOffset.value.set(...settings!.b_offset);
-
-  return renderShaderFilter(renderer, shaderMaterial, final);
-}
-
-export const RGBOffset: Filter = {
+export const RGBOffset = buildShaderFilter({
   id: 'rgb_offset',
   name: 'RGB offset',
-  pass,
+  fragmentShader,
   settings: [
     {
-      key: 'r_offset',
+      key: 'iROffset',
       type: FilterSettingType.OFFSET,
       name: 'Red offset',
       defaultValue: [0, 0],
       color: '#ff0000',
     },
     {
-      key: 'g_offset',
+      key: 'iGOffset',
       type: FilterSettingType.OFFSET,
       name: 'Green offset',
       defaultValue: [-0.1, 0],
       color: '#00ff00',
     },
     {
-      key: 'b_offset',
+      key: 'iBOffset',
       type: FilterSettingType.OFFSET,
       name: 'Blue offset',
       defaultValue: [0, 0],
       color: '#0000ff',
     },
   ],
-};
+});
