@@ -1,10 +1,10 @@
+import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
-import { WebGLRenderer, Texture, RGBFormat } from 'three';
 import { Filter, ImageLayer, LayerType, Project } from './types';
+
 import { createFilterLayer } from './filters/functions';
-import { renderTexture } from './renderTexture';
-import React, { useContext } from 'react';
+import { GlueCanvas } from 'fxglue';
 
 function createImageLayer(image: HTMLImageElement): ImageLayer {
   return {
@@ -35,6 +35,9 @@ class ProjectStore {
   showFilterGallery = false;
   showAbout = false;
   showExport = false;
+  glueCanvas = new GlueCanvas();
+  canvas = this.glueCanvas.canvas;
+  glue = this.glueCanvas.glue;
 
   constructor() {
     makeAutoObservable(this);
@@ -73,16 +76,11 @@ class ProjectStore {
   }
 
   addProjectFromImage(image: HTMLImageElement, filename = 'untitled.jpg') {
-    const previewRenderer = new WebGLRenderer({ antialias: true });
-    const previewCanvas = previewRenderer.domElement;
-
     const imageLayer = createImageLayer(image);
 
     const project: Project = {
       id: uuid(),
       filename,
-      previewCanvas,
-      previewRenderer,
       layers: [imageLayer],
       selectedLayer: imageLayer.id,
       width: 0,
@@ -94,11 +92,6 @@ class ProjectStore {
     const onload = () => {
       project.width = image.naturalWidth;
       project.height = image.naturalHeight;
-
-      const imageTexture = new Texture(image);
-      imageTexture.format = RGBFormat;
-      imageTexture.needsUpdate = true;
-      imageLayer.texture = imageTexture;
 
       this.currentProjectId = project.id;
       this.projects.push(project);
@@ -145,6 +138,15 @@ class ProjectStore {
   }
 
   closeProject(id: string) {
+    const project = this.projects.find(project => project.id === id);
+    if (project) {
+      for (const layer of project.layers.filter(
+        layer => layer.type === LayerType.IMAGE
+      )) {
+        this.glue.deregisterImage(layer.id);
+      }
+    }
+
     this.projects = this.projects.filter(project => project.id !== id);
     if (this.currentProjectId === id) {
       this.currentProjectId = this.projects[0]?.id;
@@ -155,10 +157,7 @@ class ProjectStore {
     this.loading = true;
     this.renderCurrentProject(maxSize);
 
-    const dataUrl = this.currentProject?.previewCanvas.toDataURL(
-      format,
-      quality
-    )!;
+    const dataUrl = this.canvas.toDataURL(format, quality)!;
 
     const element = document.createElement('a');
     element.setAttribute('href', dataUrl);
@@ -185,50 +184,54 @@ class ProjectStore {
       return;
     }
 
+    let { width, height } = this.currentProject;
+    [width, height] = calculatePreviewSize(width, height, maxSize);
+    this.glueCanvas.setSize(width, height);
+
     const layers = this.currentProject.layers
       .filter(layer => layer.visible)
       .reverse();
-    const renderer = this.currentProject.previewRenderer;
 
-    let { width, height } = this.currentProject;
-    [width, height] = calculatePreviewSize(width, height, maxSize);
-    renderer.setSize(width, height);
+    const glue = this.glue;
 
-    let texture: Texture | undefined = undefined;
     for (let i = 0; i < layers.length; i++) {
       const layer = layers[i];
-      const final = i === layers.length - 1;
 
-      const old = texture;
       if (layer.type === LayerType.FILTER) {
-        if (!texture) {
-          continue;
+        if (!glue.hasProgram(layer.filter.id)) {
+          try {
+            glue.registerProgram(
+              layer.filter.id,
+              layer.filter.fragmentShader,
+              layer.filter.vertexShader
+            );
+          } catch (e) {
+            console.log(e.fragmentShaderErrors, e.vertexShaderErrors);
+          }
         }
 
-        texture = layer.filter.pass(
-          renderer,
-          texture,
-          width,
-          height,
-          final,
-          layer.settings
-        );
+        if (layer.filter.settings) {
+          for (const setting of layer.filter.settings) {
+            const value = layer.settings[setting.key] ?? setting.defaultValue;
+            glue.program(layer.filter.id)?.uniforms.set(setting.key, value);
+          }
+        }
+
+        glue.program(layer.filter.id)?.apply();
       } else {
-        if (!layer.texture) {
-          continue;
+        if (!glue.hasImage(layer.id)) {
+          if (!layer.image.complete || layer.image.naturalHeight === 0) {
+            continue;
+          }
+
+          glue.registerImage(layer.id, layer.image);
         }
 
-        if (final) {
-          renderTexture(renderer, layer.texture, width, height, final);
-        } else {
-          texture = layer.texture;
-        }
-      }
-
-      if (!old?.image) {
-        old?.dispose();
+        glue.image(layer.id, 0, 0, width, height);
       }
     }
+
+    glue.render();
   }
 }
 

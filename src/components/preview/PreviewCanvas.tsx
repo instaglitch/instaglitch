@@ -13,15 +13,13 @@ export const PreviewCanvas: React.FC = observer(() => {
       return;
     }
 
-    const currentProject = projectStore.currentProject;
-
     const div = divRef.current;
     div.textContent = '';
 
-    if (currentProject?.previewCanvas) {
-      div.append(currentProject?.previewCanvas);
+    if (projectStore.canvas) {
+      div.append(projectStore.canvas);
     }
-  }, [projectStore.currentProject]);
+  }, [projectStore.canvas]);
 
   return <div ref={divRef} />;
 });

@@ -1,4 +1,5 @@
 import React from 'react';
+import { GlueUtils } from 'fxglue';
 
 import './App.scss';
 import 'rc-slider/assets/index.css';
@@ -17,19 +18,7 @@ import { Preview } from './components/preview/Preview';
 
 import { Loading } from './components/overlays/Loading';
 
-function isWebGLAvailable() {
-  try {
-    const canvas = document.createElement('canvas');
-    return !!(
-      window.WebGLRenderingContext &&
-      (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
-  } catch (e) {
-    return false;
-  }
-}
-
-const webglAvailable = isWebGLAvailable();
+const webglAvailable = GlueUtils.isWebGLAvailable();
 
 export const App: React.FC = () => {
   if (!webglAvailable) {

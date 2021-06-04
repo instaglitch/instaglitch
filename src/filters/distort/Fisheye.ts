@@ -9,8 +9,8 @@ const fragmentShader = `void main()
   neg1to1 = (neg1to1 - 0.5) * 2.0;
   
   vec2 offset;
-  offset.x = ( pow(neg1to1.y,2.0)) * iIntensity * (neg1to1.x);
-  offset.y = ( pow(neg1to1.x,2.0)) * iIntensity * (neg1to1.y);
+  offset.x = (pow(neg1to1.y,2.0)) * iIntensity * (neg1to1.x);
+  offset.y = (pow(neg1to1.x,2.0)) * iIntensity * (neg1to1.y);
   p += offset;
   
   gl_FragColor = texture2D(iTexture, p);

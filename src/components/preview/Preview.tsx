@@ -38,8 +38,8 @@ export const Preview: React.FC = observer(() => {
           className="offset-mark"
           style={{
             backgroundColor: setting.color,
-            top: (y + 0.5) * project.previewCanvas.height,
-            left: (x + 0.5) * project.previewCanvas.width,
+            top: (y + 0.5) * projectStore.canvas.height,
+            left: (x + 0.5) * projectStore.canvas.width,
           }}
         />
       );

@@ -28,3 +28,7 @@ export const filterCategories: FilterCategory[] = [
     filters: [Scanlines, Vignette],
   },
 ];
+
+export const filters: Filter[] = filterCategories.flatMap(
+  category => category.filters
+);

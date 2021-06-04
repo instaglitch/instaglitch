@@ -6,9 +6,9 @@ const fragmentShader = `void main()
 	vec2 uv = gl_FragCoord.xy / iResolution.xy;
 
   vec3 col;
-  col.r = texture(iTexture, vec2(uv.x - iROffset.x, uv.y + iROffset.y)).r;
-  col.g = texture(iTexture, vec2(uv.x - iGOffset.x, uv.y + iGOffset.y)).g;
-  col.b = texture(iTexture, vec2(uv.x - iBOffset.x, uv.y + iBOffset.y)).b;
+  col.r = texture2D(iTexture, vec2(uv.x - iROffset.x, uv.y + iROffset.y)).r;
+  col.g = texture2D(iTexture, vec2(uv.x - iGOffset.x, uv.y + iGOffset.y)).g;
+  col.b = texture2D(iTexture, vec2(uv.x - iBOffset.x, uv.y + iBOffset.y)).b;
   
   gl_FragColor = vec4(col,1.0);
 }`;

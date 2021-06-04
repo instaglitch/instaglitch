@@ -7,7 +7,7 @@ const fragmentShader = `void main()
   gl_FragColor = texture2D(iTexture, p);
   float dx = iIntensity * abs(p.x - .5);
   float dy = iIntensity * abs(p.y - .5);
-  gl_FragColor *= (1.0 - dx * dx - dy * dy);
+  gl_FragColor.rgb *= (1.0 - dx * dx - dy * dy);
 }`;
 
 export const Vignette = buildShaderFilter({
