@@ -194,20 +194,14 @@ class ProjectStore {
 
     const glue = this.glue;
 
-    for (let i = 0; i < layers.length; i++) {
-      const layer = layers[i];
-
+    for (const layer of layers) {
       if (layer.type === LayerType.FILTER) {
         if (!glue.hasProgram(layer.filter.id)) {
-          try {
-            glue.registerProgram(
-              layer.filter.id,
-              layer.filter.fragmentShader,
-              layer.filter.vertexShader
-            );
-          } catch (e) {
-            console.log(e.fragmentShaderErrors, e.vertexShaderErrors);
-          }
+          glue.registerProgram(
+            layer.filter.id,
+            layer.filter.fragmentShader,
+            layer.filter.vertexShader
+          );
         }
 
         if (layer.filter.settings) {
