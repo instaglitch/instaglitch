@@ -1,5 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+
 import { useProjectStore } from '../../ProjectStore';
 
 export const Loading: React.FC = observer(() => {

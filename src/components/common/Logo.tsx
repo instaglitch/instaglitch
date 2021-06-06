@@ -1,7 +1,7 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import logo from '../../logo.svg';
-import clsx from 'clsx';
 
 export interface LogoProps {
   className?: string;

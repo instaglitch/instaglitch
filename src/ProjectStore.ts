@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
-import { Filter, ImageLayer, LayerType, Project } from './types';
-
-import { createFilterLayer } from './filters/functions';
 import { GlueCanvas } from 'fxglue';
+
+import { Filter, ImageLayer, LayerType, Project } from './types';
+import { createFilterLayer } from './filters/functions';
 
 function createImageLayer(image: HTMLImageElement): ImageLayer {
   return {
