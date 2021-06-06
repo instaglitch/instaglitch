@@ -2,7 +2,6 @@ import React from 'react';
 import { GlueUtils } from 'fxglue';
 
 import './App.scss';
-import 'rc-slider/assets/index.css';
 
 import { Layers } from './components/panels/Layers';
 import { LayerSettings } from './components/panels/LayerSettings';

@@ -1,4 +1,5 @@
 import React from 'react';
+import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import DatGui, {
   DatNumber,
@@ -42,8 +43,9 @@ export const LayerSettings: React.FC = observer(() => {
           'This layer has no settings.'
         ) : (
           <DatGui
-            data={layer.settings}
+            data={toJS(layer.settings)}
             onUpdate={data => {
+              console.log(data);
               for (const setting of layer.filter.settings!) {
                 if (setting.type === FilterSettingType.SELECT) {
                   data[setting.key] = parseInt(data[setting.key]);
