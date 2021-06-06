@@ -1,0 +1,31 @@
+{
+  "id": "rgb_offset",
+  "name": "RGB offset",
+  "fragmentShader": "void main()\n  {\n    vec2 uv = gl_FragCoord.xy / iResolution.xy;\n  \n    vec3 col;\n    col.r = texture2D(iTexture, vec2(uv.x - iROffset.x, uv.y + iROffset.y)).r;\n    col.g = texture2D(iTexture, vec2(uv.x - iGOffset.x, uv.y + iGOffset.y)).g;\n    col.b = texture2D(iTexture, vec2(uv.x - iBOffset.x, uv.y + iBOffset.y)).b;\n    \n    gl_FragColor = vec4(col,1.0);\n  }",
+  "settings": [
+    {
+      "id": "roffset",
+      "key": "iROffset",
+      "type": "offset",
+      "name": "Red offset",
+      "defaultValue": [0, 0],
+      "color": "#ff0000"
+    },
+    {
+      "id": "goffset",
+      "key": "iGOffset",
+      "type": "offset",
+      "name": "Green offset",
+      "defaultValue": [-0.1, 0],
+      "color": "#00ff00"
+    },
+    {
+      "id": "boffset",
+      "key": "iBOffset",
+      "type": "offset",
+      "name": "Blue offset",
+      "defaultValue": [0, 0],
+      "color": "#0000ff"
+    }
+  ]
+}

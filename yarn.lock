@@ -5283,10 +5283,10 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-fxglue@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/fxglue/-/fxglue-0.0.2.tgz#5982e1e216db22d690c038c1d1ab746819a23a34"
-  integrity sha512-J0uyF9gNKMKxuKnIbqdQPG82hP4kINUgWOYePPo13mpAnwwtaVf9LYZciHR5k8Eva/svZlE3oIZF/0MFVYoC1g==
+fxglue@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/fxglue/-/fxglue-0.0.3.tgz#51e36feca1fa4de8a3996ebac1144ee8e2241b45"
+  integrity sha512-5GZiTZJ0cEsBc+bcprleWMC87JuETPQPLBD2/lCjrAGcZ3xGXIUeYf56YwE3+0Bny9pPRBkhWtrvl/8jorVV0w==
 
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.2"

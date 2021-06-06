@@ -1,4 +1,4 @@
-import { Filter, FilterSetting, FilterSettingType } from '../types';
+import { Filter, FilterSettingType } from '../types';
 
 const defaultFragmentShader = `void main()
 {
@@ -10,16 +10,7 @@ const defaultVertexShader = `void main() {
   gl_Position = vec4(position, 1.0);
 }`;
 
-export interface ShaderFilterBuildProps {
-  id: string;
-  name: string;
-  description?: string;
-  settings?: FilterSetting[];
-  fragmentShader?: string;
-  vertexShader?: string;
-}
-
-export function buildShaderFilter(props: ShaderFilterBuildProps): Filter {
+export function buildShaderFilter(props: any): Filter {
   let shaderPrefix = '';
 
   if (props.settings) {
@@ -32,11 +23,15 @@ export function buildShaderFilter(props: ShaderFilterBuildProps): Filter {
           shaderPrefix += `uniform vec2 ${setting.key};\n`;
           break;
         case FilterSettingType.FLOAT:
-        case FilterSettingType.INTEGER:
           shaderPrefix += `uniform float ${setting.key};\n`;
           break;
+        case FilterSettingType.INTEGER:
+        case FilterSettingType.SELECT:
+          shaderPrefix += `uniform int ${setting.key};\n`;
+          break;
         case FilterSettingType.COLOR:
-          throw new Error('Color setting is not supported yet.');
+          shaderPrefix += `uniform vec4 ${setting.key};\n`;
+          break;
       }
     }
   }

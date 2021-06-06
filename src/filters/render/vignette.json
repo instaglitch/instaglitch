@@ -1,0 +1,16 @@
+{
+  "id": "vignette",
+  "name": "Vignette",
+  "fragmentShader": "void main()\n  {\n    vec2 p = gl_FragCoord.xy / iResolution.xy;\n    gl_FragColor = texture2D(iTexture, p);\n    float dx = iIntensity * abs(p.x - .5);\n    float dy = iIntensity * abs(p.y - .5);\n    gl_FragColor.rgb *= (1.0 - dx * dx - dy * dy);\n  }",
+  "settings": [
+    {
+      "id": "intensity",
+      "key": "iIntensity",
+      "defaultValue": 1.3,
+      "name": "Intensity",
+      "type": "float",
+      "minValue": 1,
+      "maxValue": 3
+    }
+  ]
+}

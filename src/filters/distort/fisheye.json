@@ -1,0 +1,16 @@
+{
+  "id": "fisheye",
+  "name": "Fisheye",
+  "fragmentShader": "void main()\n  {\n    vec2 p = gl_FragCoord.xy / iResolution.xy;\n  \n    vec2 neg1to1 = p;\n    neg1to1 = (neg1to1 - 0.5) * 2.0;\n    \n    vec2 offset;\n    offset.x = (pow(neg1to1.y,2.0)) * iIntensity * (neg1to1.x);\n    offset.y = (pow(neg1to1.x,2.0)) * iIntensity * (neg1to1.y);\n    p += offset;\n    \n    gl_FragColor = texture2D(iTexture, p);\n  }",
+  "settings": [
+    {
+      "id": "intensity",
+      "key": "iIntensity",
+      "defaultValue": 0.1,
+      "name": "Intensity",
+      "type": "float",
+      "minValue": -2,
+      "maxValue": 2
+    }
+  ]
+}

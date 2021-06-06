@@ -1,8 +1,8 @@
 import { Filter } from '../types';
-import { RGBOffset } from './color/RGBOffset';
-import { Fisheye } from './distort/Fisheye';
-import { Scanlines } from './render/Scanlines';
-import { Vignette } from './render/Vignette';
+import { filtersRender } from './render';
+import { filtersDistort } from './distort';
+import { filtersColor } from './color';
+import { buildShaderFilter } from './buildShaderFilter';
 
 export interface FilterCategory {
   id: string;
@@ -15,17 +15,17 @@ export const filterCategories: FilterCategory[] = [
   {
     id: 'distort',
     name: 'Distort',
-    filters: [Fisheye],
+    filters: filtersDistort.map(buildShaderFilter),
   },
   {
     id: 'color',
     name: 'Color',
-    filters: [RGBOffset],
+    filters: filtersColor.map(buildShaderFilter),
   },
   {
     id: 'render',
     name: 'Render',
-    filters: [Scanlines, Vignette],
+    filters: filtersRender.map(buildShaderFilter),
   },
 ];
 
