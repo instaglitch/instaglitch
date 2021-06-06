@@ -1,3 +1,5 @@
+@import 'react-dat-gui/dist/index.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -317,4 +319,9 @@ a {
   border: 2px solid white;
   border-radius: 50%;
   cursor: move;
+}
+
+.react-dat-gui {
+  position: relative;
+  width: 100%;
 }
