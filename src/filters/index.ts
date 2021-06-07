@@ -2,6 +2,7 @@ import { Filter } from '../types';
 import { filtersRender } from './render';
 import { filtersDistort } from './distort';
 import { filtersColor } from './color';
+import { filtersWarp } from './warp';
 import { buildShaderFilter } from './buildShaderFilter';
 
 export interface FilterCategory {
@@ -26,6 +27,11 @@ export const filterCategories: FilterCategory[] = [
     id: 'render',
     name: 'Render',
     filters: filtersRender.map(buildShaderFilter),
+  },
+  {
+    id: 'warp',
+    name: 'Wrap',
+    filters: filtersWarp.map(buildShaderFilter),
   },
 ];
 

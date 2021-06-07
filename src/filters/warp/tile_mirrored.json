@@ -1,0 +1,17 @@
+{
+  "id": "tile_mirrored",
+  "name": "Tile (mirrored)",
+  "fragmentShader": "@use wrap\n\nvoid main(void) {\n  vec2 p = gl_FragCoord.xy / iResolution.xy;\n  p *= iScale;\n  p -= 1.5 + iScale / 2.0;\n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}",
+  "settings": [
+    {
+      "id": "scale",
+      "key": "iScale",
+      "defaultValue": 5,
+      "name": "Scale",
+      "type": "float",
+      "minValue": 0.01,
+      "maxValue": 25,
+      "step": 0.01
+    }
+  ]
+}
