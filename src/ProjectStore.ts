@@ -38,6 +38,8 @@ class ProjectStore {
   glueCanvas = new GlueCanvas();
   canvas = this.glueCanvas.canvas;
   glue = this.glueCanvas.glue;
+  exportQuality = 0.7;
+  exportScale = 1.0;
 
   constructor() {
     makeAutoObservable(this);

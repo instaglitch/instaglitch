@@ -228,7 +228,7 @@ button {
     border-bottom: 1px solid #11111a;
   }
 
-  .title {
+  & > .title {
     padding: 20px;
     font-size: 30px;
     font-weight: bold;
