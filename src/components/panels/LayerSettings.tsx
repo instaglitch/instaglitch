@@ -45,7 +45,6 @@ export const LayerSettings: React.FC = observer(() => {
           <DatGui
             data={toJS(layer.settings)}
             onUpdate={data => {
-              console.log(data);
               for (const setting of layer.filter.settings!) {
                 if (setting.type === FilterSettingType.SELECT) {
                   data[setting.key] = parseInt(data[setting.key]);

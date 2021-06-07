@@ -46,6 +46,33 @@ const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   );
 });
 
+const TabList: React.FC = observer(() => {
+  const projectStore = useProjectStore();
+  const projects = projectStore.projects;
+
+  if (projects.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      {projects.map((project, index) => (
+        <Draggable key={project.id} draggableId={project.id} index={index}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              <Tab project={project} />
+            </div>
+          )}
+        </Draggable>
+      ))}
+    </>
+  );
+});
+
 export const Tabs: React.FC = observer(() => {
   const projectStore = useProjectStore();
   const projects = projectStore.projects;
@@ -78,23 +105,7 @@ export const Tabs: React.FC = observer(() => {
             ref={provided.innerRef}
             className="panel tabs"
           >
-            {projects.map((project, index) => (
-              <Draggable
-                key={project.id}
-                draggableId={project.id}
-                index={index}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                  >
-                    <Tab project={project} />
-                  </div>
-                )}
-              </Draggable>
-            ))}
+            <TabList />
             {provided.placeholder}
           </div>
         )}

@@ -49,7 +49,7 @@ const Layer: React.FC<{ project: Project; layer: TLayer }> = observer(
   }
 );
 
-export const Layers: React.FC = observer(() => {
+const LayerList: React.FC = observer(() => {
   const projectStore = useProjectStore();
 
   const project = projectStore.currentProject;
@@ -59,6 +59,35 @@ export const Layers: React.FC = observer(() => {
   }
 
   const layers = project.layers;
+
+  return (
+    <>
+      {layers.map((layer, index) => (
+        <Draggable key={layer.id} draggableId={layer.id} index={index}>
+          {(provided, snapshot) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              <Layer project={project} layer={layer} />
+            </div>
+          )}
+        </Draggable>
+      ))}
+    </>
+  );
+});
+
+export const Layers: React.FC = observer(() => {
+  const projectStore = useProjectStore();
+
+  const project = projectStore.currentProject;
+
+  if (!project) {
+    return null;
+  }
+
   const currentLayer = project.layers.find(
     layer => layer.id === project.selectedLayer
   );
@@ -90,19 +119,7 @@ export const Layers: React.FC = observer(() => {
               ref={provided.innerRef}
               className="layers"
             >
-              {layers.map((layer, index) => (
-                <Draggable key={layer.id} draggableId={layer.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <Layer project={project} layer={layer} />
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+              <LayerList />
               {provided.placeholder}
             </div>
           )}
