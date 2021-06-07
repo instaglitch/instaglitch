@@ -160,15 +160,13 @@ class ProjectStore {
     this.renderCurrentProject(maxSize);
 
     const dataUrl = this.canvas.toDataURL(format, quality)!;
+    const suffix = '_instaglitch.' + (format === 'image/png' ? 'png' : 'jpg');
+    const currentFilename = this.currentProject?.filename || 'untitled';
+    const currentName = currentFilename.split('.')[0];
 
     const element = document.createElement('a');
     element.setAttribute('href', dataUrl);
-    element.setAttribute(
-      'download',
-      format === 'image/png'
-        ? 'instaglitch_export.png'
-        : 'instaglitch_export.jpg'
-    );
+    element.setAttribute('download', currentName + suffix);
 
     element.style.display = 'none';
     element.click();
