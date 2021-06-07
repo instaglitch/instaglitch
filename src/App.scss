@@ -270,13 +270,12 @@ button {
 .filter-gallery {
   padding: 20px;
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 150px 1fr;
   min-width: 600px;
   grid-gap: 10px;
 
   .categories {
     height: 500px;
-    width: 200px;
     overflow-y: auto;
 
     button {
@@ -289,6 +288,11 @@ button {
   .filters {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 5px;
+
+    button {
+      height: 75px;
+    }
   }
 }
 
