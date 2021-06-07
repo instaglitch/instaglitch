@@ -20,6 +20,37 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   return result;
 }
 
+const truncate = (str: string) => {
+  const maxLength = 25;
+
+  if (str.length < maxLength) {
+    return str;
+  }
+
+  const split = str.split('.');
+  if (split.length < 0) {
+    return '';
+  }
+
+  let extension = split.pop() as string;
+  const name = split.join('.');
+  if (extension.length > 4) {
+    extension = 'jpg';
+  }
+
+  if (name.length > maxLength - 5) {
+    const maxPartLength = Math.floor((maxLength - 5) / 2);
+
+    return (
+      name.substr(0, maxPartLength) +
+      '...' +
+      name.substr(name.length - maxPartLength) +
+      '.' +
+      extension
+    );
+  }
+};
+
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   const projectStore = useProjectStore();
 
@@ -32,8 +63,9 @@ const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
         projectStore.currentProjectId = project.id;
         projectStore.renderCurrentProject();
       }}
+      title={project.filename}
     >
-      {project.filename}
+      {truncate(project.filename)}
       <button
         onClick={e => {
           e.stopPropagation();
