@@ -51,24 +51,26 @@ class ProjectStore {
     fileInput.accept = 'image/*';
     fileInput.addEventListener('change', () => {
       if (fileInput.files?.length) {
-        const file = fileInput.files[0];
-
-        this.loading = true;
-        const reader = new FileReader();
-
-        reader.addEventListener('load', () => {
-          this.loading = false;
-          this.addProjectFromURL(reader.result as string, file.name);
-        });
-
-        reader.addEventListener('error', () => {
-          this.loading = false;
-        });
-
-        reader.readAsDataURL(file);
+        this.addProjectFromFile(fileInput.files[0]);
       }
     });
     fileInput.click();
+  }
+
+  addProjectFromFile(file: File) {
+    this.loading = true;
+    const reader = new FileReader();
+
+    reader.addEventListener('load', () => {
+      this.loading = false;
+      this.addProjectFromURL(reader.result as string, file.name);
+    });
+
+    reader.addEventListener('error', () => {
+      this.loading = false;
+    });
+
+    reader.readAsDataURL(file);
   }
 
   addProjectFromURL(url: string, filename = 'untitled.jpg') {

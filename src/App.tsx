@@ -16,6 +16,7 @@ import { Export } from './components/modals/Export';
 import { Preview } from './components/preview/Preview';
 
 import { Loading } from './components/overlays/Loading';
+import { Drop } from './components/overlays/Drop';
 
 const webglAvailable = GlueUtils.isWebGLAvailable();
 
@@ -45,6 +46,7 @@ export const App: React.FC = () => {
       <FilterGallery />
       <About />
       <Export />
+      <Drop />
       <Loading />
       <div className="ui v-stack">
         <Menu />
