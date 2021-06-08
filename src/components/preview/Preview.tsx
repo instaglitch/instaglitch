@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { useProjectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType, FilterLayer } from '../../types';
 import { PreviewCanvas } from './PreviewCanvas';
+import { disable, enable } from '../../scrollLock';
 
 export const Preview: React.FC = observer(() => {
   const projectStore = useProjectStore();
@@ -53,6 +54,7 @@ export const Preview: React.FC = observer(() => {
       move(e.pageX, e.pageY);
     };
     const handleUp = () => {
+      disable();
       setMoving(undefined);
     };
 
@@ -123,6 +125,7 @@ export const Preview: React.FC = observer(() => {
               return;
             }
 
+            enable();
             e.preventDefault();
             e.stopPropagation();
 
