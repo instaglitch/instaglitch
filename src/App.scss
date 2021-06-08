@@ -103,7 +103,6 @@ button {
 }
 
 .ui {
-  width: 100vw;
   height: 100vh;
 }
 
@@ -376,6 +375,21 @@ a {
 
     input:focus {
       background-color: #11111a !important;
+    }
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  body {
+    overflow: auto;
+  }
+
+  .workspace {
+    display: block;
+
+    .panel.side {
+      width: auto;
+      border-left: none;
     }
   }
 }
