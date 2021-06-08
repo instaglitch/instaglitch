@@ -47,6 +47,9 @@ export const Preview: React.FC = observer(() => {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
       move(e.pageX, e.pageY);
     };
     const handleUp = () => {
@@ -54,6 +57,9 @@ export const Preview: React.FC = observer(() => {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
       const touch = e.touches[0];
       if (!touch) {
         return;
@@ -103,6 +109,9 @@ export const Preview: React.FC = observer(() => {
           key={setting.key}
           className="offset-mark"
           onMouseDown={e => {
+            e.preventDefault();
+            e.stopPropagation();
+
             initialPositionRef.current = [e.pageX, e.pageY];
             initialValueRef.current = [x, y];
 
@@ -113,6 +122,9 @@ export const Preview: React.FC = observer(() => {
             if (!touch) {
               return;
             }
+
+            e.preventDefault();
+            e.stopPropagation();
 
             initialPositionRef.current = [touch.pageX, touch.pageY];
             initialValueRef.current = [x, y];

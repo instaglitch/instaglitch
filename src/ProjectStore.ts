@@ -40,21 +40,28 @@ class ProjectStore {
   glue = this.glueCanvas.glue;
   exportQuality = 0.7;
   exportScale = 1.0;
+  fileInput = document.createElement('input');
 
   constructor() {
     makeAutoObservable(this);
+
+    this.fileInput.type = 'file';
+    this.fileInput.accept = 'image/*';
+    this.fileInput.addEventListener('change', () => {
+      if (this.fileInput.files?.length) {
+        this.addProjectFromFile(this.fileInput.files[0]);
+        this.fileInput.value = '';
+      }
+    });
+    this.fileInput.style.position = 'absolute';
+    this.fileInput.style.opacity = '0.001';
+    this.fileInput.style.pointerEvents = 'none';
+    this.fileInput.style.zIndex = '-1';
+    document.body.appendChild(this.fileInput);
   }
 
   openFilePicker() {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*';
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files?.length) {
-        this.addProjectFromFile(fileInput.files[0]);
-      }
-    });
-    fileInput.click();
+    this.fileInput.click();
   }
 
   addProjectFromFile(file: File) {
