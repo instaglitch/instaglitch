@@ -270,7 +270,7 @@ button {
   padding: 20px;
   display: grid;
   grid-template-columns: 150px 1fr;
-  min-width: 600px;
+  min-width: 400px;
   grid-gap: 10px;
 
   .categories {
@@ -391,5 +391,9 @@ a {
       width: auto;
       border-left: none;
     }
+  }
+
+  .filter-gallery {
+    grid-template-columns: 100px 1fr;
   }
 }
