@@ -154,7 +154,7 @@ class ProjectStore {
       for (const layer of project.layers.filter(
         layer => layer.type === LayerType.IMAGE
       )) {
-        this.glue.deregisterImage(layer.id);
+        this.glue.deregisterTexture(layer.id);
       }
     }
 
@@ -222,15 +222,15 @@ class ProjectStore {
 
         glue.program(layer.filter.id)?.apply();
       } else {
-        if (!glue.hasImage(layer.id)) {
+        if (!glue.hasTexture(layer.id)) {
           if (!layer.image.complete || layer.image.naturalHeight === 0) {
             continue;
           }
 
-          glue.registerImage(layer.id, layer.image);
+          glue.registerTexture(layer.id, layer.image);
         }
 
-        glue.image(layer.id, 0, 0, width, height);
+        glue.texture(layer.id)?.draw();
       }
     }
 
