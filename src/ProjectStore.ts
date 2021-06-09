@@ -230,7 +230,10 @@ class ProjectStore {
           glue.registerTexture(layer.id, layer.image);
         }
 
-        glue.texture(layer.id)?.draw();
+        glue.texture(layer.id)?.draw({
+          width,
+          height,
+        });
       }
     }
 
