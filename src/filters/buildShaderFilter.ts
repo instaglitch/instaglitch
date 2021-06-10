@@ -1,14 +1,8 @@
+import {
+  defaultFragmentShader,
+  defaultVertexShader,
+} from 'fxglue/lib/GlueShaderSources';
 import { Filter, FilterSettingType } from '../types';
-
-const defaultFragmentShader = `void main()
-{
-  vec2 p = gl_FragCoord.xy / iResolution.xy;
-  gl_FragColor = texture2D(iTexture, p);
-}`;
-
-const defaultVertexShader = `void main() {
-  gl_Position = vec4(position, 1.0);
-}`;
 
 function uniformType(type: FilterSettingType) {
   switch (type) {

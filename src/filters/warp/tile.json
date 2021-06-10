@@ -1,7 +1,7 @@
 {
   "id": "tile",
   "name": "Tile",
-  "fragmentShader": "@use wrap\n\nvoid main(void) {\n  vec2 p = gl_FragCoord.xy / iResolution.xy;\n  p *= iScale;\n  p -= 1.5 + iScale / 2.0;\n  gl_FragColor = texture2D(iTexture, repeat(p));\n}",
+  "fragmentShader": "@use wrap\n\nvoid main(void) {\n  vec2 p = gl_FragCoord.xy / iResolution;\n  p *= iScale;\n  p -= 1.5 + iScale / 2.0;\n  gl_FragColor = texture2D(iTexture, repeat(p));\n}",
   "settings": [
     {
       "id": "scale",

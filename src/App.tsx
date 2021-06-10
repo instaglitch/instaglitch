@@ -1,5 +1,5 @@
 import React from 'react';
-import { GlueUtils } from 'fxglue';
+import { glueIsWebGLAvailable } from 'fxglue';
 
 import './App.scss';
 
@@ -18,7 +18,7 @@ import { Preview } from './components/preview/Preview';
 import { Loading } from './components/overlays/Loading';
 import { Drop } from './components/overlays/Drop';
 
-const webglAvailable = GlueUtils.isWebGLAvailable();
+const webglAvailable = glueIsWebGLAvailable();
 
 export const App: React.FC = () => {
   if (!webglAvailable) {

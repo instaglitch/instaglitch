@@ -1,7 +1,7 @@
 {
   "id": "scanlines",
   "name": "Scanlines",
-  "fragmentShader": "void main()\n  {\n    vec2 p = gl_FragCoord.xy / iResolution.xy;\n    gl_FragColor = texture2D(iTexture, p);\n    gl_FragColor.rgb += sin((p.y / (iScale * 0.01) - (6.28))) * iIntensity;\n  }",
+  "fragmentShader": "void main()\n  {\n    vec2 p = gl_FragCoord.xy / iResolution;\n    gl_FragColor = texture2D(iTexture, p);\n    gl_FragColor.rgb += sin((p.y / (iScale * 0.01) - (6.28))) * iIntensity;\n  }",
   "settings": [
     {
       "id": "intensity",

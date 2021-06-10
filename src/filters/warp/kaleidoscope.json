@@ -1,7 +1,7 @@
 {
   "id": "kaleidoscope",
   "name": "Kaleidoscope",
-  "fragmentShader": "@use math\n@use wrap\n\nvoid main(void) {\n  vec2 p = (gl_FragCoord.xy / iResolution.xy) - 0.5;\n  float radius = sqrt(dot(p, p));\n  float angle = atan2(p);\n  float segmentAngle = PI2 / iSegments;\n  angle -= segmentAngle * floor(angle / segmentAngle);\n  angle = min(angle, segmentAngle - angle);\n  vec2 uv = vec2(cos(angle), sin(angle)) * radius + 0.5;\n  uv = max(min(uv, 2.0 - uv), -uv);\n  gl_FragColor = texture2D(iTexture, uv);\n}",
+  "fragmentShader": "@use math\n@use wrap\n\nvoid main(void) {\n  vec2 p = (gl_FragCoord.xy / iResolution) - 0.5;\n  float radius = sqrt(dot(p, p));\n  float angle = atan2(p);\n  float segmentAngle = PI2 / iSegments;\n  angle -= segmentAngle * floor(angle / segmentAngle);\n  angle = min(angle, segmentAngle - angle);\n  vec2 uv = vec2(cos(angle), sin(angle)) * radius + 0.5;\n  uv = max(min(uv, 2.0 - uv), -uv);\n  gl_FragColor = texture2D(iTexture, uv);\n}",
   "settings": [
     {
       "id": "segments",
