@@ -1,4 +1,6 @@
+import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
+import { BsImageFill } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 
@@ -52,11 +54,12 @@ export const Drop: React.FC = () => {
     };
   }, [onDrop, onDragStart, onDragEnd]);
 
-  if (dropping) {
-    <div className="overlay">
-      <div className="loading">Drop your image here...</div>
-    </div>;
-  }
-
-  return null;
+  return (
+    <div className={clsx('overlay', 'drag', { dropping })}>
+      <div className="body">
+        <BsImageFill />
+        <span>Drop your image here...</span>
+      </div>
+    </div>
+  );
 };

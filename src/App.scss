@@ -397,3 +397,28 @@ a {
     grid-template-columns: 100px 1fr;
   }
 }
+
+.overlay.drag {
+  opacity: 0;
+  pointer-events: none;
+
+  transition: 0.3s ease-in-out all;
+
+  &.dropping {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .body {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    svg {
+      display: block;
+      width: 5rem;
+      height: 5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
