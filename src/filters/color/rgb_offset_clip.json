@@ -1,0 +1,31 @@
+{
+  "id": "rgb_offset_clip",
+  "name": "RGB offset (clip)",
+  "settings": [
+    {
+      "id": "roffset",
+      "key": "iROffset",
+      "type": "offset",
+      "name": "Red offset",
+      "defaultValue": [0, 0],
+      "color": "#ff0000"
+    },
+    {
+      "id": "goffset",
+      "key": "iGOffset",
+      "type": "offset",
+      "name": "Green offset",
+      "defaultValue": [-0.1, 0],
+      "color": "#00ff00"
+    },
+    {
+      "id": "boffset",
+      "key": "iBOffset",
+      "type": "offset",
+      "name": "Blue offset",
+      "defaultValue": [0, 0],
+      "color": "#0000ff"
+    }
+  ],
+  "fragmentShader": "@use wrap\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / iResolution;\n\n  vec2 r = vec2(uv.x - iROffset.x, uv.y + iROffset.y);\n  vec2 g = vec2(uv.x - iGOffset.x, uv.y + iGOffset.y);\n  vec2 b = vec2(uv.x - iBOffset.x, uv.y + iBOffset.y);\n\n  vec3 col;\n  col.r = texture2D(iTexture, r).r * clip(r);\n  col.g = texture2D(iTexture, g).g * clip(g);\n  col.b = texture2D(iTexture, b).b * clip(b);\n\n  gl_FragColor = vec4(col,1.0);\n}"
+}
