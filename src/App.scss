@@ -141,6 +141,9 @@ button {
 }
 
 .layers {
+  max-height: 400px;
+  overflow-y: scroll;
+
   .layer {
     padding: 10px;
     border-bottom: 1px solid #44444a;
