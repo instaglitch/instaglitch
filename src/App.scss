@@ -76,6 +76,9 @@ button {
   border-radius: 4px;
   padding: 5px 10px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
   &:not(:disabled):hover,
   &:not(:disabled).selected {
@@ -85,6 +88,10 @@ button {
   &:disabled {
     cursor: not-allowed;
     opacity: 0.5;
+  }
+
+  svg:not(:last-child) {
+    margin-right: 7px;
   }
 }
 
@@ -158,7 +165,6 @@ button {
 
   button {
     margin-right: 5px;
-    line-height: 0;
   }
 }
 
@@ -216,10 +222,6 @@ button {
       display: flex;
       align-items: center;
       justify-content: center;
-
-      svg {
-        margin-right: 7px;
-      }
     }
   }
 

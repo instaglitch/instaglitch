@@ -128,12 +128,14 @@ export const Layers: React.FC = observer(() => {
       <div className="layer-actions">
         <button onClick={() => (projectStore.showFilterGallery = true)}>
           <BsPlus />
+          <span>Add a filter</span>
         </button>
         <button
           onClick={() => projectStore.removeCurrentLayer()}
           disabled={currentLayer?.type === LayerType.IMAGE}
         >
           <BsTrash />
+          <span>Delete layer</span>
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { BsCloudUpload } from 'react-icons/bs';
+import { BsBoxArrowInUp } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
@@ -21,8 +21,8 @@ export const Welcome: React.FC = observer(() => {
       </div>
       <div className="actions">
         <button onClick={() => projectStore.openFilePicker()}>
-          <BsCloudUpload />
-          Import from computer
+          <BsBoxArrowInUp />
+          <span>Import from computer</span>
         </button>
       </div>
     </Modal>
