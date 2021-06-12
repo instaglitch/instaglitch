@@ -12,6 +12,7 @@ import { Welcome } from './components/modals/Welcome';
 import { FilterGallery } from './components/modals/FilterGallery';
 import { About } from './components/modals/About';
 import { Export } from './components/modals/Export';
+import { Webcam } from './components/modals/Webcam';
 
 import { Preview } from './components/preview/Preview';
 
@@ -43,6 +44,7 @@ export const App: React.FC = () => {
   return (
     <>
       <Welcome />
+      <Webcam />
       <FilterGallery />
       <About />
       <Export />

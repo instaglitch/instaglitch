@@ -1,6 +1,11 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { BsBoxArrowInUp, BsDownload, BsInfoSquare } from 'react-icons/bs';
+import {
+  BsBoxArrowInUp,
+  BsCamera,
+  BsDownload,
+  BsInfoSquare,
+} from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
@@ -15,6 +20,12 @@ export const Menu: React.FC = observer(() => {
         <button onClick={() => projectStore.openFilePicker()}>
           <BsBoxArrowInUp />
           <span>Open</span>
+        </button>
+      </li>
+      <li>
+        <button onClick={() => (projectStore.showWebcam = true)}>
+          <BsCamera />
+          <span>Webcam</span>
         </button>
       </li>
       <li>
