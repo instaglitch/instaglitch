@@ -1,4 +1,4 @@
-@import 'react-dat-gui/dist/index.css';
+@import 'react-var-ui/dist/index.css';
 
 body {
   margin: 0;
@@ -329,57 +329,18 @@ a {
   cursor: move;
 }
 
-.react-dat-gui {
-  position: relative;
-  width: 100%;
-  right: 0;
+.react-var-ui {
+  margin: 0 -10px;
+  --react-var-ui-background-color: transparent;
+  --react-var-ui-label-background-hover-color: #292930;
 
-  li.folder {
-    .title {
-      background-color: transparent;
-      background-position-x: 0;
-      padding-left: 10px;
-    }
-
-    ul {
-      margin-left: 0;
-      width: 100%;
-    }
+  &-xy-space {
+    height: 150px;
   }
 
-  li.folder.closed {
-    .title {
-      background-color: transparent;
-      background-position-x: -1px;
-      padding-left: 10px;
-    }
-  }
-
-  .cr.cr {
-    background-color: #22222a;
-    border-bottom: none;
-
-    input {
-      border-color: transparent;
-      background-color: #22222a !important;
-    }
-
-    .slider {
-      border-color: transparent;
-      background-color: #22222a;
-    }
-
-    &:hover {
-      background-color: #11111a;
-
-      input,
-      .slider {
-        background-color: #11111a !important;
-      }
-    }
-
-    input:focus {
-      background-color: #11111a !important;
+  &-slider {
+    span {
+      text-align: right;
     }
   }
 }

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
-import DatGui, { DatFolder, DatNumber } from 'react-dat-gui';
+import { VarUI, VarCategory, VarSlider } from 'react-var-ui';
 
 export const Export: React.FC = observer(() => {
   const projectStore = useProjectStore();
@@ -34,30 +34,30 @@ export const Export: React.FC = observer(() => {
   return (
     <Modal title="Export" onDismiss={() => (projectStore.showExport = false)}>
       <div className="info">
-        <DatGui
-          data={data}
-          onUpdate={data => {
+        <VarUI
+          values={data}
+          updateValues={data => {
             projectStore.exportScale = data.scale;
             projectStore.exportQuality = data.quality;
           }}
         >
-          <DatFolder title="Export settings" closed={false}>
-            <DatNumber
+          <VarCategory label="Export settings">
+            <VarSlider
               path="scale"
               min={0.1}
               max={1.0}
               step={0.05}
               label="Scale"
             />
-            <DatNumber
+            <VarSlider
               path="quality"
               min={0.1}
               max={1.0}
               step={0.05}
               label="Quality (JPEG only)"
             />
-          </DatFolder>
-        </DatGui>
+          </VarCategory>
+        </VarUI>
       </div>
       <div className="actions">
         <button

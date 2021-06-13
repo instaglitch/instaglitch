@@ -1,23 +1,17 @@
 import React from 'react';
 import { toJS } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import DatGui, {
-  DatNumber,
-  DatBoolean,
-  DatFolder,
-  DatColor,
-  DatSelect,
-} from 'react-dat-gui';
+import {
+  VarUI,
+  VarSlider,
+  VarColor,
+  VarToggle,
+  VarXY,
+  VarSelect,
+} from 'react-var-ui';
 
 import { useProjectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
-
-declare module 'react-dat-gui' {
-  interface DatSelectProps extends DatChangableFieldProps {
-    options: any[];
-    optionLabels: any[];
-  }
-}
 
 export const LayerSettings: React.FC = observer(() => {
   const projectStore = useProjectStore();
@@ -42,9 +36,9 @@ export const LayerSettings: React.FC = observer(() => {
         {layer.type === LayerType.IMAGE || !layer.filter?.settings ? (
           'This layer has no settings.'
         ) : (
-          <DatGui
-            data={toJS(layer.settings)}
-            onUpdate={data => {
+          <VarUI
+            values={toJS(layer.settings)}
+            updateValues={(data: any) => {
               for (const setting of layer.filter.settings!) {
                 if (setting.type === FilterSettingType.SELECT) {
                   data[setting.key] = parseInt(data[setting.key]);
@@ -65,18 +59,19 @@ export const LayerSettings: React.FC = observer(() => {
               switch (setting.type) {
                 case FilterSettingType.INTEGER:
                   return (
-                    <DatNumber
+                    <VarSlider
                       min={setting.minValue ?? -1}
                       max={setting.maxValue ?? 1}
                       step={setting.step ?? 1}
                       path={setting.key}
                       label={name}
                       key={setting.id}
+                      integer
                     />
                   );
                 case FilterSettingType.FLOAT:
                   return (
-                    <DatNumber
+                    <VarSlider
                       min={setting.minValue ?? -1}
                       max={setting.maxValue ?? 1}
                       step={setting.step ?? 0.01}
@@ -87,7 +82,7 @@ export const LayerSettings: React.FC = observer(() => {
                   );
                 case FilterSettingType.COLOR:
                   return (
-                    <DatColor
+                    <VarColor
                       path={setting.key}
                       label={name}
                       key={setting.id}
@@ -95,7 +90,7 @@ export const LayerSettings: React.FC = observer(() => {
                   );
                 case FilterSettingType.BOOLEAN:
                   return (
-                    <DatBoolean
+                    <VarToggle
                       path={setting.key}
                       label={name}
                       key={setting.id}
@@ -103,34 +98,20 @@ export const LayerSettings: React.FC = observer(() => {
                   );
                 case FilterSettingType.OFFSET:
                   return (
-                    <DatFolder title={name} closed={false} key={setting.id}>
-                      <DatNumber
-                        min={-1}
-                        max={1}
-                        step={0.01}
-                        path={setting.key + '.0'}
-                        label={'X'}
-                      />
-                      <DatNumber
-                        min={-1}
-                        max={1}
-                        step={0.01}
-                        path={setting.key + '.1'}
-                        label={'Y'}
-                      />
-                    </DatFolder>
+                    <VarXY label={name} path={setting.key} key={setting.id} />
                   );
                 case FilterSettingType.SELECT:
                   return (
-                    <DatSelect
+                    <VarSelect
                       path={setting.key}
                       label={name}
                       key={setting.id}
                       options={
-                        setting.selectValues?.map(value => value.value) || []
-                      }
-                      optionLabels={
-                        setting.selectValues?.map(value => value.name) || []
+                        setting.selectValues?.map(value => ({
+                          key: value.id,
+                          label: value.name,
+                          value: value.value,
+                        })) || []
                       }
                     />
                   );
@@ -138,7 +119,7 @@ export const LayerSettings: React.FC = observer(() => {
 
               return null;
             })}
-          </DatGui>
+          </VarUI>
         )}
       </div>
     </div>
