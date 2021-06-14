@@ -332,16 +332,9 @@ a {
 .react-var-ui {
   margin: 0 -10px;
   --react-var-ui-background-color: transparent;
-  --react-var-ui-label-background-hover-color: #292930;
 
   &-xy-space {
     height: 150px;
-  }
-
-  &-slider {
-    span {
-      text-align: right;
-    }
   }
 }
 
