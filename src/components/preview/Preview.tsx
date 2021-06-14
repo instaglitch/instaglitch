@@ -31,8 +31,10 @@ export const Preview: React.FC = observer(() => {
       const [x, y] = initialPositionRef.current;
       const [valueX, valueY] = initialValueRef.current;
 
-      const initialCanvasX = projectStore.canvas.width * (valueX + 0.5);
-      const initialCanvasY = projectStore.canvas.height * (valueY + 0.5);
+      const { width, height } = projectStore.canvas.getBoundingClientRect();
+
+      const initialCanvasX = width * (valueX + 0.5);
+      const initialCanvasY = height * (valueY + 0.5);
 
       const canvasPageX = x - initialCanvasX;
       const canvasPageY = y - initialCanvasY;
@@ -40,8 +42,8 @@ export const Preview: React.FC = observer(() => {
       const newCanvasX = pageX - canvasPageX;
       const newCanvasY = pageY - canvasPageY;
 
-      const newValueX = newCanvasX / projectStore.canvas.width - 0.5;
-      const newValueY = newCanvasY / projectStore.canvas.height - 0.5;
+      const newValueX = newCanvasX / width - 0.5;
+      const newValueY = newCanvasY / height - 0.5;
 
       (layer as FilterLayer).settings[moving] = [newValueX, newValueY];
       projectStore.requestPreviewRender();
@@ -136,8 +138,8 @@ export const Preview: React.FC = observer(() => {
           }}
           style={{
             backgroundColor: setting.color,
-            top: (y + 0.5) * projectStore.canvas.height,
-            left: (x + 0.5) * projectStore.canvas.width,
+            top: (y + 0.5) * 100 + '%',
+            left: (x + 0.5) * 100 + '%',
           }}
         />
       );
