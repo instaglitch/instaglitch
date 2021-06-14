@@ -66,6 +66,7 @@ export const LayerSettings: React.FC = observer(() => {
                       path={setting.key}
                       label={name}
                       key={setting.id}
+                      defaultValue={setting.defaultValue}
                       integer
                     />
                   );
@@ -77,6 +78,7 @@ export const LayerSettings: React.FC = observer(() => {
                       step={setting.step ?? 0.01}
                       path={setting.key}
                       label={name}
+                      defaultValue={setting.defaultValue}
                       key={setting.id}
                     />
                   );
@@ -86,6 +88,7 @@ export const LayerSettings: React.FC = observer(() => {
                       path={setting.key}
                       label={name}
                       key={setting.id}
+                      defaultValue={setting.defaultValue}
                     />
                   );
                 case FilterSettingType.BOOLEAN:
@@ -94,11 +97,17 @@ export const LayerSettings: React.FC = observer(() => {
                       path={setting.key}
                       label={name}
                       key={setting.id}
+                      defaultValue={setting.defaultValue}
                     />
                   );
                 case FilterSettingType.OFFSET:
                   return (
-                    <VarXY label={name} path={setting.key} key={setting.id} />
+                    <VarXY
+                      label={name}
+                      path={setting.key}
+                      key={setting.id}
+                      defaultValue={setting.defaultValue}
+                    />
                   );
                 case FilterSettingType.SELECT:
                   return (
@@ -113,6 +122,7 @@ export const LayerSettings: React.FC = observer(() => {
                           value: value.value,
                         })) || []
                       }
+                      defaultValue={setting.defaultValue}
                     />
                   );
               }
