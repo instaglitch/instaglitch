@@ -1,0 +1,22 @@
+{
+  "id": "mirrored_split_horizontal",
+  "name": "Mirrored split (horizontal)",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": [0, 0],
+      "key": "iOffset",
+      "name": "Offset",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "invert",
+      "defaultValue": false,
+      "key": "iInvert",
+      "name": "Invert",
+      "type": "boolean"
+    }
+  ],
+  "fragmentShader": "@use wrap\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  float iY = (-1.0 * iOffset.y);\n  float y = iY / 2.0 + 0.5;\n  \n  if (iInvert && p.y < y) {\n    p.y = abs(-1.0 - (iY - p.y));\n  }\n  if (!iInvert && p.y > y) {\n    p.y = abs(-1.0 - (iY - p.y));\n  }\n  \n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}"
+}
