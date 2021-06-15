@@ -1,0 +1,14 @@
+{
+  "id": "colorize",
+  "name": "Colorize",
+  "settings": [
+    {
+      "id": "color",
+      "defaultValue": "#fa0202",
+      "key": "iColor",
+      "name": "Color",
+      "type": "color"
+    }
+  ],
+  "fragmentShader": "@use color\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, p);\n  float avg = (gl_FragColor.r + gl_FragColor.g + gl_FragColor.b) / 3.0;\n  gl_FragColor.rgb = vec3(avg, avg, avg);\n  gl_FragColor.rgb *= iColor.rgb;\n}"
+}
