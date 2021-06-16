@@ -1,0 +1,50 @@
+{
+  "id": "fractal_julia",
+  "name": "Fractal (Julia)",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": [-0.64, -0.63],
+      "key": "iOffset",
+      "name": "Offset",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "position",
+      "defaultValue": [0, 0],
+      "key": "iPosition",
+      "name": "Camera position",
+      "type": "offset",
+      "color": "#000000"
+    },
+    {
+      "id": "rotation",
+      "defaultValue": 0,
+      "key": "iRotation",
+      "name": "Camera rotation",
+      "type": "angle"
+    },
+    {
+      "id": "scale",
+      "defaultValue": 1,
+      "key": "iScale",
+      "name": "Scale",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 5
+    },
+    {
+      "id": "iterations",
+      "defaultValue": 16,
+      "key": "iIterations",
+      "name": "Iterations",
+      "type": "float",
+      "step": 1,
+      "minValue": 1,
+      "maxValue": 64
+    }
+  ],
+  "fragmentShader": "@use math\n@use wrap\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution.xy;\n\n  float aspect = iResolution.x / iResolution.y;\n\n  vec2 vsPos = (p * 2.0 - 1.0) / aspect;\n\n  float c = cos(0.0 - iRotation);\n  float s = sin(0.0 - iRotation);\n  mat3 cam = mat3(\n      iScale * vec3(c, -s , 0),\n      iScale * vec3(s, c , 0),\n      vec3(1.0 - iPosition.x, iPosition.y, 1.0)\n  );\n\n  vec2 z = (cam * vec3(vsPos, 1.0)).xy;\n\tvec2 z0 = iOffset;\n\n  const float max = 64.0;\n  for (float n = 0.0; n < max; ++n)\n  {\n    if (iIterations < n) break;\n    z = z0 + vec2(z.x*z.x - z.y*z.y, 2.0 * z.x * z.y);\n    if (dot(z, z) > 4.0) break;\n  }\n\n  float mag = z.x*z.x + z.y*z.y;\n  \n  float d = sqrt(dot(z, z));\n  float displ_x = 2.0 * atan2(z)/PI - 1.0;\n  float displ_y = (log(mag / 4.0) / log(4.0)) * 0.77 + 0.1;\n\n  vec2 r = vec2(displ_x, displ_y);\n  gl_FragColor = texture2D(iTexture, mirroredRepeat(r));\n}"
+}
