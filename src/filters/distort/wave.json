@@ -3,16 +3,15 @@
   "name": "Wave",
   "settings": [
     {
-      "id": "Offset",
-      "defaultValue": [0, 0],
-      "key": "iOffset",
-      "name": "Offset",
-      "type": "offset",
-      "color": "#FFFFFF"
+      "id": "angle",
+      "defaultValue": 0,
+      "key": "iAngle",
+      "name": "Angle",
+      "type": "angle"
     },
     {
       "id": "amplitude",
-      "defaultValue": 0.02,
+      "defaultValue": 0.05,
       "key": "iAmplitude",
       "name": "Amplitude",
       "type": "float",
@@ -41,5 +40,5 @@
       "maxValue": 100
     }
   ],
-  "fragmentShader": "@use wrap\n@use math\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  \n  float angle = atan2(iOffset);\n  float x = sin(sin(angle) * iFrequencyY*p.y + cos(angle) * iFrequencyX*p.x) * iAmplitude;\n  p.x += x;\n  float y = sin(sin(angle) * iFrequencyY*p.y + cos(angle) *iFrequencyX*p.x) * iAmplitude;\n  p.y += y;\n  \n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}"
+  "fragmentShader": "@use wrap\n@use math\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  float angle = PI2 - iAngle;\n  float x = sin(sin(angle) * iFrequencyY*p.y + cos(angle) * iFrequencyX*p.x) * iAmplitude;\n  p.x += x;\n  float y = sin(sin(angle) * iFrequencyY*p.y + cos(angle) *iFrequencyX*p.x) * iAmplitude;\n  p.y += y;\n  \n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}"
 }
