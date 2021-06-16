@@ -1,0 +1,27 @@
+{
+  "id": "linocut",
+  "name": "Linocut",
+  "settings": [
+    {
+      "id": "radius",
+      "defaultValue": 0.5,
+      "key": "iRadius",
+      "name": "Radius",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0.01,
+      "maxValue": 1
+    },
+    {
+      "id": "scale",
+      "defaultValue": 0.5,
+      "key": "iScale",
+      "name": "Scale",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0.1,
+      "maxValue": 5
+    }
+  ],
+  "fragmentShader": "@use color\n\nvoid main()\n{\n  vec2 center = vec2(iResolution.x / 2.0, iResolution.y / 2.0);\n  vec2 uv = gl_FragCoord.xy;\n\n  vec2 d = uv - center;\n  float r = length(d) / 1000.0;\n  float a = atan(d.y, d.x) + iScale * (iRadius - r) / iRadius;\n\n  vec2 uvt = center + r * vec2(cos(a), sin(a));\n\n  vec2 uv2 = gl_FragCoord.xy / iResolution.xy;\n  float c = (0.75 + 0.25 * sin(uvt.x * 1000.0));\n  float l = luma(texture2D(iTexture, uv2));\n  float f = smoothstep(0.5 * c, c, l);\n  f = smoothstep(0.0, 0.5, f);\n\n  gl_FragColor = vec4( vec3( f ),1.0);\n}"
+}
