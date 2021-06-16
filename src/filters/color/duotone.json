@@ -1,0 +1,21 @@
+{
+  "id": "duotone",
+  "name": "Duotone",
+  "settings": [
+    {
+      "id": "color1",
+      "defaultValue": "#50e3c2",
+      "key": "iColor1",
+      "name": "Color 1",
+      "type": "color"
+    },
+    {
+      "id": "color2",
+      "defaultValue": "#9013fe",
+      "key": "iColor2",
+      "name": "Color 2",
+      "type": "color"
+    }
+  ],
+  "fragmentShader": "@use color\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  vec3 color = texture2D(iTexture, p).rgb;\n  vec3 hsl = rgb2hsl(color);\n  color = mix(iColor1.rgb, iColor2.rgb, hsl.z);\n  gl_FragColor = vec4(color, 1.0);\n}"
+}

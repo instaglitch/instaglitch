@@ -1,0 +1,27 @@
+{
+  "id": "posterize",
+  "name": "Posterize",
+  "settings": [
+    {
+      "id": "colors",
+      "defaultValue": 6,
+      "key": "iColors",
+      "name": "Colors",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 64
+    },
+    {
+      "id": "gamma",
+      "defaultValue": 0.5,
+      "key": "iGamma",
+      "name": "Gamma",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "void main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  \n  vec3 c = texture2D(iTexture, p).rgb;\n  c = pow(c, vec3(iGamma, iGamma, iGamma));\n  c = c * iColors;\n  c = floor(c);\n  c = c / iColors;\n  c = pow(c, vec3(1.0/iGamma));\n  gl_FragColor = vec4(c, 1.0);\n}"
+}
