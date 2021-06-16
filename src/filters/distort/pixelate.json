@@ -1,0 +1,27 @@
+{
+  "id": "pixelate",
+  "name": "Pixelate",
+  "settings": [
+    {
+      "id": "pixelate_x",
+      "defaultValue": 2,
+      "key": "iPixelateX",
+      "name": "Pixelation (horizontal)",
+      "type": "float",
+      "step": 1,
+      "minValue": 0,
+      "maxValue": 200
+    },
+    {
+      "id": "pixelate_y",
+      "defaultValue": 2,
+      "key": "iPixelateY",
+      "name": "Pixelation (vertical)",
+      "type": "float",
+      "step": 1,
+      "minValue": 0,
+      "maxValue": 200
+    }
+  ],
+  "fragmentShader": "void main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  float pX = 200.0 - iPixelateX;\n  float pY = 200.0 - iPixelateY;\n  p.x = floor(p.x*pX)/pX;\n  p.y = floor(p.y*pY)/pY;\n  gl_FragColor = texture2D(iTexture, p);\n}"
+}

@@ -1,0 +1,47 @@
+{
+  "id": "pixelate_polar",
+  "name": "Pixelate (polar coordinates)",
+  "settings": [
+    {
+      "id": "pixelate_x",
+      "defaultValue": 2,
+      "key": "iPixelateX",
+      "name": "Pixelation (horizontal)",
+      "type": "float",
+      "step": 1,
+      "minValue": 0,
+      "maxValue": 200
+    },
+    {
+      "id": "pixelate_y",
+      "defaultValue": 2,
+      "key": "iPixelateY",
+      "name": "Pixelation (vertical)",
+      "type": "float",
+      "step": 1,
+      "minValue": 0,
+      "maxValue": 200
+    },
+    {
+      "id": "radius_inner",
+      "defaultValue": 0,
+      "key": "iRadiusInner",
+      "name": "Radius (inner)",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    },
+    {
+      "id": "radius_outer",
+      "defaultValue": 0.5,
+      "key": "iRadiusOuter",
+      "name": "Radius (outer)",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "@use math\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  float pX = 200.0 - iPixelateX;\n  float pY = 200.0 - iPixelateY;\n\n  vec2 x = p - vec2(0.5);\n  float radius = length(x);\n  float angle = atan(x.y, x.x);\n\n  vec2 po; \n  \n  po.s = (radius - iRadiusInner) / (iRadiusOuter - iRadiusInner);\n  po.t = angle * 0.5 / PI + 0.5;\n  \n  po.s = floor(po.s*pX)/pX;\n  po.t = floor(po.t*pY)/pY;\n  \n  gl_FragColor = texture2D(iTexture, po);\n}"
+}
