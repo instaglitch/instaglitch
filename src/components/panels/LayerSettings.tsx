@@ -8,6 +8,7 @@ import {
   VarToggle,
   VarXY,
   VarSelect,
+  VarAngle,
 } from 'react-var-ui';
 
 import { useProjectStore } from '../../ProjectStore';
@@ -122,6 +123,15 @@ export const LayerSettings: React.FC = observer(() => {
                           value: value.value,
                         })) || []
                       }
+                      defaultValue={setting.defaultValue}
+                    />
+                  );
+                case FilterSettingType.ANGLE:
+                  return (
+                    <VarAngle
+                      label={name}
+                      path={setting.key}
+                      key={setting.id}
                       defaultValue={setting.defaultValue}
                     />
                   );

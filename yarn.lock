@@ -9382,10 +9382,10 @@ react-scripts@4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-var-ui@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/react-var-ui/-/react-var-ui-1.0.1.tgz#c41980caacf245339cc18dceebf0a705d48dabb5"
-  integrity sha512-R1X0X3GHxKkEQ2ETdFBjKzEWo+Clc0XBf+E9HiYWVxlc6m8FIatPpwQn0ARK9l64lWgR4zz5pj190GNzIb653g==
+react-var-ui@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-var-ui/-/react-var-ui-1.0.3.tgz#8ff9028bbc809cd52679e8903ad5d2739d74a1ad"
+  integrity sha512-J9tqwf/YoRo5w9mrBn3kk9isRS8n2HqBPfqAlWddkAQlY1RFOHUfbqvXoWpTxz6Hs3mqx0ON6sO05A6Ue1cVaQ==
   dependencies:
     lodash.clonedeep "^4.0.0"
     lodash.result "^4.0.0"

@@ -16,6 +16,7 @@ export enum FilterSettingType {
   FLOAT = 'float',
   BOOLEAN = 'boolean',
   SELECT = 'select',
+  ANGLE = 'angle',
 }
 
 export interface FilterSettingSelectValue {
