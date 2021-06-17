@@ -16,6 +16,11 @@ function createImageLayer(image: HTMLImageElement): ImageLayer {
     type: LayerType.IMAGE,
     image,
     visible: true,
+    settings: {
+      offset: [0, 0],
+      opacity: 1,
+      scale: 1,
+    },
   };
 }
 
@@ -238,8 +243,11 @@ class ProjectStore {
         }
 
         glue.texture(layer.id)?.draw({
-          width,
-          height,
+          x: width * 2 * layer.settings.offset[0],
+          y: height * 2 * layer.settings.offset[1],
+          width: width * layer.settings.scale,
+          height: height * layer.settings.scale,
+          opacity: layer.settings.opacity,
         });
       }
     }

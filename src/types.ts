@@ -55,10 +55,17 @@ export interface FilterLayer extends Layer {
   settings: Record<string, any>;
 }
 
+export interface ImageLayerSettings {
+  offset: [number, number];
+  opacity: number;
+  scale: number;
+}
+
 export interface ImageLayer extends Layer {
   id: string;
   type: LayerType.IMAGE;
   readonly image: HTMLImageElement;
+  settings: ImageLayerSettings;
 }
 
 export type TLayer = FilterLayer | ImageLayer;
