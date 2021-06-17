@@ -43,6 +43,7 @@ body {
 .side {
   border-left: 2px solid #11111a;
   width: 400px;
+  overflow-y: auto;
 }
 
 .tabs {
@@ -111,10 +112,12 @@ button {
 
 .ui {
   height: 100vh;
+  max-height: 100vh;
 }
 
 .workspace {
   display: flex;
+  max-height: calc(100% - 50px);
 
   .canvas-area {
     display: flex;
@@ -338,25 +341,6 @@ a {
   }
 }
 
-@media screen and (max-width: 1200px) {
-  body {
-    overflow: auto;
-  }
-
-  .workspace {
-    display: block;
-
-    .panel.side {
-      width: auto;
-      border-left: none;
-    }
-  }
-
-  .filter-gallery {
-    grid-template-columns: 100px 1fr;
-  }
-}
-
 .overlay.drag {
   opacity: 0;
   pointer-events: none;
@@ -394,5 +378,36 @@ a {
 
   .hidden {
     display: none;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  body {
+    overflow: auto;
+  }
+
+  .workspace {
+    display: block;
+
+    .panel.side {
+      width: auto;
+      border-left: none;
+    }
+  }
+
+  .filter-gallery {
+    grid-template-columns: 100px 1fr;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .menu {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .logo {
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
   }
 }

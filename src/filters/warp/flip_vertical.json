@@ -1,0 +1,5 @@
+{
+  "id": "flip_vertical",
+  "name": "Flip (vertical)",
+  "fragmentShader": "@use wrap\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  p.y = p.y - 1.0;\n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}"
+}

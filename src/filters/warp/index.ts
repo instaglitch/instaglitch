@@ -3,8 +3,8 @@ import tile_mirrored from './tile_mirrored.json';
 import kaleidoscope from './kaleidoscope.json';
 import mirror_horizontal from './mirror_horizontal.json';
 import mirror_vertical from './mirror_vertical.json';
-import mirrored_split_horizontal from './mirrored_split_horizontal.json';
-import mirrored_split_vertical from './mirrored_split_vertical.json';
+import flip_horizontal from './flip_horizontal.json';
+import flip_vertical from './flip_vertical.json';
 
 export const filtersWarp = [
   tile,
@@ -12,6 +12,6 @@ export const filtersWarp = [
   kaleidoscope,
   mirror_horizontal,
   mirror_vertical,
-  mirrored_split_horizontal,
-  mirrored_split_vertical,
+  flip_horizontal,
+  flip_vertical,
 ];
