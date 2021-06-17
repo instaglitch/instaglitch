@@ -6,6 +6,10 @@ import { GlueCanvas } from 'fxglue';
 import { Filter, ImageLayer, LayerType, Project } from './types';
 import { createFilterLayer } from './filters/functions';
 
+declare class ClipboardItem {
+  constructor(data: any);
+}
+
 function createImageLayer(image: HTMLImageElement): ImageLayer {
   return {
     id: uuid(),
@@ -39,6 +43,7 @@ class ProjectStore {
   glueCanvas = new GlueCanvas();
   canvas = this.glueCanvas.canvas;
   glue = this.glueCanvas.glue;
+  gl = this.glueCanvas.gl;
   exportQuality = 0.7;
   exportScale = 1.0;
   fileInput = document.createElement('input');
@@ -168,6 +173,7 @@ class ProjectStore {
   renderAndSave(maxSize = 0, format = 'image/png', quality = 1.0) {
     this.loading = true;
     this.renderCurrentProject(maxSize);
+    this.gl.flush();
 
     const dataUrl = this.canvas.toDataURL(format, quality)!;
     const suffix = '_instaglitch.' + (format === 'image/png' ? 'png' : 'jpg');
@@ -239,6 +245,18 @@ class ProjectStore {
     }
 
     glue.render();
+  }
+
+  copyToClipboard() {
+    this.renderCurrentProject(800);
+    this.gl.flush();
+
+    this.canvas.toBlob(async blob => {
+      try {
+        const clipboardItemInput = new ClipboardItem({ 'image/png': blob });
+        await (navigator.clipboard as any).write([clipboardItemInput]);
+      } catch {}
+    }, 'image/png');
   }
 }
 

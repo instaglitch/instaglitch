@@ -4,11 +4,14 @@ import {
   BsBoxArrowInUp,
   BsCamera,
   BsDownload,
+  BsClipboard,
   BsInfoSquare,
 } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
+
+const copyToClipboardAvailable = !!(window as any)['ClipboardItem'];
 
 export const Menu: React.FC = observer(() => {
   const projectStore = useProjectStore();
@@ -34,6 +37,14 @@ export const Menu: React.FC = observer(() => {
           <span>Export</span>
         </button>
       </li>
+      {copyToClipboardAvailable && (
+        <li>
+          <button onClick={() => projectStore.copyToClipboard()}>
+            <BsClipboard />
+            <span>Copy to clipboard</span>
+          </button>
+        </li>
+      )}
       <li>
         <button onClick={() => (projectStore.showAbout = true)}>
           <BsInfoSquare />
