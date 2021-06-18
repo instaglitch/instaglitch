@@ -7,10 +7,17 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd';
-import { BsEyeFill, BsEyeSlashFill, BsPlus, BsTrash } from 'react-icons/bs';
+import {
+  BsEyeFill,
+  BsEyeSlashFill,
+  BsPlus,
+  BsTrash,
+  BsImage,
+} from 'react-icons/bs';
 
-import { useProjectStore } from '../../ProjectStore';
+import { FileInputMode, useProjectStore } from '../../ProjectStore';
 import { LayerType, Project, TLayer } from '../../types';
+import { truncate } from '../../Utils';
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   const result = Array.from(list);
@@ -24,6 +31,10 @@ const Layer: React.FC<{ project: Project; layer: TLayer }> = observer(
   ({ project, layer }) => {
     const projectStore = useProjectStore();
 
+    const name =
+      layer.type === LayerType.IMAGE
+        ? layer.name || 'Image'
+        : layer.filter.name;
     return (
       <div
         className={clsx('layer', {
@@ -43,7 +54,8 @@ const Layer: React.FC<{ project: Project; layer: TLayer }> = observer(
         >
           {layer.visible ? <BsEyeFill /> : <BsEyeSlashFill />}
         </button>
-        {layer.type === LayerType.IMAGE ? 'Image' : layer.filter.name}
+        {layer.type === LayerType.IMAGE && <BsImage />}
+        <span title={name}>{truncate(name)}</span>
       </div>
     );
   }
@@ -88,10 +100,6 @@ export const Layers: React.FC = observer(() => {
     return null;
   }
 
-  const currentLayer = project.layers.find(
-    layer => layer.id === project.selectedLayer
-  );
-
   const onDragEnd = (result: DropResult) => {
     // dropped outside the list
     if (!result.destination) {
@@ -128,12 +136,13 @@ export const Layers: React.FC = observer(() => {
       <div className="layer-actions">
         <button onClick={() => (projectStore.showFilterGallery = true)}>
           <BsPlus />
-          <span>Add a filter</span>
+          <span>Filter</span>
         </button>
-        <button
-          onClick={() => projectStore.removeCurrentLayer()}
-          disabled={currentLayer?.type === LayerType.IMAGE}
-        >
+        <button onClick={() => projectStore.openFilePicker(FileInputMode.ADD)}>
+          <BsPlus />
+          <span>Image</span>
+        </button>
+        <button onClick={() => projectStore.removeCurrentLayer()}>
           <BsTrash />
           <span>Delete layer</span>
         </button>

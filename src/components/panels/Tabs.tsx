@@ -11,6 +11,7 @@ import { BsX } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Project } from '../../types';
+import { truncate } from '../../Utils';
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   const result = Array.from(list);
@@ -19,37 +20,6 @@ function reorder<T>(list: T[], startIndex: number, endIndex: number) {
 
   return result;
 }
-
-const truncate = (str: string) => {
-  const maxLength = 25;
-
-  if (str.length < maxLength) {
-    return str;
-  }
-
-  const split = str.split('.');
-  if (split.length < 0) {
-    return '';
-  }
-
-  let extension = split.pop() as string;
-  const name = split.join('.');
-  if (extension.length > 4) {
-    extension = 'jpg';
-  }
-
-  if (name.length > maxLength - 5) {
-    const maxPartLength = Math.floor((maxLength - 5) / 2);
-
-    return (
-      name.substr(0, maxPartLength) +
-      '...' +
-      name.substr(name.length - maxPartLength) +
-      '.' +
-      extension
-    );
-  }
-};
 
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   const projectStore = useProjectStore();

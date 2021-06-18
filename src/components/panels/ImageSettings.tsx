@@ -15,14 +15,11 @@ export const ImageSettings: React.FC<ImageSettingsProps> = observer(
   ({ layer }) => {
     const projectStore = useProjectStore();
 
-    console.log(toJS(layer.settings));
-
     return (
       <div className="layer-settings">
         <VarUI
           values={toJS(layer.settings)}
           updateValues={(data: any) => {
-            console.log('upd', toJS(data));
             layer.settings = data;
             projectStore.requestPreviewRender();
           }}

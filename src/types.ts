@@ -69,6 +69,7 @@ export interface ImageLayer extends Layer {
   type: LayerType.IMAGE;
   readonly image: HTMLImageElement;
   settings: ImageLayerSettings;
+  name?: string;
 }
 
 export type TLayer = FilterLayer | ImageLayer;

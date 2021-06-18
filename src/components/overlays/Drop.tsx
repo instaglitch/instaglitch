@@ -16,7 +16,7 @@ export const Drop: React.FC = () => {
       if (e.dataTransfer?.files[0]) {
         const file = e.dataTransfer?.files[0];
         if (file.type.startsWith('image')) {
-          projectStore.addProjectFromFile(file);
+          projectStore.handleFile(file);
         }
       }
     },

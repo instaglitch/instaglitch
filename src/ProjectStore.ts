@@ -25,17 +25,17 @@ function createImageLayer(image: HTMLImageElement): ImageLayer {
   };
 }
 
-function calculatePreviewSize(width: number, height: number, maxSize: number) {
+function calculateScale(width: number, height: number, maxSize: number) {
   if (maxSize) {
-    let scale = 1;
-
-    scale = Math.min(Math.min(maxSize / width, maxSize / height), 1);
-
-    width *= scale;
-    height *= scale;
+    return Math.min(Math.min(maxSize / width, maxSize / height), 1);
   }
 
-  return [width, height] as const;
+  return 1;
+}
+
+export enum FileInputMode {
+  NEW,
+  ADD,
 }
 
 class ProjectStore {
@@ -53,6 +53,7 @@ class ProjectStore {
   exportQuality = 0.7;
   exportScale = 1.0;
   fileInput = document.createElement('input');
+  fileInputMode: FileInputMode = FileInputMode.NEW;
 
   constructor() {
     makeAutoObservable(this);
@@ -61,7 +62,7 @@ class ProjectStore {
     this.fileInput.accept = 'image/*';
     this.fileInput.addEventListener('change', () => {
       if (this.fileInput.files?.length) {
-        this.addProjectFromFile(this.fileInput.files[0]);
+        this.handleFile(this.fileInput.files[0], this.fileInputMode);
         this.fileInput.value = '';
       }
     });
@@ -72,17 +73,24 @@ class ProjectStore {
     document.body.appendChild(this.fileInput);
   }
 
-  openFilePicker() {
+  openFilePicker(mode: FileInputMode = FileInputMode.NEW) {
+    this.fileInputMode = mode;
     this.fileInput.click();
   }
 
-  addProjectFromFile(file: File) {
+  handleFile(file: File, mode: FileInputMode = FileInputMode.NEW) {
     this.loading = true;
     const reader = new FileReader();
 
     reader.addEventListener('load', () => {
       this.loading = false;
-      this.addProjectFromURL(reader.result as string, file.name);
+
+      const dataUrl = reader.result as string;
+      if (mode === FileInputMode.NEW) {
+        this.addProjectFromURL(dataUrl, file.name);
+      } else {
+        this.addImageLayer(dataUrl, file.name);
+      }
     });
 
     reader.addEventListener('error', () => {
@@ -100,6 +108,7 @@ class ProjectStore {
 
   addProjectFromImage(image: HTMLImageElement, filename = 'untitled.jpg') {
     const imageLayer = createImageLayer(image);
+    imageLayer.name = filename;
 
     const project: Project = {
       id: uuid(),
@@ -121,6 +130,34 @@ class ProjectStore {
 
       this.loading = false;
 
+      this.requestPreviewRender();
+    };
+
+    if (image.complete && image.naturalHeight !== 0) {
+      onload();
+    } else {
+      image.onload = onload;
+    }
+  }
+
+  addImageLayer(url: string, name?: string) {
+    const image = new Image();
+    image.src = url;
+
+    const imageLayer = createImageLayer(image);
+    imageLayer.name = name;
+
+    this.loading = true;
+
+    const onload = () => {
+      if (!this.currentProject) {
+        this.loading = false;
+        return;
+      }
+
+      this.currentProject.layers = [imageLayer, ...this.currentProject.layers];
+      this.currentProject.selectedLayer = imageLayer.id;
+      this.loading = false;
       this.requestPreviewRender();
     };
 
@@ -156,7 +193,7 @@ class ProjectStore {
       layer => layer.id !== this.currentProject?.selectedLayer
     );
     this.currentProject.selectedLayer =
-      this.currentProject.layers[this.currentProject.layers.length - 1].id;
+      this.currentProject.layers[this.currentProject.layers.length - 1]?.id;
     this.requestPreviewRender();
   }
 
@@ -206,9 +243,9 @@ class ProjectStore {
       return;
     }
 
-    let { width, height } = this.currentProject;
-    [width, height] = calculatePreviewSize(width, height, maxSize);
-    this.glueCanvas.setSize(width, height);
+    const { width, height } = this.currentProject;
+    const scale = calculateScale(width, height, maxSize);
+    this.glueCanvas.setSize(width * scale, height * scale);
 
     const layers = this.currentProject.layers
       .filter(layer => layer.visible)
@@ -244,10 +281,10 @@ class ProjectStore {
         }
 
         glue.texture(layer.id)?.draw({
-          x: width * 2 * layer.settings.offset[0],
-          y: height * 2 * layer.settings.offset[1],
-          width: width * layer.settings.scale,
-          height: height * layer.settings.scale,
+          x: layer.image.naturalWidth * layer.settings.offset[0] * scale,
+          y: layer.image.naturalHeight * layer.settings.offset[1] * scale,
+          width: layer.image.naturalWidth * scale * layer.settings.scale,
+          height: layer.image.naturalHeight * scale * layer.settings.scale,
           opacity: layer.settings.opacity,
           mode: layer.settings.mode,
         });

@@ -153,6 +153,10 @@ button {
     display: flex;
     align-items: center;
 
+    svg {
+      margin-right: 5px;
+    }
+
     &.selected {
       background: #44444a;
     }

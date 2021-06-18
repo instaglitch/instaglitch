@@ -30,12 +30,6 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
           <VarUI
             values={toJS(layer.settings)}
             updateValues={(data: any) => {
-              for (const setting of layer.filter.settings!) {
-                if (setting.type === FilterSettingType.SELECT) {
-                  data[setting.key] = parseInt(data[setting.key]);
-                }
-              }
-
               layer.settings = data;
               projectStore.requestPreviewRender();
             }}
