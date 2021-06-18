@@ -5273,10 +5273,10 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
-fxglue@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/fxglue/-/fxglue-0.0.9.tgz#b27a05817a7f8c1e4c32212dca2aad19e5c91012"
-  integrity sha512-XgBBgCWLzrlc+S/GpHTglK6cLSMffFQgpGcMbb7AFQLAZVFQ/33p+m/+NiOQaX2Tp9pGNhM/FmprRmCVH1RQFw==
+fxglue@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/fxglue/-/fxglue-0.0.10.tgz#bf269aa6c6cf059d1db2a392fa10da04c2b84855"
+  integrity sha512-2PLY3UgSm8a2lYXR1LaDUTCgMqC3ksep2XBA9iLvZQmp6STwWcbhQT7A7x/WaAwMCvFY3tYTIaWocz2CTaUb7g==
 
 gensync@^1.0.0-beta.1:
   version "1.0.0-beta.2"
@@ -9382,10 +9382,10 @@ react-scripts@4.0.3:
   optionalDependencies:
     fsevents "^2.1.3"
 
-react-var-ui@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/react-var-ui/-/react-var-ui-1.0.3.tgz#8ff9028bbc809cd52679e8903ad5d2739d74a1ad"
-  integrity sha512-J9tqwf/YoRo5w9mrBn3kk9isRS8n2HqBPfqAlWddkAQlY1RFOHUfbqvXoWpTxz6Hs3mqx0ON6sO05A6Ue1cVaQ==
+react-var-ui@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-var-ui/-/react-var-ui-1.0.5.tgz#0008234da20939206ecb4aeafbbf524c6af9fec0"
+  integrity sha512-t+PkeiKYRpUFM4BmNWukzgEBG/ICs/Ke2J+hLi3n0J0amLPDmhghWkwAx6k9pUaXBipL6HZSr+CDDb4LblduBw==
   dependencies:
     lodash.clonedeep "^4.0.0"
     lodash.result "^4.0.0"

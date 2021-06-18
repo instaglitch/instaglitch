@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
-import { GlueCanvas } from 'fxglue';
+import { GlueBlendMode, GlueCanvas } from 'fxglue';
 
 import { Filter, ImageLayer, LayerType, Project } from './types';
 import { createFilterLayer } from './filters/functions';
@@ -20,6 +20,7 @@ function createImageLayer(image: HTMLImageElement): ImageLayer {
       offset: [0, 0],
       opacity: 1,
       scale: 1,
+      mode: GlueBlendMode.NORMAL,
     },
   };
 }
@@ -248,6 +249,7 @@ class ProjectStore {
           width: width * layer.settings.scale,
           height: height * layer.settings.scale,
           opacity: layer.settings.opacity,
+          mode: layer.settings.mode,
         });
       }
     }

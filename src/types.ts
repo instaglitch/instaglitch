@@ -1,3 +1,5 @@
+import { GlueBlendMode } from 'fxglue';
+
 export enum LayerType {
   IMAGE,
   FILTER,
@@ -59,6 +61,7 @@ export interface ImageLayerSettings {
   offset: [number, number];
   opacity: number;
   scale: number;
+  mode: GlueBlendMode;
 }
 
 export interface ImageLayer extends Layer {
