@@ -1,0 +1,37 @@
+{
+  "id": "rgb",
+  "name": "RGB",
+  "settings": [
+    {
+      "id": "red_offset",
+      "defaultValue": 0,
+      "key": "iRedOffset",
+      "name": "Red offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -1,
+      "maxValue": 1
+    },
+    {
+      "id": "green_offset",
+      "defaultValue": 0,
+      "key": "iGreenOffset",
+      "name": "Green offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -1,
+      "maxValue": 1
+    },
+    {
+      "id": "blue_offset",
+      "defaultValue": 0,
+      "key": "iBlueOffset",
+      "name": "Blue offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -1,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "@use color\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, p);\n  gl_FragColor.rgb += vec3(iRedOffset, iGreenOffset, iBlueOffset);\n}"
+}

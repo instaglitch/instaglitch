@@ -1,0 +1,37 @@
+{
+  "id": "hsl_multiply",
+  "name": "HSL (multiply)",
+  "settings": [
+    {
+      "id": "hue_offset",
+      "defaultValue": 0,
+      "key": "iHueOffset",
+      "name": "Hue offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -10,
+      "maxValue": 10
+    },
+    {
+      "id": "saturation_offset",
+      "defaultValue": 0,
+      "key": "iSaturationOffset",
+      "name": "Saturation offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -10,
+      "maxValue": 10
+    },
+    {
+      "id": "lightness_offset",
+      "defaultValue": 0,
+      "key": "iLightnessOffset",
+      "name": "Lightness offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -10,
+      "maxValue": 10
+    }
+  ],
+  "fragmentShader": "@use color\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, p);\n  \n  vec3 hsl = rgb2hsl(gl_FragColor.rgb);\n  hsl += hsl * vec3(iHueOffset, iSaturationOffset, iLightnessOffset);\n  gl_FragColor.rgb = hsl2rgb(hsl);\n}"
+}
