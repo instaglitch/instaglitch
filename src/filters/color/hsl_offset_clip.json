@@ -1,0 +1,31 @@
+{
+  "id": "hsl_offset_clip",
+  "name": "HSL offset (clip)",
+  "settings": [
+    {
+      "id": "hoffset",
+      "key": "iHOffset",
+      "type": "offset",
+      "name": "Hue offset",
+      "defaultValue": [0, 0],
+      "color": "#ff0000"
+    },
+    {
+      "id": "soffset",
+      "key": "iSOffset",
+      "type": "offset",
+      "name": "Saturation offset",
+      "defaultValue": [-0.1, 0],
+      "color": "#ffffff"
+    },
+    {
+      "id": "loffset",
+      "key": "iLOffset",
+      "type": "offset",
+      "name": "Lightness offset",
+      "defaultValue": [0, 0],
+      "color": "#000000"
+    }
+  ],
+  "fragmentShader": "@use color\n@use wrap\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / iResolution;\n\n  vec2 h = vec2(uv.x - iHOffset.x, uv.y + iHOffset.y);\n  vec2 s = vec2(uv.x - iSOffset.x, uv.y + iSOffset.y);\n  vec2 l = vec2(uv.x - iLOffset.x, uv.y + iLOffset.y);\n  \n  vec3 hsl;\n  hsl.x = rgb2hsl(texture2D(iTexture, h).rgb).x * clip(h);\n  hsl.y = rgb2hsl(texture2D(iTexture, s).rgb).y * clip(s);\n  hsl.z = rgb2hsl(texture2D(iTexture, l).rgb).z * clip(l);\n\n  gl_FragColor = vec4(hsl2rgb(hsl),1.0);\n}"
+}
