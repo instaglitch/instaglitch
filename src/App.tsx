@@ -18,6 +18,7 @@ import { Preview } from './components/preview/Preview';
 
 import { Loading } from './components/overlays/Loading';
 import { Drop } from './components/overlays/Drop';
+import { Properties } from './components/modals/Properties';
 
 const webglAvailable = glueIsWebGLAvailable();
 
@@ -48,6 +49,7 @@ export const App: React.FC = () => {
       <FilterGallery />
       <About />
       <Export />
+      <Properties />
       <Drop />
       <Loading />
       <div className="ui v-stack">

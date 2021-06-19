@@ -6,6 +6,7 @@ import {
   BsDownload,
   BsClipboard,
   BsInfoSquare,
+  BsFillGearFill,
 } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
@@ -45,6 +46,12 @@ export const Menu: React.FC = observer(() => {
           </button>
         </li>
       )}
+      <li>
+        <button onClick={() => (projectStore.showProperties = true)}>
+          <BsFillGearFill />
+          <span>Properties</span>
+        </button>
+      </li>
       <li>
         <button onClick={() => (projectStore.showAbout = true)}>
           <BsInfoSquare />

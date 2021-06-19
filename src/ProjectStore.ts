@@ -46,6 +46,7 @@ class ProjectStore {
   showAbout = false;
   showExport = false;
   showWebcam = false;
+  showProperties = false;
   glueCanvas = new GlueCanvas();
   canvas = this.glueCanvas.canvas;
   glue = this.glueCanvas.glue;
