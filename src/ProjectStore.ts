@@ -361,6 +361,59 @@ class ProjectStore {
     return value;
   }
 
+  isLayerVisible(layer: TLayer) {
+    if (!this.currentProject) {
+      return false;
+    }
+
+    const clips = this.currentProject.clips[layer.id];
+    if (!this.currentProject.animated || !clips) {
+      return layer.visible;
+    }
+
+    if (!layer.visible) {
+      return false;
+    }
+
+    for (const clip of clips) {
+      if (
+        this.currentProject.time >= clip.start &&
+        this.currentProject.time <= clip.end
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  getVideoTime(layer: SourceLayer) {
+    if (!this.currentProject || !(layer.source instanceof HTMLVideoElement)) {
+      return 0;
+    }
+
+    const clips = this.currentProject.clips[layer.id];
+    if (!this.currentProject.animated || !clips) {
+      return 0;
+    }
+
+    if (!layer.visible) {
+      return 0;
+    }
+
+    for (const clip of clips) {
+      if (
+        this.currentProject.time >= clip.start &&
+        this.currentProject.time <= clip.end &&
+        typeof clip.absoluteStart === 'number'
+      ) {
+        return this.currentProject.time - clip.absoluteStart;
+      }
+    }
+
+    return this.currentProject.time;
+  }
+
   renderCurrentProject(maxSize = 800) {
     if (!this.currentProject) {
       return;
@@ -371,7 +424,7 @@ class ProjectStore {
     this.glueCanvas.setSize(width * scale, height * scale);
 
     const layers = this.currentProject.layers
-      .filter(layer => layer.visible)
+      .filter(layer => this.isLayerVisible(layer))
       .reverse();
 
     const glue = this.glue;
@@ -406,6 +459,10 @@ class ProjectStore {
 
         if (layer.source instanceof HTMLVideoElement) {
           try {
+            const time = this.getVideoTime(layer);
+            if (Math.abs(layer.source.currentTime - time) > 1) {
+              layer.source.currentTime = time;
+            }
             glue.texture(layer.id)?.update(layer.source);
           } catch {}
         }
