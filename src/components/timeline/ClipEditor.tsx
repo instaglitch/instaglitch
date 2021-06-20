@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
+import { v4 as uuid } from 'uuid';
 
 import { AutomationClip } from '../../types';
-import { fnToChart } from './Utils';
+import { chartToFn, fnToChart } from './Utils';
 
 interface DragState {
   moving: 'start' | 'block' | 'end';
@@ -120,6 +121,38 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
         onDoubleClick={e => {
           e.preventDefault();
           e.stopPropagation();
+
+          const rect = e.currentTarget.getBoundingClientRect();
+          const chartX = e.clientX - rect.left;
+          const fnX = chartToFn(chartX, width, minX, maxX);
+
+          let insertAt: number | undefined = undefined;
+          if (clips.length > 0) {
+            for (let i = 0; i < clips.length; i++) {
+              if (clips[i].end >= fnX) {
+                insertAt = i;
+                break;
+              }
+            }
+          }
+
+          const newClips = [...clips];
+
+          if (typeof insertAt === 'undefined') {
+            newClips.push({
+              id: uuid(),
+              start: fnX,
+              end: fnX + 1,
+            });
+          } else {
+            newClips.splice(insertAt, 0, {
+              id: uuid(),
+              start: fnX,
+              end: fnX + 1,
+            });
+          }
+
+          onChange(newClips);
         }}
       >
         {clips.map((clip, i) => {
