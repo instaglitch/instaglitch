@@ -35,11 +35,16 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
 
   const updatePosition = useCallback(
     (x: number, y: number, dragState: DragState) => {
+      const clip = dragState.clip;
       const delta = (x - dragState.initX) / pixelsPerSecond;
       const i = dragState.i;
 
-      let newStart = dragState.clip.start;
-      let newEnd = dragState.clip.end;
+      const hasAbsolute =
+        typeof clip.absoluteStart === 'number' &&
+        typeof clip.duration === 'number';
+
+      let newStart = clip.start;
+      let newEnd = clip.end;
 
       if (dragState.moving !== 'start') {
         newEnd += delta;
@@ -68,14 +73,32 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
         }
       }
 
+      if (newStart < 0) {
+        newEnd += -1 * newStart;
+        newStart = 0;
+      }
+
       const newClip: AutomationClip = {
-        ...dragState.clip,
+        ...clip,
       };
+
       if (dragState.moving !== 'start') {
         newClip.end = newEnd;
       }
       if (dragState.moving !== 'end') {
         newClip.start = newStart;
+      }
+
+      if (hasAbsolute) {
+        if (dragState.moving !== 'start') {
+          newClip.absoluteStart! += newStart - clip.start;
+        }
+
+        newClip.start = Math.max(newClip.absoluteStart!, newClip.start);
+        newClip.end = Math.min(
+          newClip.absoluteStart! + newClip.duration!,
+          newClip.end
+        );
       }
 
       clips[i] = newClip;
@@ -100,11 +123,31 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
         }}
       >
         {clips.map((clip, i) => {
+          const hasAbsolute =
+            typeof clip.absoluteStart === 'number' &&
+            typeof clip.duration === 'number';
+          const absoluteStartX = hasAbsolute
+            ? fnToChart(clip.absoluteStart!, width, minX, maxX)
+            : undefined;
+          const absoluteEndX = hasAbsolute
+            ? fnToChart(clip.absoluteStart! + clip.duration!, width, minX, maxX)
+            : undefined;
           const startX = fnToChart(clip.start, width, minX, maxX);
           const endX = fnToChart(clip.end, width, minX, maxX);
 
           return (
             <React.Fragment key={clip.id}>
+              {hasAbsolute && (
+                <rect
+                  className="clip-absolute"
+                  x={absoluteStartX}
+                  y={10}
+                  width={absoluteEndX! - absoluteStartX!}
+                  height={height - 20}
+                  stroke="#77f"
+                  fill="#77f"
+                />
+              )}
               <rect
                 className="clip"
                 x={startX}

@@ -101,6 +101,8 @@ export interface AutomationClip {
   id: string;
   start: number;
   end: number;
+  absoluteStart?: number;
+  duration?: number;
 }
 
 export interface AutomationLayer {

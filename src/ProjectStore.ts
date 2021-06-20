@@ -161,6 +161,19 @@ class ProjectStore {
       const [width, height] = glueGetSourceDimensions(source);
       project.width = width;
       project.height = height;
+      project.clips[sourceLayer.id] = [
+        {
+          id: uuid(),
+          start: 0,
+          end: 10,
+        },
+      ];
+
+      if (source instanceof HTMLVideoElement && source.duration) {
+        project.clips[sourceLayer.id][0].end = source.duration;
+        project.clips[sourceLayer.id][0].absoluteStart = 0;
+        project.clips[sourceLayer.id][0].duration = source.duration;
+      }
 
       this.currentProjectId = project.id;
       this.projects.push(project);
@@ -200,6 +213,20 @@ class ProjectStore {
 
       this.currentProject.layers = [sourceLayer, ...this.currentProject.layers];
       this.currentProject.selectedLayer = sourceLayer.id;
+      this.currentProject.clips[sourceLayer.id] = [
+        {
+          id: uuid(),
+          start: 0,
+          end: this.maxClipEnd,
+        },
+      ];
+
+      if (source instanceof HTMLVideoElement && source.duration) {
+        this.currentProject.clips[sourceLayer.id][0].end = source.duration;
+        this.currentProject.clips[sourceLayer.id][0].absoluteStart = 0;
+        this.currentProject.clips[sourceLayer.id][0].duration = source.duration;
+      }
+
       this.loading = false;
       this.requestPreviewRender();
     };
@@ -209,6 +236,21 @@ class ProjectStore {
     } else {
       source.onload = onload;
     }
+  }
+
+  get maxClipEnd() {
+    if (!this.currentProject) {
+      return 0;
+    }
+
+    let max = 0;
+    for (const clips of Object.values(this.currentProject.clips)) {
+      for (const clip of clips) {
+        max = Math.max(clip.end, max);
+      }
+    }
+
+    return max;
   }
 
   get currentProject() {
@@ -223,6 +265,13 @@ class ProjectStore {
     const layer = createFilterLayer(filter);
     this.currentProject.layers = [layer, ...this.currentProject.layers];
     this.currentProject.selectedLayer = layer.id;
+    this.currentProject.clips[layer.id] = [
+      {
+        id: uuid(),
+        start: 0,
+        end: this.maxClipEnd,
+      },
+    ];
     this.requestPreviewRender();
     this.showFilterGallery = false;
   }

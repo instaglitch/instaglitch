@@ -427,6 +427,11 @@ a {
     touch-action: none;
   }
 
+  .clip-absolute {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
   .clip-start,
   .clip-end {
     &:hover {
