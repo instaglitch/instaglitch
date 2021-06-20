@@ -15,7 +15,7 @@ export const Drop: React.FC = () => {
 
       if (e.dataTransfer?.files[0]) {
         const file = e.dataTransfer?.files[0];
-        if (file.type.startsWith('image')) {
+        if (file.type.startsWith('image') || file.type.startsWith('video')) {
           projectStore.handleFile(file);
         }
       }

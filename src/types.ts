@@ -1,3 +1,5 @@
+import { GlueSourceType } from 'fxglue';
+
 export enum LayerType {
   SOURCE,
   FILTER,
@@ -58,7 +60,7 @@ export interface FilterLayer extends Layer {
 export interface SourceLayer extends Layer {
   id: string;
   type: LayerType.SOURCE;
-  readonly source: HTMLImageElement;
+  readonly source: GlueSourceType;
   name?: string;
 }
 

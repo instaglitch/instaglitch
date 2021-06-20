@@ -69,6 +69,7 @@ export const Webcam: React.FC = observer(() => {
     if (canvasRef.current) {
       projectStore.addProjectFromURL(
         canvasRef.current.toDataURL('image/png'),
+        'image',
         'webcam.png'
       );
       projectStore.showWebcam = false;

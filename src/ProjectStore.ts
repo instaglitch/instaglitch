@@ -5,6 +5,7 @@ import {
   GlueCanvas,
   glueIsSourceLoaded,
   glueGetSourceDimensions,
+  GlueSourceType,
 } from 'fxglue';
 
 import {
@@ -23,7 +24,7 @@ declare class ClipboardItem {
   constructor(data: any);
 }
 
-function createSourceLayer(source: HTMLImageElement): SourceLayer {
+function createSourceLayer(source: GlueSourceType): SourceLayer {
   const settings: Record<string, any> = {};
 
   for (const setting of sourceSettings) {
@@ -76,7 +77,7 @@ class ProjectStore {
     makeAutoObservable(this);
 
     this.fileInput.type = 'file';
-    this.fileInput.accept = 'image/*';
+    this.fileInput.accept = 'image/*;video/*';
     this.fileInput.addEventListener('change', () => {
       if (this.fileInput.files?.length) {
         this.handleFile(this.fileInput.files[0], this.fileInputMode);
@@ -103,10 +104,12 @@ class ProjectStore {
       this.loading = false;
 
       const dataUrl = reader.result as string;
+      const type = file.type.startsWith('video') ? 'video' : 'image';
+
       if (mode === FileInputMode.NEW) {
-        this.addProjectFromURL(dataUrl, file.name);
+        this.addProjectFromURL(dataUrl, type, file.name);
       } else {
-        this.addSourceLayer(dataUrl, file.name);
+        this.addSourceLayer(dataUrl, type, file.name);
       }
     });
 
@@ -117,13 +120,18 @@ class ProjectStore {
     reader.readAsDataURL(file);
   }
 
-  addProjectFromURL(url: string, filename = 'untitled.jpg') {
-    const source = new Image();
+  addProjectFromURL(
+    url: string,
+    type: 'image' | 'video',
+    filename = 'untitled.jpg'
+  ) {
+    const source =
+      type === 'image' ? new Image() : document.createElement('video');
     source.src = url;
     this.addProjectFromSource(source, filename);
   }
 
-  addProjectFromSource(source: HTMLImageElement, filename = 'untitled.jpg') {
+  addProjectFromSource(source: GlueSourceType, filename = 'untitled.jpg') {
     const sourceLayer = createSourceLayer(source);
     sourceLayer.name = filename;
 
@@ -159,12 +167,18 @@ class ProjectStore {
     if (glueIsSourceLoaded(source)) {
       onload();
     } else {
-      source.onload = onload;
+      if (source instanceof HTMLImageElement) {
+        source.onload = onload;
+      } else {
+        source.addEventListener('loadeddata', onload);
+        source.load();
+      }
     }
   }
 
-  addSourceLayer(url: string, name?: string) {
-    const source = new Image();
+  addSourceLayer(url: string, type: 'image' | 'video', name?: string) {
+    const source =
+      type === 'image' ? new Image() : document.createElement('video');
     source.src = url;
 
     const sourceLayer = createSourceLayer(source);
@@ -333,6 +347,12 @@ class ProjectStore {
           glue.registerTexture(layer.id, layer.source);
         }
 
+        if (layer.source instanceof HTMLVideoElement) {
+          try {
+            glue.texture(layer.id)?.update(layer.source);
+          } catch {}
+        }
+
         const [width, height] = glueGetSourceDimensions(layer.source);
 
         glue.texture(layer.id)?.draw({
@@ -376,9 +396,61 @@ class ProjectStore {
   }
 
   startPlayback() {
-    this.currentProject!.playing = true;
+    if (!this.currentProject) {
+      return;
+    }
+
+    this.currentProject.playing = true;
     this.lastFrameTime = new Date().getTime();
     this.requestPreviewRender();
+
+    for (const layer of this.currentProject.layers) {
+      if (layer.type !== LayerType.SOURCE) {
+        continue;
+      }
+
+      if (layer.source instanceof HTMLVideoElement) {
+        layer.source.play();
+      }
+    }
+  }
+
+  stopPlayback() {
+    if (!this.currentProject) {
+      return;
+    }
+
+    this.currentProject.playing = false;
+
+    for (const layer of this.currentProject.layers) {
+      if (layer.type !== LayerType.SOURCE) {
+        continue;
+      }
+
+      if (layer.source instanceof HTMLVideoElement) {
+        layer.source.pause();
+      }
+    }
+  }
+
+  setTime(time: number) {
+    if (!this.currentProject) {
+      return;
+    }
+
+    this.currentProject.time = time;
+    for (const layer of this.currentProject.layers) {
+      if (layer.type !== LayerType.SOURCE) {
+        continue;
+      }
+
+      if (layer.source instanceof HTMLVideoElement) {
+        layer.source.currentTime = this.currentProject.time;
+      }
+    }
+
+    this.requestPreviewRender();
+    setTimeout(() => this.requestPreviewRender(), 100);
   }
 
   recordVideo() {
@@ -393,9 +465,8 @@ class ProjectStore {
     const mediaRecorder = getMediaRecorder(stream);
 
     this.lastFrameTime = new Date().getTime();
-    this.currentProject!.time = 0;
-    this.currentProject!.playing = true;
-    this.requestPreviewRender();
+    this.setTime(0);
+    this.startPlayback();
 
     mediaRecorder.start(100);
     this.mediaRecorder = mediaRecorder;

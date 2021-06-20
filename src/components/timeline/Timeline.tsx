@@ -89,7 +89,7 @@ export const Timeline: React.FC = observer(() => {
             if (!currentProject.playing) {
               projectStore.startPlayback();
             } else {
-              currentProject.playing = false;
+              projectStore.stopPlayback();
             }
           }}
         >
@@ -97,8 +97,8 @@ export const Timeline: React.FC = observer(() => {
         </button>
         <button
           onClick={() => {
-            currentProject.playing = false;
-            currentProject.time = 0;
+            projectStore.stopPlayback();
+            projectStore.setTime(0);
           }}
         >
           <BsStopFill />
@@ -120,10 +120,7 @@ export const Timeline: React.FC = observer(() => {
             maxX={maxX}
             pixelsPerSecond={PPS}
             time={currentProject.time}
-            onUpdateTime={time => {
-              currentProject.time = time;
-              projectStore.requestPreviewRender();
-            }}
+            onUpdateTime={time => projectStore.setTime(time)}
             onUpdate={(PPS, minX) => {
               setPPS(PPS);
               setMinX(minX);
