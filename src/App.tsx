@@ -19,6 +19,7 @@ import { Preview } from './components/preview/Preview';
 import { Loading } from './components/overlays/Loading';
 import { Drop } from './components/overlays/Drop';
 import { Properties } from './components/modals/Properties';
+import { Timeline } from './components/timeline/Timeline';
 
 const webglAvailable = glueIsWebGLAvailable();
 
@@ -60,6 +61,7 @@ export const App: React.FC = () => {
             <div className="canvas-area flex">
               <Preview />
             </div>
+            <Timeline />
           </div>
           <div className="panel side">
             <Layers />

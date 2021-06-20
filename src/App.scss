@@ -14,7 +14,7 @@ body {
 }
 
 .panel {
-  background: #33333a;
+  background: #22222a;
 }
 
 .menu {
@@ -52,14 +52,14 @@ body {
   padding-left: 5px;
 
   .tab {
-    background: #44444a;
+    background: #33333a;
     padding: 0 5px;
     margin-right: 5px;
     display: inline-flex;
     align-items: center;
 
     &.selected {
-      background: #55555a;
+      background: #44444a;
     }
 
     button {
@@ -72,7 +72,7 @@ body {
 
 button {
   border: none;
-  background: #44444a;
+  background: #33333a;
   color: #ddd;
   border-radius: 4px;
   padding: 5px 10px;
@@ -83,7 +83,7 @@ button {
 
   &:not(:disabled):hover,
   &:not(:disabled).selected {
-    background: #55555a;
+    background: #44444a;
   }
 
   &:disabled {
@@ -126,7 +126,7 @@ button {
 
     canvas {
       max-width: 100%;
-      max-height: 100%;
+      max-height: calc(100vh - 400px);
       background: white;
       box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
     }
@@ -149,7 +149,7 @@ button {
 
   .layer {
     padding: 10px;
-    border-bottom: 1px solid #44444a;
+    border-bottom: 1px solid #33333a;
     display: flex;
     align-items: center;
 
@@ -158,7 +158,7 @@ button {
     }
 
     &.selected {
-      background: #44444a;
+      background: #33333a;
     }
 
     button {
@@ -214,7 +214,7 @@ button {
 }
 
 .modal {
-  background: #33333a;
+  background: #22222a;
   box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
   width: 600px;
 
@@ -385,6 +385,148 @@ a {
   }
 }
 
+.curve-editor {
+  touch-action: none;
+
+  circle {
+    touch-action: none;
+  }
+
+  path {
+    touch-action: none;
+  }
+
+  .curve {
+    &:hover {
+      stroke-width: 4px;
+      cursor: ns-resize;
+    }
+  }
+
+  .curve-point {
+    &:hover {
+      stroke: #77f;
+      stroke-width: 2px;
+      cursor: pointer;
+    }
+  }
+
+  .fill-path {
+    pointer-events: none;
+  }
+}
+
+.clip-editor {
+  touch-action: none;
+
+  rect {
+    touch-action: none;
+  }
+
+  path {
+    touch-action: none;
+  }
+
+  .clip-start,
+  .clip-end {
+    &:hover {
+      stroke-width: 4px;
+      cursor: ew-resize;
+    }
+  }
+
+  .clip {
+    &:hover {
+      cursor: move;
+    }
+  }
+
+  .fill-path {
+    pointer-events: none;
+  }
+}
+
+.time-display {
+  user-select: none;
+  touch-action: none;
+  cursor: move;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  background: #22222a;
+  color: white;
+  position: relative;
+  user-select: none;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .timeline-item-wrapper,
+  .timeline-info {
+    border-bottom: 1px solid #11111a;
+    position: relative;
+    z-index: 4;
+  }
+
+  .timeline-info {
+    display: flex;
+    align-items: center;
+    border-right: 2px solid #11111a;
+
+    span {
+      font-weight: bold;
+      padding: 5px 10px;
+    }
+
+    &-layer {
+      border-left: 5px solid #77f;
+      cursor: pointer;
+    }
+
+    &-property {
+      border-left: 10px solid #77f;
+    }
+  }
+
+  svg {
+    display: block;
+    position: absolute;
+  }
+}
+
+.time-background,
+.time-foreground {
+  top: 40px;
+  bottom: 0;
+  height: calc(100% - 40px);
+  z-index: 1;
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.time-foreground {
+  opacity: 1;
+  z-index: 5;
+}
+
+.time-display-head {
+  position: absolute;
+  width: 2px;
+  background: #77f;
+  bottom: 0;
+  top: 0;
+}
+
+.timeline-wrapper {
+  background: #22222a;
+  height: 300px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 @media screen and (max-width: 1200px) {
   body {
     overflow: auto;
@@ -392,6 +534,12 @@ a {
 
   .workspace {
     display: block;
+
+    .canvas-area {
+      canvas {
+        max-height: auto;
+      }
+    }
 
     .panel.side {
       width: auto;
