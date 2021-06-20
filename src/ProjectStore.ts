@@ -173,6 +173,7 @@ class ProjectStore {
         project.clips[sourceLayer.id][0].end = source.duration;
         project.clips[sourceLayer.id][0].absoluteStart = 0;
         project.clips[sourceLayer.id][0].duration = source.duration;
+        project.animated = true;
       }
 
       this.currentProjectId = project.id;
