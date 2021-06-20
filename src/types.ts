@@ -81,4 +81,7 @@ export interface Project {
   selectedLayer: string;
   width: number;
   height: number;
+  animated: boolean;
+  time: number;
+  playing: boolean;
 }

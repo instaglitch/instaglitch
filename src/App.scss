@@ -459,6 +459,15 @@ a {
   color: white;
   position: relative;
   user-select: none;
+  overflow-y: auto;
+
+  & > div:nth-child(1),
+  & > div:nth-child(2) {
+    position: sticky;
+    top: 0;
+    background: #22222a;
+    z-index: 999;
+  }
 
   * {
     box-sizing: border-box;
@@ -524,7 +533,17 @@ a {
   background: #22222a;
   height: 300px;
   max-height: 300px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.playback-controls {
+  display: flex;
+  justify-content: center;
+
+  button {
+    margin: 5px;
+  }
 }
 
 @media screen and (max-width: 1200px) {

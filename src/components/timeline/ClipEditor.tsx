@@ -93,7 +93,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
         viewBox={`0 0 ${width} ${height}`}
         style={{ width: width + 'px', height: height + 'px' }}
         xmlns="http://www.w3.org/2000/svg"
-        className="automation-clip-editor"
+        className="clip-editor"
         onDoubleClick={e => {
           e.preventDefault();
           e.stopPropagation();
@@ -106,7 +106,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
           return (
             <React.Fragment key={clip.id}>
               <rect
-                className="automation-clip"
+                className="clip"
                 x={startX}
                 y={10}
                 width={endX - startX}
@@ -138,7 +138,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
                 }}
               />
               <path
-                className="automation-clip-start"
+                className="clip-start"
                 d={`M ${startX} 10 V ${height - 10}`}
                 stroke="#77f"
                 fill="none"
@@ -168,7 +168,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
                 }}
               />
               <path
-                className="automation-clip-end"
+                className="clip-end"
                 d={`M ${endX} 10 V ${height - 10}`}
                 stroke="#77f"
                 fill="none"

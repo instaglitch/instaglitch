@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { BsPlayFill, BsPauseFill, BsStopFill } from 'react-icons/bs';
+import { observer } from 'mobx-react-lite';
 
+import { useProjectStore } from '../../ProjectStore';
 import { ClipEditor } from './ClipEditor';
 import { CurveEditor } from './CurveEditor';
 import { TimeDisplay } from './TimeDisplay';
@@ -9,9 +12,11 @@ import { AutomationLayer } from './types';
 const timeHeight = 40;
 const layerHeight = 40;
 const propertyHeight = 100;
-// todo playing/head props
 
-export const Timeline: React.FC = () => {
+export const Timeline: React.FC = observer(() => {
+  const projectStore = useProjectStore();
+  const animated = projectStore.currentProject?.animated;
+
   const resizeDivRef = useRef<HTMLDivElement>(null);
 
   const [layers, setLayers] = useState<AutomationLayer[]>([
@@ -78,7 +83,6 @@ export const Timeline: React.FC = () => {
     },
   ]);
   const [selectedLayer, setSelectedLayer] = useState<string>();
-  const [time, setTime] = useState(20);
 
   const [width, setWidth] = useState(500);
   const [PPS, setPPS] = useState(defaultPPS);
@@ -99,31 +103,82 @@ export const Timeline: React.FC = () => {
     window.addEventListener('resize', resize);
 
     return () => window.removeEventListener('resize', resize);
-  }, [resize]);
+  }, [resize, animated, selectedLayer]);
+
+  useEffect(() => {
+    if (!projectStore.currentProject) {
+      return;
+    }
+
+    const { time, playing } = projectStore.currentProject;
+    if (playing) {
+      setMinX(minX => {
+        if (time > minX + width / 2) {
+          return time - width / 2;
+        }
+
+        if (time < minX) {
+          return time;
+        }
+
+        return minX;
+      });
+    }
+  }, [projectStore.currentProject, setMinX, width]);
+
+  if (!animated) {
+    return null;
+  }
 
   return (
     <div className="panel timeline-wrapper">
+      <div className="playback-controls">
+        <button
+          onClick={() => {
+            if (!projectStore.currentProject!.playing) {
+              projectStore.startPlayback();
+            } else {
+              projectStore.currentProject!.playing = false;
+            }
+          }}
+        >
+          {projectStore.currentProject!.playing ? (
+            <BsPauseFill />
+          ) : (
+            <BsPlayFill />
+          )}
+        </button>
+        <button
+          onClick={() => {
+            projectStore.currentProject!.playing = false;
+            projectStore.currentProject!.time = 0;
+          }}
+        >
+          <BsStopFill />
+        </button>
+      </div>
       <div className="timeline">
-        <div>
+        <div style={{ height: timeHeight + 'px' }}>
           <div
             className="timeline-info"
             style={{ height: timeHeight + 'px' }}
           ></div>
         </div>
+        <TimeDisplay
+          height={timeHeight}
+          minX={minX}
+          maxX={maxX}
+          pixelsPerSecond={PPS}
+          time={projectStore.currentProject!.time}
+          onUpdateTime={time => (projectStore.currentProject!.time = time)}
+          onUpdate={(PPS, minX) => {
+            setPPS(PPS);
+            setMinX(minX);
+          }}
+        />
+        <div></div>
         <div>
           <div ref={resizeDivRef}></div>
-          <TimeDisplay
-            height={timeHeight}
-            minX={minX}
-            maxX={maxX}
-            pixelsPerSecond={PPS}
-            time={time}
-            onUpdateTime={setTime}
-            onUpdate={(PPS, minX) => {
-              setPPS(PPS);
-              setMinX(minX);
-            }}
-          />
         </div>
         {layers.map(layer => (
           <React.Fragment key={layer.id}>
@@ -191,4 +246,4 @@ export const Timeline: React.FC = () => {
       </div>
     </div>
   );
-};
+});

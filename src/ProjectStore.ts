@@ -55,6 +55,7 @@ class ProjectStore {
   exportScale = 1.0;
   fileInput = document.createElement('input');
   fileInputMode: FileInputMode = FileInputMode.NEW;
+  lastFrameTime: number = new Date().getTime();
 
   constructor() {
     makeAutoObservable(this);
@@ -118,6 +119,9 @@ class ProjectStore {
       selectedLayer: imageLayer.id,
       width: 0,
       height: 0,
+      animated: false,
+      time: 0,
+      playing: false,
     };
 
     this.loading = true;
@@ -293,6 +297,13 @@ class ProjectStore {
     }
 
     glue.render();
+
+    const time = new Date().getTime();
+    if (this.currentProject.playing && this.currentProject.animated) {
+      this.currentProject.time += (time - this.lastFrameTime) / 1000;
+      this.requestPreviewRender();
+    }
+    this.lastFrameTime = time;
   }
 
   copyToClipboard() {
@@ -305,6 +316,12 @@ class ProjectStore {
         await (navigator.clipboard as any).write([clipboardItemInput]);
       } catch {}
     }, 'image/png');
+  }
+
+  startPlayback() {
+    this.currentProject!.playing = true;
+    this.lastFrameTime = new Date().getTime();
+    this.requestPreviewRender();
   }
 }
 

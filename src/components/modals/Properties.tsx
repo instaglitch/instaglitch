@@ -3,20 +3,31 @@ import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
-import { VarUI, VarCategory, VarNumber, VarSelect } from 'react-var-ui';
+import {
+  VarUI,
+  VarCategory,
+  VarNumber,
+  VarSelect,
+  VarToggle,
+} from 'react-var-ui';
 
 export const Properties: React.FC = observer(() => {
   const projectStore = useProjectStore();
   const [aspectRatio, setAspectRatio] =
     useState<[number, number] | undefined>(undefined);
 
+  const width = projectStore.currentProject?.width;
+  const height = projectStore.currentProject?.height;
+  const animated = projectStore.currentProject?.animated;
+
   const data = useMemo(
     () => ({
-      width: projectStore.currentProject?.width,
-      height: projectStore.currentProject?.height,
+      width,
+      height,
       aspectRatio,
+      animated,
     }),
-    [projectStore.currentProject, aspectRatio]
+    [width, height, animated, aspectRatio]
   );
 
   if (!projectStore.showProperties) {
@@ -51,6 +62,13 @@ export const Properties: React.FC = observer(() => {
             } else {
               projectStore.currentProject.width = data.width;
               projectStore.currentProject.height = data.height;
+            }
+
+            projectStore.currentProject.animated = data.animated;
+
+            if (!data.animated) {
+              projectStore.currentProject.playing = false;
+              projectStore.currentProject.time = 0;
             }
 
             projectStore.requestPreviewRender();
@@ -95,6 +113,7 @@ export const Properties: React.FC = observer(() => {
                 },
               ]}
             />
+            <VarToggle path="animated" label="Enable animation tools" />
           </VarCategory>
         </VarUI>
       </div>
