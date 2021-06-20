@@ -563,7 +563,7 @@ class ProjectStore {
       }
 
       if (layer.source instanceof HTMLVideoElement) {
-        layer.source.currentTime = this.currentProject.time;
+        layer.source.currentTime = this.getVideoTime(layer);
       }
     }
 
