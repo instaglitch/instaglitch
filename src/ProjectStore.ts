@@ -398,10 +398,12 @@ class ProjectStore {
     };
 
     mediaRecorder.onstop = () => {
-      const buffer = new Blob(blobs, { type: 'video/webm' });
+      const buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
       const url = window.URL.createObjectURL(buffer);
 
-      const suffix = '_instaglitch.webm';
+      const suffix =
+        '_instaglitch.' +
+        (mediaRecorder.mimeType.includes('webm') ? 'webm' : 'mp4');
       const currentFilename = this.currentProject?.filename || 'untitled';
       const currentName = currentFilename.split('.')[0];
 
