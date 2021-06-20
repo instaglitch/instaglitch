@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { BsPlayFill, BsPauseFill, BsStopFill } from 'react-icons/bs';
+import {
+  BsPlayFill,
+  BsPauseFill,
+  BsStopFill,
+  BsFillCaretDownFill,
+  BsFillCaretLeftFill,
+} from 'react-icons/bs';
 import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../../ProjectStore';
@@ -142,6 +148,11 @@ export const Timeline: React.FC = observer(() => {
                   }
                 >
                   <span>{layerName(layer)}</span>
+                  {selectedLayer === layer.id ? (
+                    <BsFillCaretDownFill />
+                  ) : (
+                    <BsFillCaretLeftFill />
+                  )}
                 </div>
                 {selectedLayer === layer.id &&
                   layer.type === LayerType.FILTER &&

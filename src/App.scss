@@ -477,6 +477,8 @@ a {
     display: flex;
     align-items: center;
     border-right: 2px solid #33333a;
+    justify-content: space-between;
+    padding-right: 5px;
 
     span {
       font-weight: bold;
@@ -491,11 +493,6 @@ a {
     &-property {
       border-left: 10px solid #77f;
     }
-  }
-
-  svg {
-    display: block;
-    position: absolute;
   }
 }
 
