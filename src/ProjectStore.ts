@@ -27,6 +27,10 @@ declare class ClipboardItem {
 }
 
 function createSourceLayer(source: GlueSourceType): SourceLayer {
+  if (source instanceof HTMLVideoElement) {
+    source.muted = true;
+  }
+
   const settings: Record<string, any> = {};
 
   for (const setting of sourceSettings) {
