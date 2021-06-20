@@ -32,8 +32,8 @@ export const truncate = (str: string) => {
 };
 
 export const layerName = (layer: TLayer) => {
-  return layer.type === LayerType.IMAGE
-    ? layer.name || 'Image'
+  return layer.type === LayerType.SOURCE
+    ? layer.name || 'Source'
     : layer.filter.name;
 };
 

@@ -51,7 +51,7 @@ const Layer: React.FC<{ project: Project; layer: TLayer }> = observer(
         >
           {layer.visible ? <BsEyeFill /> : <BsEyeSlashFill />}
         </button>
-        {layer.type === LayerType.IMAGE && <BsImage />}
+        {layer.type === LayerType.SOURCE && <BsImage />}
         <span title={name}>{truncate(name)}</span>
       </div>
     );
@@ -137,7 +137,7 @@ export const Layers: React.FC = observer(() => {
         </button>
         <button onClick={() => projectStore.openFilePicker(FileInputMode.ADD)}>
           <BsPlus />
-          <span>Image</span>
+          <span>File</span>
         </button>
         <button onClick={() => projectStore.removeCurrentLayer()}>
           <BsTrash />

@@ -1,5 +1,5 @@
 export enum LayerType {
-  IMAGE,
+  SOURCE,
   FILTER,
 }
 
@@ -55,14 +55,14 @@ export interface FilterLayer extends Layer {
   readonly filter: Filter;
 }
 
-export interface ImageLayer extends Layer {
+export interface SourceLayer extends Layer {
   id: string;
-  type: LayerType.IMAGE;
-  readonly image: HTMLImageElement;
+  type: LayerType.SOURCE;
+  readonly source: HTMLImageElement;
   name?: string;
 }
 
-export type TLayer = FilterLayer | ImageLayer;
+export type TLayer = FilterLayer | SourceLayer;
 
 export interface Project {
   id: string;

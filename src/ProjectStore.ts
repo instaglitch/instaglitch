@@ -1,12 +1,16 @@
 import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
-import { GlueBlendMode, GlueCanvas } from 'fxglue';
+import {
+  GlueCanvas,
+  glueIsSourceLoaded,
+  glueGetSourceDimensions,
+} from 'fxglue';
 
 import {
   Filter,
   FilterSettingType,
-  ImageLayer,
+  SourceLayer,
   LayerType,
   Project,
 } from './types';
@@ -19,7 +23,7 @@ declare class ClipboardItem {
   constructor(data: any);
 }
 
-function createImageLayer(image: HTMLImageElement): ImageLayer {
+function createSourceLayer(source: HTMLImageElement): SourceLayer {
   const settings: Record<string, any> = {};
 
   for (const setting of sourceSettings) {
@@ -28,8 +32,8 @@ function createImageLayer(image: HTMLImageElement): ImageLayer {
 
   return {
     id: uuid(),
-    type: LayerType.IMAGE,
-    image,
+    type: LayerType.SOURCE,
+    source,
     visible: true,
     settings,
   };
@@ -102,7 +106,7 @@ class ProjectStore {
       if (mode === FileInputMode.NEW) {
         this.addProjectFromURL(dataUrl, file.name);
       } else {
-        this.addImageLayer(dataUrl, file.name);
+        this.addSourceLayer(dataUrl, file.name);
       }
     });
 
@@ -114,20 +118,20 @@ class ProjectStore {
   }
 
   addProjectFromURL(url: string, filename = 'untitled.jpg') {
-    const image = new Image();
-    image.src = url;
-    this.addProjectFromImage(image, filename);
+    const source = new Image();
+    source.src = url;
+    this.addProjectFromSource(source, filename);
   }
 
-  addProjectFromImage(image: HTMLImageElement, filename = 'untitled.jpg') {
-    const imageLayer = createImageLayer(image);
-    imageLayer.name = filename;
+  addProjectFromSource(source: HTMLImageElement, filename = 'untitled.jpg') {
+    const sourceLayer = createSourceLayer(source);
+    sourceLayer.name = filename;
 
     const project: Project = {
       id: uuid(),
       filename,
-      layers: [imageLayer],
-      selectedLayer: imageLayer.id,
+      layers: [sourceLayer],
+      selectedLayer: sourceLayer.id,
       width: 0,
       height: 0,
       animated: false,
@@ -140,8 +144,9 @@ class ProjectStore {
     this.loading = true;
 
     const onload = () => {
-      project.width = image.naturalWidth;
-      project.height = image.naturalHeight;
+      const [width, height] = glueGetSourceDimensions(source);
+      project.width = width;
+      project.height = height;
 
       this.currentProjectId = project.id;
       this.projects.push(project);
@@ -151,19 +156,19 @@ class ProjectStore {
       this.requestPreviewRender();
     };
 
-    if (image.complete && image.naturalHeight !== 0) {
+    if (glueIsSourceLoaded(source)) {
       onload();
     } else {
-      image.onload = onload;
+      source.onload = onload;
     }
   }
 
-  addImageLayer(url: string, name?: string) {
-    const image = new Image();
-    image.src = url;
+  addSourceLayer(url: string, name?: string) {
+    const source = new Image();
+    source.src = url;
 
-    const imageLayer = createImageLayer(image);
-    imageLayer.name = name;
+    const sourceLayer = createSourceLayer(source);
+    sourceLayer.name = name;
 
     this.loading = true;
 
@@ -173,16 +178,16 @@ class ProjectStore {
         return;
       }
 
-      this.currentProject.layers = [imageLayer, ...this.currentProject.layers];
-      this.currentProject.selectedLayer = imageLayer.id;
+      this.currentProject.layers = [sourceLayer, ...this.currentProject.layers];
+      this.currentProject.selectedLayer = sourceLayer.id;
       this.loading = false;
       this.requestPreviewRender();
     };
 
-    if (image.complete && image.naturalHeight !== 0) {
+    if (glueIsSourceLoaded(source)) {
       onload();
     } else {
-      image.onload = onload;
+      source.onload = onload;
     }
   }
 
@@ -219,7 +224,7 @@ class ProjectStore {
     const project = this.projects.find(project => project.id === id);
     if (project) {
       for (const layer of project.layers.filter(
-        layer => layer.type === LayerType.IMAGE
+        layer => layer.type === LayerType.SOURCE
       )) {
         this.glue.deregisterTexture(layer.id);
       }
@@ -321,18 +326,20 @@ class ProjectStore {
         glue.program(layer.filter.id)?.apply();
       } else {
         if (!glue.hasTexture(layer.id)) {
-          if (!layer.image.complete || layer.image.naturalHeight === 0) {
+          if (!glueIsSourceLoaded(layer.source)) {
             continue;
           }
 
-          glue.registerTexture(layer.id, layer.image);
+          glue.registerTexture(layer.id, layer.source);
         }
 
+        const [width, height] = glueGetSourceDimensions(layer.source);
+
         glue.texture(layer.id)?.draw({
-          x: layer.image.naturalWidth * layer.settings.offset[0] * scale,
-          y: layer.image.naturalHeight * layer.settings.offset[1] * scale,
-          width: layer.image.naturalWidth * scale * layer.settings.scale,
-          height: layer.image.naturalHeight * scale * layer.settings.scale,
+          x: width * layer.settings.offset[0] * scale,
+          y: height * layer.settings.offset[1] * scale,
+          width: width * scale * layer.settings.scale,
+          height: height * scale * layer.settings.scale,
           opacity: layer.settings.opacity,
           mode: layer.settings.mode,
         });
