@@ -9,6 +9,7 @@ import { CurveEditor } from './CurveEditor';
 import { TimeDisplay } from './TimeDisplay';
 import { defaultPPS } from './Utils';
 import { layerName } from '../../Utils';
+import { TimeBackground } from './TimeBackground';
 
 const timeHeight = 40;
 const layerHeight = 40;
@@ -100,200 +101,212 @@ export const Timeline: React.FC = observer(() => {
         </button>
         <button onClick={() => projectStore.recordVideo()}>Record</button>
       </div>
-      <div className="timeline">
+      <div className="timeline" style={{ minHeight: timeHeight + 'px' }}>
         <div style={{ height: timeHeight + 'px' }}>
           <div
             className="timeline-info"
             style={{ height: timeHeight + 'px' }}
           ></div>
         </div>
-        <TimeDisplay
+        <div style={{ height: timeHeight + 'px' }}>
+          <div ref={resizeDivRef}></div>
+          <TimeDisplay
+            height={timeHeight}
+            minX={minX}
+            maxX={maxX}
+            pixelsPerSecond={PPS}
+            time={currentProject.time}
+            onUpdateTime={time => {
+              currentProject.time = time;
+              projectStore.requestPreviewRender();
+            }}
+            onUpdate={(PPS, minX) => {
+              setPPS(PPS);
+              setMinX(minX);
+            }}
+          />
+        </div>
+      </div>
+      <div className="timeline-with-background">
+        <div className="timeline">
+          {currentProject.layers.map(layer => (
+            <React.Fragment key={layer.id}>
+              <div>
+                <div
+                  className="timeline-info timeline-info-layer"
+                  style={{ height: layerHeight + 'px' }}
+                  onClick={() =>
+                    setSelectedLayer(id =>
+                      id === layer.id ? undefined : layer.id
+                    )
+                  }
+                >
+                  <span>{layerName(layer)}</span>
+                </div>
+                {selectedLayer === layer.id &&
+                  layer.type === LayerType.FILTER &&
+                  layer.filter.settings?.map(setting => {
+                    if (!supportedTypes.includes(setting.type)) {
+                      return null;
+                    }
+
+                    if (setting.type === FilterSettingType.OFFSET) {
+                      return (
+                        <React.Fragment key={setting.key}>
+                          <div
+                            className="timeline-info timeline-info-property"
+                            style={{ height: propertyHeight + 'px' }}
+                            key={setting.key}
+                          >
+                            <span>{setting.name} (X)</span>
+                          </div>
+                          <div
+                            className="timeline-info timeline-info-property"
+                            style={{ height: propertyHeight + 'px' }}
+                            key={setting.key}
+                          >
+                            <span>{setting.name} (Y)</span>
+                          </div>
+                        </React.Fragment>
+                      );
+                    }
+
+                    return (
+                      <div
+                        className="timeline-info timeline-info-property"
+                        style={{ height: propertyHeight + 'px' }}
+                        key={setting.key}
+                      >
+                        <span>{setting.name}</span>
+                      </div>
+                    );
+                  })}
+              </div>
+              <div>
+                <ClipEditor
+                  height={layerHeight}
+                  minX={minX}
+                  maxX={maxX}
+                  pixelsPerSecond={PPS}
+                  clips={currentProject.clips[layer.id] ?? []}
+                  onChange={clips => {
+                    currentProject.clips[layer.id] = [...clips];
+                    projectStore.requestPreviewRender();
+                  }}
+                />
+                {selectedLayer === layer.id &&
+                  layer.type === LayerType.FILTER &&
+                  layer.filter.settings?.map(setting => {
+                    if (!supportedTypes.includes(setting.type)) {
+                      return null;
+                    }
+
+                    if (setting.type === FilterSettingType.OFFSET) {
+                      return (
+                        <React.Fragment key={setting.key}>
+                          <CurveEditor
+                            key={setting.key}
+                            height={propertyHeight}
+                            minX={minX}
+                            maxX={maxX}
+                            pixelsPerSecond={PPS}
+                            minY={-1}
+                            maxY={1}
+                            previewValue={layer.settings[setting.key][0]}
+                            points={
+                              currentProject.points[layer.id]?.[
+                                setting.key + '_x'
+                              ] ?? []
+                            }
+                            onChange={points => {
+                              if (!currentProject.points[layer.id]) {
+                                currentProject.points[layer.id] = {};
+                              }
+
+                              currentProject.points[layer.id][
+                                setting.key + '_x'
+                              ] = points;
+                              projectStore.requestPreviewRender();
+                            }}
+                          />
+                          <CurveEditor
+                            key={setting.key}
+                            height={propertyHeight}
+                            minX={minX}
+                            maxX={maxX}
+                            pixelsPerSecond={PPS}
+                            minY={-1}
+                            maxY={1}
+                            previewValue={layer.settings[setting.key][1]}
+                            points={
+                              currentProject.points[layer.id]?.[
+                                setting.key + '_y'
+                              ] ?? []
+                            }
+                            onChange={points => {
+                              if (!currentProject.points[layer.id]) {
+                                currentProject.points[layer.id] = {};
+                              }
+
+                              currentProject.points[layer.id][
+                                setting.key + '_y'
+                              ] = points;
+                              projectStore.requestPreviewRender();
+                            }}
+                          />
+                        </React.Fragment>
+                      );
+                    }
+
+                    const minValue =
+                      setting.type === FilterSettingType.ANGLE
+                        ? 0
+                        : setting.minValue!;
+                    const maxValue =
+                      setting.type === FilterSettingType.ANGLE
+                        ? Math.PI * 2
+                        : setting.maxValue!;
+                    const step =
+                      setting.type === FilterSettingType.INTEGER
+                        ? 1
+                        : undefined;
+
+                    return (
+                      <CurveEditor
+                        key={setting.key}
+                        height={propertyHeight}
+                        minX={minX}
+                        maxX={maxX}
+                        pixelsPerSecond={PPS}
+                        minY={minValue}
+                        maxY={maxValue}
+                        step={step}
+                        previewValue={layer.settings[setting.key]}
+                        points={
+                          currentProject.points[layer.id]?.[setting.key] ?? []
+                        }
+                        onChange={points => {
+                          if (!currentProject.points[layer.id]) {
+                            currentProject.points[layer.id] = {};
+                          }
+
+                          currentProject.points[layer.id][setting.key] = points;
+                          projectStore.requestPreviewRender();
+                        }}
+                      />
+                    );
+                  })}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+        <TimeBackground
           height={timeHeight}
           minX={minX}
           maxX={maxX}
           pixelsPerSecond={PPS}
           time={currentProject.time}
-          onUpdateTime={time => {
-            currentProject.time = time;
-            projectStore.requestPreviewRender();
-          }}
-          onUpdate={(PPS, minX) => {
-            setPPS(PPS);
-            setMinX(minX);
-          }}
         />
-        <div></div>
-        <div>
-          <div ref={resizeDivRef}></div>
-        </div>
-        {currentProject.layers.map(layer => (
-          <React.Fragment key={layer.id}>
-            <div>
-              <div
-                className="timeline-info timeline-info-layer"
-                style={{ height: layerHeight + 'px' }}
-                onClick={() =>
-                  setSelectedLayer(id =>
-                    id === layer.id ? undefined : layer.id
-                  )
-                }
-              >
-                <span>{layerName(layer)}</span>
-              </div>
-              {selectedLayer === layer.id &&
-                layer.type === LayerType.FILTER &&
-                layer.filter.settings?.map(setting => {
-                  if (!supportedTypes.includes(setting.type)) {
-                    return null;
-                  }
-
-                  if (setting.type === FilterSettingType.OFFSET) {
-                    return (
-                      <React.Fragment key={setting.key}>
-                        <div
-                          className="timeline-info timeline-info-property"
-                          style={{ height: propertyHeight + 'px' }}
-                          key={setting.key}
-                        >
-                          <span>{setting.name} (X)</span>
-                        </div>
-                        <div
-                          className="timeline-info timeline-info-property"
-                          style={{ height: propertyHeight + 'px' }}
-                          key={setting.key}
-                        >
-                          <span>{setting.name} (Y)</span>
-                        </div>
-                      </React.Fragment>
-                    );
-                  }
-
-                  return (
-                    <div
-                      className="timeline-info timeline-info-property"
-                      style={{ height: propertyHeight + 'px' }}
-                      key={setting.key}
-                    >
-                      <span>{setting.name}</span>
-                    </div>
-                  );
-                })}
-            </div>
-            <div>
-              <ClipEditor
-                height={layerHeight}
-                minX={minX}
-                maxX={maxX}
-                pixelsPerSecond={PPS}
-                clips={currentProject.clips[layer.id] ?? []}
-                onChange={clips => {
-                  currentProject.clips[layer.id] = [...clips];
-                  projectStore.requestPreviewRender();
-                }}
-              />
-              {selectedLayer === layer.id &&
-                layer.type === LayerType.FILTER &&
-                layer.filter.settings?.map(setting => {
-                  if (!supportedTypes.includes(setting.type)) {
-                    return null;
-                  }
-
-                  if (setting.type === FilterSettingType.OFFSET) {
-                    return (
-                      <React.Fragment key={setting.key}>
-                        <CurveEditor
-                          key={setting.key}
-                          height={propertyHeight}
-                          minX={minX}
-                          maxX={maxX}
-                          pixelsPerSecond={PPS}
-                          minY={-1}
-                          maxY={1}
-                          previewValue={layer.settings[setting.key][0]}
-                          points={
-                            currentProject.points[layer.id]?.[
-                              setting.key + '_x'
-                            ] ?? []
-                          }
-                          onChange={points => {
-                            if (!currentProject.points[layer.id]) {
-                              currentProject.points[layer.id] = {};
-                            }
-
-                            currentProject.points[layer.id][
-                              setting.key + '_x'
-                            ] = points;
-                            projectStore.requestPreviewRender();
-                          }}
-                        />
-                        <CurveEditor
-                          key={setting.key}
-                          height={propertyHeight}
-                          minX={minX}
-                          maxX={maxX}
-                          pixelsPerSecond={PPS}
-                          minY={-1}
-                          maxY={1}
-                          previewValue={layer.settings[setting.key][1]}
-                          points={
-                            currentProject.points[layer.id]?.[
-                              setting.key + '_y'
-                            ] ?? []
-                          }
-                          onChange={points => {
-                            if (!currentProject.points[layer.id]) {
-                              currentProject.points[layer.id] = {};
-                            }
-
-                            currentProject.points[layer.id][
-                              setting.key + '_y'
-                            ] = points;
-                            projectStore.requestPreviewRender();
-                          }}
-                        />
-                      </React.Fragment>
-                    );
-                  }
-
-                  const minValue =
-                    setting.type === FilterSettingType.ANGLE
-                      ? 0
-                      : setting.minValue!;
-                  const maxValue =
-                    setting.type === FilterSettingType.ANGLE
-                      ? Math.PI * 2
-                      : setting.maxValue!;
-                  const step =
-                    setting.type === FilterSettingType.INTEGER ? 1 : undefined;
-
-                  return (
-                    <CurveEditor
-                      key={setting.key}
-                      height={propertyHeight}
-                      minX={minX}
-                      maxX={maxX}
-                      pixelsPerSecond={PPS}
-                      minY={minValue}
-                      maxY={maxValue}
-                      step={step}
-                      previewValue={layer.settings[setting.key]}
-                      points={
-                        currentProject.points[layer.id]?.[setting.key] ?? []
-                      }
-                      onChange={points => {
-                        if (!currentProject.points[layer.id]) {
-                          currentProject.points[layer.id] = {};
-                        }
-
-                        currentProject.points[layer.id][setting.key] = points;
-                        projectStore.requestPreviewRender();
-                      }}
-                    />
-                  );
-                })}
-            </div>
-          </React.Fragment>
-        ))}
       </div>
     </div>
   );

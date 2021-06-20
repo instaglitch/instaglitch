@@ -460,14 +460,7 @@ a {
   position: relative;
   user-select: none;
   overflow-y: auto;
-
-  & > div:nth-child(1),
-  & > div:nth-child(2) {
-    position: sticky;
-    top: 0;
-    background: #22222a;
-    z-index: 999;
-  }
+  overflow-x: hidden;
 
   * {
     box-sizing: border-box;
@@ -475,7 +468,7 @@ a {
 
   .timeline-item-wrapper,
   .timeline-info {
-    border-bottom: 1px solid #11111a;
+    border-bottom: 1px solid #33333a;
     position: relative;
     z-index: 4;
   }
@@ -483,7 +476,7 @@ a {
   .timeline-info {
     display: flex;
     align-items: center;
-    border-right: 2px solid #11111a;
+    border-right: 2px solid #33333a;
 
     span {
       font-weight: bold;
@@ -508,17 +501,20 @@ a {
 
 .time-background,
 .time-foreground {
-  top: 40px;
+  position: absolute;
+  left: 200px;
+  right: 0;
+  top: 0;
   bottom: 0;
   height: 100%;
-  z-index: 1;
+  z-index: 99999;
   opacity: 0.2;
   pointer-events: none;
 }
 
 .time-foreground {
   opacity: 1;
-  z-index: 5;
+  z-index: 100000;
 }
 
 .time-display-head {
@@ -538,9 +534,17 @@ a {
   overflow: hidden;
 }
 
+.timeline-with-background {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 220px;
+}
+
 .playback-controls {
   display: flex;
   justify-content: center;
+  height: 40px;
 
   button {
     margin: 5px;

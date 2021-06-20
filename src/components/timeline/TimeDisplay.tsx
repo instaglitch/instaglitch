@@ -77,117 +77,72 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   return (
     <>
-      <div style={{ height: height + 'px' }}>
-        <div
-          className="timeline-item-wrapper"
-          style={{ height: height + 'px' }}
-        >
-          <svg
-            viewBox={`0 0 ${width} ${height}`}
-            style={{ width: width + 'px', height: height + 'px' }}
-            xmlns="http://www.w3.org/2000/svg"
-            className="time-display"
-            onDoubleClick={e => {
-              e.preventDefault();
-              onUpdate(defaultPPS, 0);
-            }}
-            onClick={e => {
-              e.preventDefault();
-              const rect = e.currentTarget.getBoundingClientRect();
-              const chartX = e.clientX - rect.left;
-              const fnX = chartToFn(chartX, width, minX, maxX);
-              onUpdateTime(fnX);
-            }}
-            onMouseDown={(e: React.MouseEvent) => {
-              e.preventDefault();
-              startDragging({
-                initX: e.pageX,
-                initY: e.pageY,
-                initMinX: minX,
-                initPPS: pixelsPerSecond,
-              });
-            }}
-            onTouchStart={(e: React.TouchEvent) => {
-              e.preventDefault();
-              const touch = e.touches[0];
-              if (!touch) {
-                return;
-              }
-
-              startDragging({
-                initX: touch.pageX,
-                initY: touch.pageY,
-                initMinX: minX,
-                initPPS: pixelsPerSecond,
-              });
-            }}
-          >
-            <polygon
-              points={`${timeX},${height - 20} ${timeX - 7},0 ${timeX + 7},0`}
-              fill="#77f"
-            />
-            {ticks.map(([x, bold]) => (
-              <path
-                key={x}
-                d={`M ${x} 0 L ${x} ${height - (bold ? 20 : 25)}`}
-                stroke={bold ? '#7777ff' : '#7777ff50'}
-                fill="none"
-                strokeWidth={2}
-              />
-            ))}
-            {labels.map(([x, label]) => (
-              <text
-                key={x}
-                x={x}
-                y={height - 10}
-                fontSize="10px"
-                textAnchor="middle"
-                fill="white"
-              >
-                {label}
-              </text>
-            ))}
-            <path
-              d={`M ${timeX} 0 L ${timeX} ${height}`}
-              stroke={'#77f'}
-              fill="none"
-              strokeWidth={2}
-            />
-          </svg>
-        </div>
-      </div>
-      <div></div>
-      <div>
+      <div className="timeline-item-wrapper" style={{ height: height + 'px' }}>
         <svg
           viewBox={`0 0 ${width} ${height}`}
-          style={{ width: width + 'px' }}
-          preserveAspectRatio="none"
+          style={{ width: width + 'px', height: height + 'px' }}
           xmlns="http://www.w3.org/2000/svg"
-          className="time-background"
+          className="time-display"
+          onDoubleClick={e => {
+            e.preventDefault();
+            onUpdate(defaultPPS, 0);
+          }}
+          onClick={e => {
+            e.preventDefault();
+            const rect = e.currentTarget.getBoundingClientRect();
+            const chartX = e.clientX - rect.left;
+            const fnX = chartToFn(chartX, width, minX, maxX);
+            onUpdateTime(fnX);
+          }}
+          onMouseDown={(e: React.MouseEvent) => {
+            e.preventDefault();
+            startDragging({
+              initX: e.pageX,
+              initY: e.pageY,
+              initMinX: minX,
+              initPPS: pixelsPerSecond,
+            });
+          }}
+          onTouchStart={(e: React.TouchEvent) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            if (!touch) {
+              return;
+            }
+
+            startDragging({
+              initX: touch.pageX,
+              initY: touch.pageY,
+              initMinX: minX,
+              initPPS: pixelsPerSecond,
+            });
+          }}
         >
+          <polygon
+            points={`${timeX},${height - 20} ${timeX - 7},0 ${timeX + 7},0`}
+            fill="#77f"
+          />
           {ticks.map(([x, bold]) => (
             <path
               key={x}
-              d={`M ${x} 0 L ${x} ${height}`}
+              d={`M ${x} 0 L ${x} ${height - (bold ? 20 : 25)}`}
               stroke={bold ? '#7777ff' : '#7777ff50'}
               fill="none"
               strokeWidth={2}
             />
           ))}
-          <path
-            d={`M ${timeX} 0 L ${timeX} ${height}`}
-            stroke={'#77f'}
-            fill="none"
-            strokeWidth={2}
-          />
-        </svg>
-        <svg
-          viewBox={`0 0 ${width} ${height}`}
-          style={{ width: width + 'px' }}
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="time-foreground"
-        >
+          {labels.map(([x, label]) => (
+            <text
+              key={x}
+              x={x}
+              y={height - 10}
+              fontSize="10px"
+              textAnchor="middle"
+              fill="white"
+            >
+              {label}
+            </text>
+          ))}
           <path
             d={`M ${timeX} 0 L ${timeX} ${height}`}
             stroke={'#77f'}
