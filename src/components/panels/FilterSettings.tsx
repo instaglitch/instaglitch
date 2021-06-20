@@ -39,10 +39,14 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                 return null;
               }
 
+              const points = projectStore.currentProject!.points[layer.id];
+
               const name = setting.name || setting.key;
               const disabled =
-                projectStore.currentProject!.points[layer.id]?.[setting.key]
-                  ?.length > 0;
+                setting.type === FilterSettingType.OFFSET
+                  ? points?.[setting.key + '_x']?.length > 0 ||
+                    points?.[setting.key + '_y']?.length > 0
+                  : points?.[setting.key]?.length > 0;
 
               switch (setting.type) {
                 case FilterSettingType.INTEGER:

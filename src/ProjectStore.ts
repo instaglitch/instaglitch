@@ -3,7 +3,13 @@ import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
 import { GlueBlendMode, GlueCanvas } from 'fxglue';
 
-import { Filter, ImageLayer, LayerType, Project } from './types';
+import {
+  Filter,
+  FilterSettingType,
+  ImageLayer,
+  LayerType,
+  Project,
+} from './types';
 import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
 
@@ -275,12 +281,33 @@ class ProjectStore {
           for (const setting of layer.filter.settings) {
             let value = layer.settings[setting.key] ?? setting.defaultValue;
 
-            if (
-              this.currentProject.animated &&
-              this.currentProject.points[layer.id]?.[setting.key]?.length > 0
-            ) {
-              const points = this.currentProject.points[layer.id][setting.key];
-              value = getY(this.currentProject.time, points);
+            if (this.currentProject.animated) {
+              if (setting.type === FilterSettingType.OFFSET) {
+                value = [...value];
+
+                if (
+                  this.currentProject.points[layer.id]?.[setting.key + '_x']
+                    ?.length > 0
+                ) {
+                  const points =
+                    this.currentProject.points[layer.id][setting.key + '_x'];
+                  value[0] = getY(this.currentProject.time, points);
+                }
+                if (
+                  this.currentProject.points[layer.id]?.[setting.key + '_y']
+                    ?.length > 0
+                ) {
+                  const points =
+                    this.currentProject.points[layer.id][setting.key + '_y'];
+                  value[1] = getY(this.currentProject.time, points);
+                }
+              } else if (
+                this.currentProject.points[layer.id]?.[setting.key]?.length > 0
+              ) {
+                const points =
+                  this.currentProject.points[layer.id][setting.key];
+                value = getY(this.currentProject.time, points);
+              }
             }
 
             glue.program(layer.filter.id)?.uniforms.set(setting.key, value);

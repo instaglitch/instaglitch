@@ -18,6 +18,7 @@ const supportedTypes = [
   FilterSettingType.FLOAT,
   FilterSettingType.INTEGER,
   FilterSettingType.ANGLE,
+  FilterSettingType.OFFSET,
 ];
 
 export const Timeline: React.FC = observer(() => {
@@ -145,6 +146,27 @@ export const Timeline: React.FC = observer(() => {
                     return null;
                   }
 
+                  if (setting.type === FilterSettingType.OFFSET) {
+                    return (
+                      <React.Fragment key={setting.key}>
+                        <div
+                          className="timeline-info timeline-info-property"
+                          style={{ height: propertyHeight + 'px' }}
+                          key={setting.key}
+                        >
+                          <span>{setting.name} (X)</span>
+                        </div>
+                        <div
+                          className="timeline-info timeline-info-property"
+                          style={{ height: propertyHeight + 'px' }}
+                          key={setting.key}
+                        >
+                          <span>{setting.name} (Y)</span>
+                        </div>
+                      </React.Fragment>
+                    );
+                  }
+
                   return (
                     <div
                       className="timeline-info timeline-info-property"
@@ -173,6 +195,63 @@ export const Timeline: React.FC = observer(() => {
                 layer.filter.settings?.map(setting => {
                   if (!supportedTypes.includes(setting.type)) {
                     return null;
+                  }
+
+                  if (setting.type === FilterSettingType.OFFSET) {
+                    return (
+                      <React.Fragment key={setting.key}>
+                        <CurveEditor
+                          key={setting.key}
+                          height={propertyHeight}
+                          minX={minX}
+                          maxX={maxX}
+                          pixelsPerSecond={PPS}
+                          minY={-1}
+                          maxY={1}
+                          previewValue={layer.settings[setting.key][0]}
+                          points={
+                            currentProject.points[layer.id]?.[
+                              setting.key + '_x'
+                            ] ?? []
+                          }
+                          onChange={points => {
+                            if (!currentProject.points[layer.id]) {
+                              currentProject.points[layer.id] = {};
+                            }
+
+                            currentProject.points[layer.id][
+                              setting.key + '_x'
+                            ] = points;
+                            projectStore.requestPreviewRender();
+                          }}
+                        />
+                        <CurveEditor
+                          key={setting.key}
+                          height={propertyHeight}
+                          minX={minX}
+                          maxX={maxX}
+                          pixelsPerSecond={PPS}
+                          minY={-1}
+                          maxY={1}
+                          previewValue={layer.settings[setting.key][1]}
+                          points={
+                            currentProject.points[layer.id]?.[
+                              setting.key + '_y'
+                            ] ?? []
+                          }
+                          onChange={points => {
+                            if (!currentProject.points[layer.id]) {
+                              currentProject.points[layer.id] = {};
+                            }
+
+                            currentProject.points[layer.id][
+                              setting.key + '_y'
+                            ] = points;
+                            projectStore.requestPreviewRender();
+                          }}
+                        />
+                      </React.Fragment>
+                    );
                   }
 
                   const minValue =
