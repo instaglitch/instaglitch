@@ -1,3 +1,5 @@
+import { LayerType, TLayer } from './types';
+
 export const truncate = (str: string) => {
   const maxLength = 25;
 
@@ -27,4 +29,10 @@ export const truncate = (str: string) => {
       extension
     );
   }
+};
+
+export const layerName = (layer: TLayer) => {
+  return layer.type === LayerType.IMAGE
+    ? layer.name || 'Image'
+    : layer.filter.name;
 };

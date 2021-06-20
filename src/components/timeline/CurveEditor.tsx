@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 import { v4 as uuid } from 'uuid';
 
-import { AutomationPoint } from './types';
+import { AutomationPoint } from '../../types';
 
 import {
   getExponentAfterDelta,
@@ -134,108 +134,109 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);
 
-  if (!points || points.length === 0) {
-    return null;
-  }
-
-  let fillPath = 'M 0 ' + (height - fnToChart(0, height, minY, maxY));
   const parts: CurvePart[] = [];
-  let x = fnToChart(points[0].x, width, minX, maxX);
+  let fillPath = '';
 
-  fillPath += ' L 0 ' + (height - fnToChart(points[0].y, height, minY, maxY));
+  if (points.length > 0) {
+    fillPath = 'M 0 ' + (height - fnToChart(0, height, minY, maxY));
+    let x = fnToChart(points[0].x, width, minX, maxX);
 
-  for (let i = 0; i < points.length; i++) {
-    const point = points[i];
+    fillPath += ' L 0 ' + (height - fnToChart(points[0].y, height, minY, maxY));
 
-    const startX = point.x;
-    const startY = point.y;
-    const exponent = point.exponent;
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
 
-    const next = i + 1;
+      const startX = point.x;
+      const startY = point.y;
+      const exponent = point.exponent;
 
-    const partPoints: [number, number][] = [];
-    let endX: number | undefined = undefined;
-    let endY: number | undefined = undefined;
+      const next = i + 1;
 
-    if (typeof points[next] !== 'undefined') {
-      endX = points[next].x;
-      endY = points[next].y;
+      const partPoints: [number, number][] = [];
+      let endX: number | undefined = undefined;
+      let endY: number | undefined = undefined;
 
-      const endChartX = fnToChart(endX, width, minX, maxX);
+      if (typeof points[next] !== 'undefined') {
+        endX = points[next].x;
+        endY = points[next].y;
 
-      while (x < endChartX) {
-        const fnX = chartToFn(x, width, minX, maxX);
-        let fnY = getYBetweenTwoPoints(
-          fnX,
-          startX,
-          startY,
-          endX,
-          endY,
-          exponent
-        );
+        const endChartX = fnToChart(endX, width, minX, maxX);
 
-        if (isBoolean) {
-          fnY = Math.floor(fnY);
+        while (x < endChartX) {
+          const fnX = chartToFn(x, width, minX, maxX);
+          let fnY = getYBetweenTwoPoints(
+            fnX,
+            startX,
+            startY,
+            endX,
+            endY,
+            exponent
+          );
+
+          if (isBoolean) {
+            fnY = Math.floor(fnY);
+          }
+
+          const chartY = height - fnToChart(fnY, height, minY, maxY);
+
+          partPoints.push([x, chartY]);
+
+          x += 1;
         }
 
-        const chartY = height - fnToChart(fnY, height, minY, maxY);
-
-        partPoints.push([x, chartY]);
-
-        x += 1;
+        partPoints.push([
+          endChartX,
+          height - fnToChart(endY, height, minY, maxY),
+        ]);
+        x = endChartX;
+      } else {
+        const lastY = height - fnToChart(startY, height, minY, maxY);
+        partPoints.push([x, lastY]);
+        partPoints.push([width, lastY]);
       }
 
-      partPoints.push([
-        endChartX,
-        height - fnToChart(endY, height, minY, maxY),
-      ]);
-      x = endChartX;
-    } else {
-      const lastY = height - fnToChart(startY, height, minY, maxY);
-      partPoints.push([x, lastY]);
-      partPoints.push([width, lastY]);
-    }
+      const start: [number, number] | undefined =
+        typeof startX !== 'undefined'
+          ? [
+              fnToChart(startX, width, minX, maxX),
+              height - fnToChart(startY, height, minY, maxY),
+            ]
+          : undefined;
 
-    const start: [number, number] | undefined =
-      typeof startX !== 'undefined'
-        ? [
-            fnToChart(startX, width, minX, maxX),
-            height - fnToChart(startY, height, minY, maxY),
-          ]
-        : undefined;
+      const end: [number, number] | undefined =
+        typeof endX !== 'undefined'
+          ? [
+              fnToChart(endX, width, minX, maxX),
+              height - fnToChart(endY!, height, minY, maxY),
+            ]
+          : undefined;
 
-    const end: [number, number] | undefined =
-      typeof endX !== 'undefined'
-        ? [
-            fnToChart(endX, width, minX, maxX),
-            height - fnToChart(endY!, height, minY, maxY),
-          ]
-        : undefined;
-
-    if (typeof start !== 'undefined') {
-      let path: string | undefined = undefined;
-      if (points.length > 0 || typeof end !== 'undefined') {
-        path = 'M ' + start[0] + ' ' + start[1];
-        fillPath += ' L ' + start[0] + ' ' + start[1];
-        for (const point of partPoints) {
-          path += ' L ' + point[0] + ' ' + point[1];
-          fillPath += ' L ' + point[0] + ' ' + point[1];
+      if (typeof start !== 'undefined') {
+        let path: string | undefined = undefined;
+        if (points.length > 0 || typeof end !== 'undefined') {
+          path = 'M ' + start[0] + ' ' + start[1];
+          fillPath += ' L ' + start[0] + ' ' + start[1];
+          for (const point of partPoints) {
+            path += ' L ' + point[0] + ' ' + point[1];
+            fillPath += ' L ' + point[0] + ' ' + point[1];
+          }
         }
-      }
 
-      parts.push({
-        id: point.id,
-        i,
-        path,
-        start,
-        xy: [startX, startY],
-        end,
-        exponent,
-      });
+        parts.push({
+          id: point.id,
+          i,
+          path,
+          start,
+          xy: [startX, startY],
+          end,
+          exponent,
+        });
+      }
     }
+
+    fillPath +=
+      ' L ' + width + ' ' + (height - fnToChart(0, height, minY, maxY));
   }
-
-  fillPath += ' L ' + width + ' ' + (height - fnToChart(0, height, minY, maxY));
 
   return (
     <div className="timeline-item-wrapper" style={{ height: height + 'px' }}>
@@ -256,10 +257,12 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
           fnY = roundValue(fnY, minY, maxY, step);
 
           let insertAt: number | undefined = undefined;
-          for (let i = 0; i < points.length; i++) {
-            if (points[i].x >= fnX) {
-              insertAt = i;
-              break;
+          if (points.length > 0) {
+            for (let i = 0; i < points.length; i++) {
+              if (points[i].x >= fnX) {
+                insertAt = i;
+                break;
+              }
             }
           }
 

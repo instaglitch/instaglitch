@@ -113,7 +113,10 @@ export const Properties: React.FC = observer(() => {
                 },
               ]}
             />
-            <VarToggle path="animated" label="Enable animation tools" />
+            <VarToggle
+              path="animated"
+              label="Enable animation tools (experimental)"
+            />
           </VarCategory>
         </VarUI>
       </div>

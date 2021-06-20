@@ -17,7 +17,7 @@ import {
 
 import { FileInputMode, useProjectStore } from '../../ProjectStore';
 import { LayerType, Project, TLayer } from '../../types';
-import { truncate } from '../../Utils';
+import { layerName, truncate } from '../../Utils';
 
 function reorder<T>(list: T[], startIndex: number, endIndex: number) {
   const result = Array.from(list);
@@ -31,10 +31,7 @@ const Layer: React.FC<{ project: Project; layer: TLayer }> = observer(
   ({ project, layer }) => {
     const projectStore = useProjectStore();
 
-    const name =
-      layer.type === LayerType.IMAGE
-        ? layer.name || 'Image'
-        : layer.filter.name;
+    const name = layerName(layer);
     return (
       <div
         className={clsx('layer', {

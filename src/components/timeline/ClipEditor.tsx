@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 
-import { AutomationClip } from './types';
+import { AutomationClip } from '../../types';
 import { fnToChart } from './Utils';
 
 interface DragState {

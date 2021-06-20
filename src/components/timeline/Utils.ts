@@ -1,3 +1,5 @@
+import { AutomationPoint } from '../../types';
+
 export function getExponentAfterDelta(
   exponent: number,
   delta: number,
@@ -32,8 +34,7 @@ export function getYBetweenTwoPoints(
   startY: number,
   endX: number,
   endY: number,
-  exponent: number,
-  debug = false
+  exponent: number
 ) {
   if (startX === x) {
     return startY;
@@ -57,6 +58,39 @@ export function getYBetweenTwoPoints(
   const fnY = Math.pow(fnX, exponent);
 
   return fnY * (endY - startY) + startY;
+}
+
+export function getY(x: number, points: AutomationPoint[]) {
+  if (points.length === 0) {
+    return 0;
+  }
+
+  if (x <= points[0].x) {
+    return points[0].y;
+  }
+
+  let current = 0;
+  while (points.length > current && x > points[current].x) {
+    current++;
+  }
+
+  current--;
+
+  const currentPoint = points[current];
+  if (points.length <= current + 1) {
+    return currentPoint.y;
+  }
+
+  const nextPoint = points[current + 1];
+
+  return getYBetweenTwoPoints(
+    x,
+    currentPoint.x,
+    currentPoint.y,
+    nextPoint.x,
+    nextPoint.y,
+    currentPoint.exponent
+  );
 }
 
 export function fnToChart(n: number, d: number, min: number, max: number) {

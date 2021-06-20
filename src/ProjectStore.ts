@@ -5,6 +5,7 @@ import { GlueBlendMode, GlueCanvas } from 'fxglue';
 
 import { Filter, ImageLayer, LayerType, Project } from './types';
 import { createFilterLayer } from './filters/functions';
+import { getY } from './components/timeline/Utils';
 
 declare class ClipboardItem {
   constructor(data: any);
@@ -122,6 +123,8 @@ class ProjectStore {
       animated: false,
       time: 0,
       playing: false,
+      clips: {},
+      points: {},
     };
 
     this.loading = true;
@@ -270,7 +273,16 @@ class ProjectStore {
 
         if (layer.filter.settings) {
           for (const setting of layer.filter.settings) {
-            const value = layer.settings[setting.key] ?? setting.defaultValue;
+            let value = layer.settings[setting.key] ?? setting.defaultValue;
+
+            if (
+              this.currentProject.animated &&
+              this.currentProject.points[layer.id]?.[setting.key]?.length > 0
+            ) {
+              const points = this.currentProject.points[layer.id][setting.key];
+              value = getY(this.currentProject.time, points);
+            }
+
             glue.program(layer.filter.id)?.uniforms.set(setting.key, value);
           }
         }

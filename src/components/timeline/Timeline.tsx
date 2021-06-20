@@ -3,11 +3,12 @@ import { BsPlayFill, BsPauseFill, BsStopFill } from 'react-icons/bs';
 import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../../ProjectStore';
+import { FilterSettingType, LayerType } from '../../types';
 import { ClipEditor } from './ClipEditor';
 import { CurveEditor } from './CurveEditor';
 import { TimeDisplay } from './TimeDisplay';
 import { defaultPPS } from './Utils';
-import { AutomationLayer } from './types';
+import { layerName } from '../../Utils';
 
 const timeHeight = 40;
 const layerHeight = 40;
@@ -15,73 +16,11 @@ const propertyHeight = 100;
 
 export const Timeline: React.FC = observer(() => {
   const projectStore = useProjectStore();
-  const animated = projectStore.currentProject?.animated;
+  const currentProject = projectStore.currentProject;
+  const animated = currentProject?.animated;
 
   const resizeDivRef = useRef<HTMLDivElement>(null);
 
-  const [layers, setLayers] = useState<AutomationLayer[]>([
-    {
-      id: 'test',
-      name: 'Layer 1',
-      clips: [
-        {
-          id: 'clip_1',
-          start: 0,
-          end: 50,
-        },
-      ],
-      properties: [
-        {
-          id: 'property_1',
-          name: 'Property (float)',
-          min: -1,
-          max: 1,
-          points: [
-            {
-              id: 'p1',
-              x: 0,
-              y: 0,
-              exponent: 1,
-            },
-            {
-              id: 'p2',
-              x: 25,
-              y: 0.9,
-              exponent: 0.3,
-            },
-            {
-              id: 'p3',
-              x: 33,
-              y: 0.3,
-              exponent: 4,
-            },
-            {
-              id: 'p4',
-              x: 50,
-              y: -0.1,
-              exponent: 0.1,
-            },
-          ],
-        },
-        {
-          id: 'property_2',
-          name: 'Property (bool)',
-          min: 0,
-          max: 1,
-          step: 1,
-          isBoolean: true,
-          points: [
-            {
-              id: 'p1',
-              x: 0,
-              y: 0,
-              exponent: 1,
-            },
-          ],
-        },
-      ],
-    },
-  ]);
   const [selectedLayer, setSelectedLayer] = useState<string>();
 
   const [width, setWidth] = useState(500);
@@ -126,7 +65,7 @@ export const Timeline: React.FC = observer(() => {
     }
   }, [projectStore.currentProject, setMinX, width]);
 
-  if (!animated) {
+  if (!currentProject || !animated) {
     return null;
   }
 
@@ -135,23 +74,19 @@ export const Timeline: React.FC = observer(() => {
       <div className="playback-controls">
         <button
           onClick={() => {
-            if (!projectStore.currentProject!.playing) {
+            if (!currentProject.playing) {
               projectStore.startPlayback();
             } else {
-              projectStore.currentProject!.playing = false;
+              currentProject.playing = false;
             }
           }}
         >
-          {projectStore.currentProject!.playing ? (
-            <BsPauseFill />
-          ) : (
-            <BsPlayFill />
-          )}
+          {currentProject.playing ? <BsPauseFill /> : <BsPlayFill />}
         </button>
         <button
           onClick={() => {
-            projectStore.currentProject!.playing = false;
-            projectStore.currentProject!.time = 0;
+            currentProject.playing = false;
+            currentProject.time = 0;
           }}
         >
           <BsStopFill />
@@ -169,8 +104,11 @@ export const Timeline: React.FC = observer(() => {
           minX={minX}
           maxX={maxX}
           pixelsPerSecond={PPS}
-          time={projectStore.currentProject!.time}
-          onUpdateTime={time => (projectStore.currentProject!.time = time)}
+          time={currentProject.time}
+          onUpdateTime={time => {
+            currentProject.time = time;
+            projectStore.requestPreviewRender();
+          }}
           onUpdate={(PPS, minX) => {
             setPPS(PPS);
             setMinX(minX);
@@ -180,7 +118,7 @@ export const Timeline: React.FC = observer(() => {
         <div>
           <div ref={resizeDivRef}></div>
         </div>
-        {layers.map(layer => (
+        {currentProject.layers.map(layer => (
           <React.Fragment key={layer.id}>
             <div>
               <div
@@ -192,18 +130,25 @@ export const Timeline: React.FC = observer(() => {
                   )
                 }
               >
-                <span>{layer.name}</span>
+                <span>{layerName(layer)}</span>
               </div>
               {selectedLayer === layer.id &&
-                layer.properties.map(property => (
-                  <div
-                    className="timeline-info timeline-info-property"
-                    style={{ height: propertyHeight + 'px' }}
-                    key={property.id}
-                  >
-                    <span>{property.name}</span>
-                  </div>
-                ))}
+                layer.type === LayerType.FILTER &&
+                layer.filter.settings?.map(setting => {
+                  if (setting.type !== FilterSettingType.FLOAT) {
+                    return null;
+                  }
+
+                  return (
+                    <div
+                      className="timeline-info timeline-info-property"
+                      style={{ height: propertyHeight + 'px' }}
+                      key={setting.key}
+                    >
+                      <span>{setting.name}</span>
+                    </div>
+                  );
+                })}
             </div>
             <div>
               <ClipEditor
@@ -211,35 +156,42 @@ export const Timeline: React.FC = observer(() => {
                 minX={minX}
                 maxX={maxX}
                 pixelsPerSecond={PPS}
-                clips={layer.clips}
+                clips={currentProject.clips[layer.id] ?? []}
                 onChange={clips => {
-                  setLayers(layers => {
-                    layer.clips = clips;
-                    return [...layers];
-                  });
+                  currentProject.clips[layer.id] = [...clips];
+                  projectStore.requestPreviewRender();
                 }}
               />
               {selectedLayer === layer.id &&
-                layer.properties.map(property => (
-                  <CurveEditor
-                    key={property.id}
-                    height={propertyHeight}
-                    minX={minX}
-                    maxX={maxX}
-                    pixelsPerSecond={PPS}
-                    minY={property.min}
-                    maxY={property.max}
-                    step={property.step}
-                    isBoolean={property.isBoolean}
-                    points={property.points}
-                    onChange={points => {
-                      setLayers(layers => {
-                        property.points = points;
-                        return [...layers];
-                      });
-                    }}
-                  />
-                ))}
+                layer.type === LayerType.FILTER &&
+                layer.filter.settings?.map(setting => {
+                  if (setting.type !== FilterSettingType.FLOAT) {
+                    return null;
+                  }
+
+                  return (
+                    <CurveEditor
+                      key={setting.key}
+                      height={propertyHeight}
+                      minX={minX}
+                      maxX={maxX}
+                      pixelsPerSecond={PPS}
+                      minY={setting.minValue!}
+                      maxY={setting.maxValue!}
+                      points={
+                        currentProject.points[layer.id]?.[setting.key] ?? []
+                      }
+                      onChange={points => {
+                        if (!currentProject.points[layer.id]) {
+                          currentProject.points[layer.id] = {};
+                        }
+
+                        currentProject.points[layer.id][setting.key] = points;
+                        projectStore.requestPreviewRender();
+                      }}
+                    />
+                  );
+                })}
             </div>
           </React.Fragment>
         ))}
