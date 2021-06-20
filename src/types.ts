@@ -1,5 +1,3 @@
-import { GlueBlendMode } from 'fxglue';
-
 export enum LayerType {
   IMAGE,
   FILTER,
@@ -9,6 +7,7 @@ export interface Layer {
   id: string;
   type: LayerType;
   visible: boolean;
+  settings: Record<string, any>;
 }
 
 export enum FilterSettingType {
@@ -22,9 +21,9 @@ export enum FilterSettingType {
 }
 
 export interface FilterSettingSelectValue {
-  id: string;
-  name: string;
-  value: number;
+  key: string;
+  label: string;
+  value?: any;
 }
 
 export interface FilterSetting {
@@ -54,21 +53,12 @@ export interface FilterLayer extends Layer {
   id: string;
   type: LayerType.FILTER;
   readonly filter: Filter;
-  settings: Record<string, any>;
-}
-
-export interface ImageLayerSettings {
-  offset: [number, number];
-  opacity: number;
-  scale: number;
-  mode: GlueBlendMode;
 }
 
 export interface ImageLayer extends Layer {
   id: string;
   type: LayerType.IMAGE;
   readonly image: HTMLImageElement;
-  settings: ImageLayerSettings;
   name?: string;
 }
 

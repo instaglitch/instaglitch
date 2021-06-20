@@ -13,23 +13,25 @@ import {
 import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
 import { getMediaRecorder } from './Utils';
+import { sourceSettings } from './sourceSettings';
 
 declare class ClipboardItem {
   constructor(data: any);
 }
 
 function createImageLayer(image: HTMLImageElement): ImageLayer {
+  const settings: Record<string, any> = {};
+
+  for (const setting of sourceSettings) {
+    settings[setting.key] = setting.defaultValue;
+  }
+
   return {
     id: uuid(),
     type: LayerType.IMAGE,
     image,
     visible: true,
-    settings: {
-      offset: [0, 0],
-      opacity: 1,
-      scale: 1,
-      mode: GlueBlendMode.NORMAL,
-    },
+    settings,
   };
 }
 
