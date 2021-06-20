@@ -32,6 +32,8 @@ export const Timeline: React.FC = observer(() => {
   const projectStore = useProjectStore();
   const currentProject = projectStore.currentProject;
   const animated = currentProject?.animated;
+  const time = currentProject?.time;
+  const playing = currentProject?.playing;
 
   const resizeDivRef = useRef<HTMLDivElement>(null);
 
@@ -59,15 +61,11 @@ export const Timeline: React.FC = observer(() => {
   }, [resize, animated, selectedLayer]);
 
   useEffect(() => {
-    if (!projectStore.currentProject) {
-      return;
-    }
-
-    const { time, playing } = projectStore.currentProject;
-    if (playing) {
+    if (playing && typeof time !== 'undefined') {
       setMinX(minX => {
-        if (time > minX + width / 2) {
-          return time - width / 2;
+        const maxX = width / PPS + minX;
+        if (time > minX + (maxX - minX) / 2) {
+          return time - (maxX - minX) / 2;
         }
 
         if (time < minX) {
@@ -77,7 +75,7 @@ export const Timeline: React.FC = observer(() => {
         return minX;
       });
     }
-  }, [projectStore.currentProject, setMinX, width]);
+  }, [time, playing, setMinX, width, PPS]);
 
   if (!currentProject || !animated) {
     return null;
