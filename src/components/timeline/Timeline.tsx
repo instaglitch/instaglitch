@@ -98,6 +98,7 @@ export const Timeline: React.FC = observer(() => {
         >
           <BsStopFill />
         </button>
+        <button onClick={() => projectStore.recordVideo()}>Record</button>
       </div>
       <div className="timeline">
         <div style={{ height: timeHeight + 'px' }}>

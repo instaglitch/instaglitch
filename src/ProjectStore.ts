@@ -12,6 +12,7 @@ import {
 } from './types';
 import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
+import { getMediaRecorder } from './Utils';
 
 declare class ClipboardItem {
   constructor(data: any);
@@ -63,6 +64,7 @@ class ProjectStore {
   fileInput = document.createElement('input');
   fileInputMode: FileInputMode = FileInputMode.NEW;
   lastFrameTime: number = new Date().getTime();
+  mediaRecorder: any = undefined;
 
   constructor() {
     makeAutoObservable(this);
@@ -340,6 +342,13 @@ class ProjectStore {
     const time = new Date().getTime();
     if (this.currentProject.playing && this.currentProject.animated) {
       this.currentProject.time += (time - this.lastFrameTime) / 1000;
+
+      if (this.mediaRecorder && this.currentProject.time > 10) {
+        this.currentProject.playing = false;
+        this.mediaRecorder.stop();
+        return;
+      }
+
       this.requestPreviewRender();
     }
     this.lastFrameTime = time;
@@ -361,6 +370,50 @@ class ProjectStore {
     this.currentProject!.playing = true;
     this.lastFrameTime = new Date().getTime();
     this.requestPreviewRender();
+  }
+
+  recordVideo() {
+    if (!(this.canvas as any).captureStream) {
+      return;
+    }
+
+    this.loading = true;
+
+    const blobs: Blob[] = [];
+    const stream: MediaStream = (this.canvas as any).captureStream(60);
+    const mediaRecorder = getMediaRecorder(stream);
+
+    this.lastFrameTime = new Date().getTime();
+    this.currentProject!.time = 0;
+    this.currentProject!.playing = true;
+    this.requestPreviewRender();
+
+    mediaRecorder.start(100);
+    this.mediaRecorder = mediaRecorder;
+
+    mediaRecorder.ondataavailable = (e: any) => {
+      if (e.data && e.data.size > 0) {
+        blobs.push(e.data);
+      }
+    };
+
+    mediaRecorder.onstop = () => {
+      const buffer = new Blob(blobs, { type: 'video/webm' });
+      const url = window.URL.createObjectURL(buffer);
+
+      const suffix = '_instaglitch.webm';
+      const currentFilename = this.currentProject?.filename || 'untitled';
+      const currentName = currentFilename.split('.')[0];
+
+      const element = document.createElement('a');
+      element.setAttribute('href', url);
+      element.setAttribute('download', currentName + suffix);
+
+      element.style.display = 'none';
+      element.click();
+      this.mediaRecorder = undefined;
+      this.loading = false;
+    };
   }
 }
 
