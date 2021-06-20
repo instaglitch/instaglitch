@@ -14,6 +14,12 @@ const timeHeight = 40;
 const layerHeight = 40;
 const propertyHeight = 100;
 
+const supportedTypes = [
+  FilterSettingType.FLOAT,
+  FilterSettingType.INTEGER,
+  FilterSettingType.ANGLE,
+];
+
 export const Timeline: React.FC = observer(() => {
   const projectStore = useProjectStore();
   const currentProject = projectStore.currentProject;
@@ -135,7 +141,7 @@ export const Timeline: React.FC = observer(() => {
               {selectedLayer === layer.id &&
                 layer.type === LayerType.FILTER &&
                 layer.filter.settings?.map(setting => {
-                  if (setting.type !== FilterSettingType.FLOAT) {
+                  if (!supportedTypes.includes(setting.type)) {
                     return null;
                   }
 
@@ -165,9 +171,20 @@ export const Timeline: React.FC = observer(() => {
               {selectedLayer === layer.id &&
                 layer.type === LayerType.FILTER &&
                 layer.filter.settings?.map(setting => {
-                  if (setting.type !== FilterSettingType.FLOAT) {
+                  if (!supportedTypes.includes(setting.type)) {
                     return null;
                   }
+
+                  const minValue =
+                    setting.type === FilterSettingType.ANGLE
+                      ? 0
+                      : setting.minValue!;
+                  const maxValue =
+                    setting.type === FilterSettingType.ANGLE
+                      ? Math.PI * 2
+                      : setting.maxValue!;
+                  const step =
+                    setting.type === FilterSettingType.INTEGER ? 1 : undefined;
 
                   return (
                     <CurveEditor
@@ -176,8 +193,9 @@ export const Timeline: React.FC = observer(() => {
                       minX={minX}
                       maxX={maxX}
                       pixelsPerSecond={PPS}
-                      minY={setting.minValue!}
-                      maxY={setting.maxValue!}
+                      minY={minValue}
+                      maxY={maxValue}
+                      step={step}
                       previewValue={layer.settings[setting.key]}
                       points={
                         currentProject.points[layer.id]?.[setting.key] ?? []
