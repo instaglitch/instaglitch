@@ -494,6 +494,12 @@ a {
       border-left: 10px solid #77f;
     }
   }
+
+  .clip-editor,
+  .time-display {
+    display: block;
+    position: absolute;
+  }
 }
 
 .time-background,
