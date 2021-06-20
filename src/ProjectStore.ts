@@ -14,6 +14,8 @@ import {
   SourceLayer,
   LayerType,
   Project,
+  TLayer,
+  FilterSetting,
 } from './types';
 import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
@@ -275,6 +277,37 @@ class ProjectStore {
     requestAnimationFrame(() => this.renderCurrentProject());
   }
 
+  getLayerSetting(layer: TLayer, setting: FilterSetting) {
+    if (!this.currentProject) {
+      return setting.defaultValue;
+    }
+
+    let value = layer.settings[setting.key] ?? setting.defaultValue;
+
+    if (this.currentProject.animated) {
+      const points = this.currentProject.points[layer.id]?.[setting.key];
+
+      if (setting.type === FilterSettingType.OFFSET) {
+        value = [...value];
+        const pointsX =
+          this.currentProject.points[layer.id]?.[setting.key + '_x'];
+        const pointsY =
+          this.currentProject.points[layer.id]?.[setting.key + '_y'];
+
+        if (pointsX?.length > 0) {
+          value[0] = getY(this.currentProject.time, pointsX);
+        }
+        if (pointsY?.length > 0) {
+          value[1] = getY(this.currentProject.time, pointsY);
+        }
+      } else if (points?.length > 0) {
+        value = getY(this.currentProject.time, points);
+      }
+    }
+
+    return value;
+  }
+
   renderCurrentProject(maxSize = 800) {
     if (!this.currentProject) {
       return;
@@ -302,38 +335,9 @@ class ProjectStore {
 
         if (layer.filter.settings) {
           for (const setting of layer.filter.settings) {
-            let value = layer.settings[setting.key] ?? setting.defaultValue;
-
-            if (this.currentProject.animated) {
-              if (setting.type === FilterSettingType.OFFSET) {
-                value = [...value];
-
-                if (
-                  this.currentProject.points[layer.id]?.[setting.key + '_x']
-                    ?.length > 0
-                ) {
-                  const points =
-                    this.currentProject.points[layer.id][setting.key + '_x'];
-                  value[0] = getY(this.currentProject.time, points);
-                }
-                if (
-                  this.currentProject.points[layer.id]?.[setting.key + '_y']
-                    ?.length > 0
-                ) {
-                  const points =
-                    this.currentProject.points[layer.id][setting.key + '_y'];
-                  value[1] = getY(this.currentProject.time, points);
-                }
-              } else if (
-                this.currentProject.points[layer.id]?.[setting.key]?.length > 0
-              ) {
-                const points =
-                  this.currentProject.points[layer.id][setting.key];
-                value = getY(this.currentProject.time, points);
-              }
-            }
-
-            glue.program(layer.filter.id)?.uniforms.set(setting.key, value);
+            glue
+              .program(layer.filter.id)
+              ?.uniforms.set(setting.key, this.getLayerSetting(layer, setting));
           }
         }
 
@@ -355,13 +359,18 @@ class ProjectStore {
 
         const [width, height] = glueGetSourceDimensions(layer.source);
 
+        const settings: Record<string, any> = {};
+        for (const setting of sourceSettings) {
+          settings[setting.key] = this.getLayerSetting(layer, setting);
+        }
+
         glue.texture(layer.id)?.draw({
-          x: width * layer.settings.offset[0] * scale,
-          y: height * layer.settings.offset[1] * scale,
-          width: width * scale * layer.settings.scale,
-          height: height * scale * layer.settings.scale,
-          opacity: layer.settings.opacity,
-          mode: layer.settings.mode,
+          x: width * settings.offset[0] * scale,
+          y: height * settings.offset[1] * scale,
+          width: width * scale * settings.scale,
+          height: height * scale * settings.scale,
+          opacity: settings.opacity,
+          mode: settings.mode,
         });
       }
     }
