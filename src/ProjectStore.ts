@@ -382,7 +382,6 @@ class ProjectStore {
       this.currentProject.time += (time - this.lastFrameTime) / 1000;
 
       if (this.mediaRecorder && this.currentProject.time > 10) {
-        this.currentProject.playing = false;
         this.mediaRecorder.stop();
         return;
       }
@@ -487,6 +486,8 @@ class ProjectStore {
     };
 
     mediaRecorder.onstop = () => {
+      this.stopPlayback();
+
       const buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
       const url = window.URL.createObjectURL(buffer);
 
