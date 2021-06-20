@@ -178,6 +178,7 @@ export const Timeline: React.FC = observer(() => {
                       pixelsPerSecond={PPS}
                       minY={setting.minValue!}
                       maxY={setting.maxValue!}
+                      previewValue={layer.settings[setting.key]}
                       points={
                         currentProject.points[layer.id]?.[setting.key] ?? []
                       }

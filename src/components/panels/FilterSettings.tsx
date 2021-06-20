@@ -40,6 +40,9 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
               }
 
               const name = setting.name || setting.key;
+              const disabled =
+                projectStore.currentProject!.points[layer.id]?.[setting.key]
+                  ?.length > 0;
 
               switch (setting.type) {
                 case FilterSettingType.INTEGER:
@@ -53,6 +56,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       key={setting.id}
                       defaultValue={setting.defaultValue}
                       integer
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.FLOAT:
@@ -65,6 +69,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       label={name}
                       defaultValue={setting.defaultValue}
                       key={setting.id}
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.COLOR:
@@ -74,6 +79,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       label={name}
                       key={setting.id}
                       defaultValue={setting.defaultValue}
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.BOOLEAN:
@@ -83,6 +89,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       label={name}
                       key={setting.id}
                       defaultValue={setting.defaultValue}
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.OFFSET:
@@ -92,6 +99,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       path={setting.key}
                       key={setting.id}
                       defaultValue={setting.defaultValue}
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.SELECT:
@@ -108,6 +116,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                         })) || []
                       }
                       defaultValue={setting.defaultValue}
+                      disabled={disabled}
                     />
                   );
                 case FilterSettingType.ANGLE:
@@ -117,6 +126,7 @@ export const FilterSettings: React.FC<FilterSettingsProps> = observer(
                       path={setting.key}
                       key={setting.id}
                       defaultValue={setting.defaultValue}
+                      disabled={disabled}
                     />
                   );
               }

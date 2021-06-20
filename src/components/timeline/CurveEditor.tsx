@@ -63,6 +63,7 @@ export interface CurveEditorProps {
   onChange: (points: AutomationPoint[]) => void;
   step?: number;
   isBoolean?: boolean;
+  previewValue?: number;
 }
 
 export const CurveEditor: React.FC<CurveEditorProps> = ({
@@ -76,6 +77,7 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
   onChange,
   step,
   isBoolean,
+  previewValue,
 }) => {
   const width = useMemo(
     () => (maxX - minX) * pixelsPerSecond,
@@ -234,6 +236,17 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
       }
     }
 
+    fillPath +=
+      ' L ' + width + ' ' + (height - fnToChart(0, height, minY, maxY));
+  } else if (typeof previewValue !== 'undefined') {
+    fillPath = 'M 0 ' + (height - fnToChart(0, height, minY, maxY));
+    fillPath +=
+      ' L 0 ' + (height - fnToChart(previewValue, height, minY, maxY));
+    fillPath +=
+      ' L ' +
+      width +
+      ' ' +
+      (height - fnToChart(previewValue, height, minY, maxY));
     fillPath +=
       ' L ' + width + ' ' + (height - fnToChart(0, height, minY, maxY));
   }
