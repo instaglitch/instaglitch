@@ -489,9 +489,12 @@ a {
     border-right: 2px solid #33333a;
     justify-content: space-between;
     padding-right: 5px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
 
     span {
-      font-weight: bold;
       padding: 5px 10px;
     }
 

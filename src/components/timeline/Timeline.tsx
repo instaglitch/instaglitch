@@ -14,7 +14,7 @@ import { ClipEditor } from './ClipEditor';
 import { CurveEditor } from './CurveEditor';
 import { TimeDisplay } from './TimeDisplay';
 import { defaultPPS } from './Utils';
-import { layerName } from '../../Utils';
+import { layerName, truncate } from '../../Utils';
 import { TimeBackground } from './TimeBackground';
 import { sourceSettings } from '../../sourceSettings';
 
@@ -136,6 +136,7 @@ export const Timeline: React.FC = observer(() => {
               layer.type === LayerType.SOURCE
                 ? sourceSettings
                 : layer.filter.settings;
+            const name = layerName(layer);
 
             return (
               <React.Fragment key={layer.id}>
@@ -149,7 +150,7 @@ export const Timeline: React.FC = observer(() => {
                       )
                     }
                   >
-                    <span>{layerName(layer)}</span>
+                    <span title={name}>{truncate(name, 16)}</span>
                     {selectedLayer === layer.id ? (
                       <BsFillCaretDownFill />
                     ) : (
@@ -168,14 +169,12 @@ export const Timeline: React.FC = observer(() => {
                             <div
                               className="timeline-info timeline-info-property"
                               style={{ height: propertyHeight + 'px' }}
-                              key={setting.key}
                             >
                               <span>{setting.name} (X)</span>
                             </div>
                             <div
                               className="timeline-info timeline-info-property"
                               style={{ height: propertyHeight + 'px' }}
-                              key={setting.key}
                             >
                               <span>{setting.name} (Y)</span>
                             </div>
@@ -216,7 +215,6 @@ export const Timeline: React.FC = observer(() => {
                         return (
                           <React.Fragment key={setting.key}>
                             <CurveEditor
-                              key={setting.key}
                               height={propertyHeight}
                               minX={minX}
                               maxX={maxX}
@@ -241,7 +239,6 @@ export const Timeline: React.FC = observer(() => {
                               }}
                             />
                             <CurveEditor
-                              key={setting.key}
                               height={propertyHeight}
                               minX={minX}
                               maxX={maxX}
