@@ -126,9 +126,14 @@ button {
 
     canvas {
       max-width: 100%;
-      max-height: calc(100vh - 400px);
-      background: white;
+      max-height: calc(100vh - 100px);
       box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .animation-open {
+      canvas {
+        max-height: calc(100vh - 400px);
+      }
     }
   }
 }
