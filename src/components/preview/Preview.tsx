@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import clsx from 'clsx';
 
 import { useProjectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType, FilterLayer } from '../../types';
@@ -147,7 +148,9 @@ export const Preview: React.FC = observer(() => {
   };
 
   return (
-    <div className="preview-wrap">
+    <div
+      className={clsx('preview-wrap', { 'animation-open': project?.animated })}
+    >
       {renderOffsetMarks()}
       <PreviewCanvas />
     </div>
