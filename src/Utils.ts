@@ -1,8 +1,6 @@
 import { LayerType, TLayer } from './types';
 
-export const truncate = (str: string) => {
-  const maxLength = 25;
-
+export const truncate = (str: string, maxLength = 25) => {
   if (str.length < maxLength) {
     return str;
   }

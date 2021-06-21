@@ -46,6 +46,17 @@ function createSourceLayer(source: GlueSourceType): SourceLayer {
   };
 }
 
+function createSource(url: string, type: 'image' | 'video') {
+  const source =
+    type === 'image' ? new Image() : document.createElement('video');
+  source.src = url;
+  if (source instanceof HTMLVideoElement) {
+    source.playsInline = true;
+  }
+
+  return source;
+}
+
 function calculateScale(width: number, height: number, maxSize: number) {
   if (maxSize) {
     return Math.min(Math.min(maxSize / width, maxSize / height), 1);
@@ -131,9 +142,7 @@ class ProjectStore {
     type: 'image' | 'video',
     filename = 'untitled.jpg'
   ) {
-    const source =
-      type === 'image' ? new Image() : document.createElement('video');
-    source.src = url;
+    const source = createSource(url, type);
     this.addProjectFromSource(source, filename);
   }
 
@@ -197,9 +206,7 @@ class ProjectStore {
   }
 
   addSourceLayer(url: string, type: 'image' | 'video', name?: string) {
-    const source =
-      type === 'image' ? new Image() : document.createElement('video');
-    source.src = url;
+    const source = createSource(url, type);
 
     const sourceLayer = createSourceLayer(source);
     sourceLayer.name = name;
@@ -235,7 +242,12 @@ class ProjectStore {
     if (glueIsSourceLoaded(source)) {
       onload();
     } else {
-      source.onload = onload;
+      if (source instanceof HTMLImageElement) {
+        source.onload = onload;
+      } else {
+        source.addEventListener('loadeddata', onload);
+        source.load();
+      }
     }
   }
 
@@ -463,6 +475,9 @@ class ProjectStore {
             const time = this.getVideoTime(layer);
             if (Math.abs(layer.source.currentTime - time) > 1) {
               layer.source.currentTime = time;
+            }
+            if (!glueIsSourceLoaded(layer.source)) {
+              continue;
             }
             glue.texture(layer.id)?.update(layer.source);
           } catch {}
