@@ -14,9 +14,11 @@ import { ClipEditor } from './ClipEditor';
 import { CurveEditor } from './CurveEditor';
 import { TimeDisplay } from './TimeDisplay';
 import { defaultPPS } from './Utils';
-import { layerName, truncate } from '../../Utils';
+import { layerName, supportsMediaRecorder, truncate } from '../../Utils';
 import { TimeBackground } from './TimeBackground';
 import { sourceSettings } from '../../sourceSettings';
+
+const canRecord = supportsMediaRecorder();
 
 const timeHeight = 40;
 const layerHeight = 40;
@@ -104,7 +106,11 @@ export const Timeline: React.FC = observer(() => {
         >
           <BsStopFill />
         </button>
-        <button onClick={() => projectStore.recordVideo()}>Record (10s)</button>
+        {canRecord && (
+          <button onClick={() => projectStore.recordVideo()}>
+            Record (10s)
+          </button>
+        )}
       </div>
       <div className="timeline" style={{ minHeight: timeHeight + 'px' }}>
         <div style={{ height: timeHeight + 'px' }}>
