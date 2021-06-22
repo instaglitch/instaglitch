@@ -460,6 +460,15 @@ a {
   user-select: none;
   touch-action: none;
   cursor: move;
+
+  rect {
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  .time-decoration {
+    pointer-events: none;
+  }
 }
 
 .timeline {

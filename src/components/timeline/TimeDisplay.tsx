@@ -14,6 +14,7 @@ function timeDisplay(s: number) {
 }
 
 interface DragState {
+  type: 'timeline' | 'marker';
   initX: number;
   initY: number;
   initMinX: number;
@@ -49,14 +50,20 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
   const updatePosition = useCallback(
     (x: number, y: number, dragState: DragState) => {
-      const deltaY = (y - dragState.initY) / height;
-      const PPS = getExponentAfterDelta(dragState.initPPS, deltaY, 0.1, 40);
+      if (dragState.type === 'marker') {
+        const deltaX = (x - dragState.initX) / dragState.initPPS;
+        const newTime = Math.max(dragState.initMinX + deltaX, 0);
 
-      const deltaX = (x - dragState.initX) / PPS;
+        onUpdateTime(newTime);
+      } else {
+        const deltaY = (y - dragState.initY) / height;
+        const PPS = getExponentAfterDelta(dragState.initPPS, deltaY, 0.1, 40);
+        const deltaX = (x - dragState.initX) / PPS;
 
-      onUpdate(PPS, Math.max(0, dragState.initMinX - deltaX));
+        onUpdate(PPS, Math.max(0, dragState.initMinX - deltaX));
+      }
     },
-    [height, onUpdate]
+    [height, onUpdate, onUpdateTime]
   );
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);
@@ -96,7 +103,10 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
           }}
           onMouseDown={(e: React.MouseEvent) => {
             e.preventDefault();
+            e.stopPropagation();
+
             startDragging({
+              type: 'timeline',
               initX: e.pageX,
               initY: e.pageY,
               initMinX: minX,
@@ -105,12 +115,15 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
           }}
           onTouchStart={(e: React.TouchEvent) => {
             e.preventDefault();
+            e.stopPropagation();
+
             const touch = e.touches[0];
             if (!touch) {
               return;
             }
 
             startDragging({
+              type: 'timeline',
               initX: touch.pageX,
               initY: touch.pageY,
               initMinX: minX,
@@ -121,6 +134,44 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
           <polygon
             points={`${timeX},${height - 20} ${timeX - 7},0 ${timeX + 7},0`}
             fill="#77f"
+            className="time-decoration"
+          />
+          <rect
+            className="clip"
+            x={timeX - 10}
+            y={0}
+            width={20}
+            height={height}
+            fill="transparent"
+            onMouseDown={(e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              startDragging({
+                type: 'marker',
+                initX: e.pageX,
+                initY: e.pageY,
+                initMinX: time,
+                initPPS: pixelsPerSecond,
+              });
+            }}
+            onTouchStart={(e: React.TouchEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+
+              const touch = e.touches[0];
+              if (!touch) {
+                return;
+              }
+
+              startDragging({
+                type: 'marker',
+                initX: touch.pageX,
+                initY: touch.pageY,
+                initMinX: time,
+                initPPS: pixelsPerSecond,
+              });
+            }}
           />
           {ticks.map(([x, bold]) => (
             <path
@@ -148,6 +199,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
             stroke={'#77f'}
             fill="none"
             strokeWidth={2}
+            className="time-decoration"
           />
         </svg>
       </div>
