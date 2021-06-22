@@ -117,26 +117,13 @@ class ProjectStore {
 
   handleFile(file: File, mode: FileInputMode = FileInputMode.NEW) {
     this.loading = true;
-    const reader = new FileReader();
-
-    reader.addEventListener('load', () => {
-      this.loading = false;
-
-      const dataUrl = reader.result as string;
-      const type = file.type.startsWith('video') ? 'video' : 'image';
-
-      if (mode === FileInputMode.NEW) {
-        this.addProjectFromURL(dataUrl, type, file.name);
-      } else {
-        this.addSourceLayer(dataUrl, type, file.name);
-      }
-    });
-
-    reader.addEventListener('error', () => {
-      this.loading = false;
-    });
-
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    const type = file.type.startsWith('video') ? 'video' : 'image';
+    if (mode === FileInputMode.NEW) {
+      this.addProjectFromURL(url, type, file.name);
+    } else {
+      this.addSourceLayer(url, type, file.name);
+    }
   }
 
   addProjectFromURL(
