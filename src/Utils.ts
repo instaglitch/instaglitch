@@ -69,7 +69,7 @@ declare class MediaRecorder {
 }
 
 function getSupportedMimeTypes() {
-  const VIDEO_TYPES = ['webm', 'ogg', 'mp4', 'x-matroska'];
+  const VIDEO_TYPES = ['mp4', 'webm', 'ogg', 'x-matroska'];
   const VIDEO_CODECS = [
     'vp9',
     'vp9.0',
