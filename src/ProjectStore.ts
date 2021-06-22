@@ -21,6 +21,7 @@ import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
 import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
+import { webmFixDuration } from 'webm-fix-duration';
 
 declare class ClipboardItem {
   constructor(data: any);
@@ -508,7 +509,9 @@ class ProjectStore {
       this.currentProject.time += (time - this.lastFrameTime) / 1000;
 
       if (this.mediaRecorder && this.currentProject.time > 10) {
-        this.mediaRecorder.stop();
+        try {
+          this.mediaRecorder.stop();
+        } catch {}
         return;
       }
 
@@ -609,16 +612,21 @@ class ProjectStore {
     mediaRecorder.start(100);
     this.mediaRecorder = mediaRecorder;
 
-    mediaRecorder.ondataavailable = (e: any) => {
+    mediaRecorder.ondataavailable = e => {
       if (e.data && e.data.size > 0) {
         blobs.push(e.data);
       }
     };
 
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async () => {
       this.stopPlayback();
 
-      const buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
+      let buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
+      try {
+        if (buffer.type.includes('video/webm')) {
+          buffer = await webmFixDuration(buffer, 10000);
+        }
+      } catch {}
       const url = window.URL.createObjectURL(buffer);
 
       const suffix =
