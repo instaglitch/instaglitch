@@ -8,6 +8,7 @@ import { Export } from './Export';
 import { About } from './About';
 import { Properties } from './Properties';
 import { Welcome } from './Welcome';
+import { Recording } from './Recording';
 
 export const Modals: React.FC = observer(() => {
   const projectStore = useProjectStore();
@@ -23,6 +24,8 @@ export const Modals: React.FC = observer(() => {
       return <About />;
     case 'properties':
       return <Properties />;
+    case 'recording':
+      return <Recording />;
   }
 
   if (projectStore.projects.length === 0) {

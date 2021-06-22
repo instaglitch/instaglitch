@@ -629,11 +629,12 @@ class ProjectStore {
 
     mediaRecorder.onstop = async () => {
       this.stopPlayback();
+      this.recording = false;
+      this.mediaRecorder = undefined;
+      this.modal = undefined;
 
       if (this.recordingCancel) {
         this.recordingCancel = false;
-        this.mediaRecorder = undefined;
-        this.recording = false;
         return;
       }
 
@@ -660,8 +661,6 @@ class ProjectStore {
 
       element.style.display = 'none';
       element.click();
-      this.mediaRecorder = undefined;
-      this.recording = false;
     };
   }
 }

@@ -107,8 +107,8 @@ export const Timeline: React.FC = observer(() => {
           <BsStopFill />
         </button>
         {canRecord && (
-          <button onClick={() => projectStore.recordVideo()}>
-            Record (10s)
+          <button onClick={() => (projectStore.modal = 'recording')}>
+            Record
           </button>
         )}
       </div>
