@@ -35,7 +35,38 @@ export const layerName = (layer: TLayer) => {
     : layer.filter.name;
 };
 
-declare var MediaRecorder: any;
+interface MediaRecorderOptions {
+  mimeType?: string;
+  audioBitsPerSecond?: number;
+  videoBitsPerSecond?: number;
+  bitsPerSecond?: number;
+}
+
+interface MediaRecorderDataAvailableEvent extends Event {
+  data: Blob;
+}
+
+declare class MediaRecorder {
+  constructor(stream: MediaStream, options?: MediaRecorderOptions);
+
+  static isTypeSupported(type: string): boolean;
+  pause(): void;
+  requestData(): void;
+  resume(): void;
+  start(timeslice?: number): void;
+  stop(): void;
+
+  readonly stream: MediaStream;
+  readonly state: 'recording' | 'inactive' | 'paused';
+  readonly mimeType: string;
+
+  onstop: (e: Event) => void;
+  onstart: (e: Event) => void;
+  onresume: (e: Event) => void;
+  onpause: (e: Event) => void;
+  onerror: (e: Event) => void;
+  ondataavailable: (e: MediaRecorderDataAvailableEvent) => void;
+}
 
 function getSupportedMimeTypes() {
   const VIDEO_TYPES = ['webm', 'ogg', 'mp4', 'x-matroska'];
@@ -73,14 +104,21 @@ function getSupportedMimeTypes() {
   return supportedTypes;
 }
 
+export function supportsMediaRecorder() {
+  return !!(window as any)['MediaRecorder'];
+}
+
 export function getMediaRecorder(stream: MediaStream) {
-  if (!(window as any)['MediaRecorder']) {
+  if (!supportsMediaRecorder()) {
     return undefined;
   }
 
   try {
     const suppportedTypes = getSupportedMimeTypes();
-    return new MediaRecorder(stream, { mimeType: suppportedTypes[0] });
+    return new MediaRecorder(stream, {
+      mimeType: suppportedTypes[0],
+      videoBitsPerSecond: 25000000,
+    });
   } catch {
     return undefined;
   }

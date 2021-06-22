@@ -598,6 +598,10 @@ class ProjectStore {
     const stream: MediaStream = (this.canvas as any).captureStream(60);
     const mediaRecorder = getMediaRecorder(stream);
 
+    if (!mediaRecorder) {
+      return;
+    }
+
     this.lastFrameTime = new Date().getTime();
     this.setTime(0);
     this.startPlayback();
