@@ -19,21 +19,19 @@ export const Webcam: React.FC = observer(() => {
     setPermissionDenied(false);
     const video = videoRef.current;
 
-    if (projectStore.showWebcam) {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
-          audio: false,
-        })
-        .then(stream => {
-          if (video) {
-            setLoading(false);
-            video.srcObject = stream;
-            video.play();
-          }
-        })
-        .catch(() => setPermissionDenied(true));
-    }
+    navigator.mediaDevices
+      .getUserMedia({
+        video: { width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: false,
+      })
+      .then(stream => {
+        if (video) {
+          setLoading(false);
+          video.srcObject = stream;
+          video.play();
+        }
+      })
+      .catch(() => setPermissionDenied(true));
 
     return () => {
       video?.pause();
@@ -46,7 +44,7 @@ export const Webcam: React.FC = observer(() => {
         });
       }
     };
-  }, [projectStore.showWebcam, setPermissionDenied]);
+  }, [setPermissionDenied]);
 
   const capture = useCallback(() => {
     const canvas = canvasRef.current;
@@ -72,20 +70,16 @@ export const Webcam: React.FC = observer(() => {
         'image',
         'webcam.png'
       );
-      projectStore.showWebcam = false;
+      projectStore.modal = undefined;
       setCaptureAvailable(false);
     }
   }, [projectStore, setCaptureAvailable]);
-
-  if (!projectStore.showWebcam) {
-    return null;
-  }
 
   return (
     <Modal
       title="Webcam capture"
       className="webcam"
-      onDismiss={() => (projectStore.showWebcam = false)}
+      onDismiss={() => (projectStore.modal = undefined)}
     >
       <div className="info">
         {permissionDenied && (
@@ -116,7 +110,7 @@ export const Webcam: React.FC = observer(() => {
         )}
         {!captureAvailable && (
           <>
-            <button onClick={() => (projectStore.showWebcam = false)}>
+            <button onClick={() => (projectStore.modal = undefined)}>
               <BsArrowReturnLeft /> <span>Return</span>
             </button>
             <button onClick={capture}>

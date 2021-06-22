@@ -30,14 +30,10 @@ export const Properties: React.FC = observer(() => {
     [width, height, animated, aspectRatio]
   );
 
-  if (!projectStore.showProperties) {
-    return null;
-  }
-
   return (
     <Modal
       title="Project properties"
-      onDismiss={() => (projectStore.showProperties = false)}
+      onDismiss={() => (projectStore.modal = undefined)}
     >
       <div className="info">
         <VarUI

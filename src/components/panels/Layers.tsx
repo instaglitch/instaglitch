@@ -131,7 +131,7 @@ export const Layers: React.FC = observer(() => {
         </Droppable>
       </DragDropContext>
       <div className="layer-actions">
-        <button onClick={() => (projectStore.showFilterGallery = true)}>
+        <button onClick={() => (projectStore.modal = 'filterGallery')}>
           <BsPlus />
           <span>Filter</span>
         </button>

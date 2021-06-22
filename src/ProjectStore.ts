@@ -75,11 +75,7 @@ class ProjectStore {
   currentProjectId?: string = undefined;
   projects: Project[] = [];
   loading = false;
-  showFilterGallery = false;
-  showAbout = false;
-  showExport = false;
-  showWebcam = false;
-  showProperties = false;
+  modal: string | undefined = undefined;
   glueCanvas = new GlueCanvas();
   canvas = this.glueCanvas.canvas;
   glue = this.glueCanvas.glue;
@@ -292,7 +288,7 @@ class ProjectStore {
       },
     ];
     this.requestPreviewRender();
-    this.showFilterGallery = false;
+    this.modal = undefined;
   }
 
   removeCurrentLayer() {

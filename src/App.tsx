@@ -8,17 +8,12 @@ import { LayerSettings } from './components/panels/LayerSettings';
 import { Tabs } from './components/panels/Tabs';
 import { Menu } from './components/panels/Menu';
 
-import { Welcome } from './components/modals/Welcome';
-import { FilterGallery } from './components/modals/FilterGallery';
-import { About } from './components/modals/About';
-import { Export } from './components/modals/Export';
-import { Webcam } from './components/modals/Webcam';
+import { Modals } from './components/modals';
 
 import { Preview } from './components/preview/Preview';
 
 import { Loading } from './components/overlays/Loading';
 import { Drop } from './components/overlays/Drop';
-import { Properties } from './components/modals/Properties';
 import { Timeline } from './components/timeline/Timeline';
 import { Recording } from './components/overlays/Recording';
 
@@ -46,12 +41,7 @@ export const App: React.FC = () => {
   }
   return (
     <>
-      <Welcome />
-      <Webcam />
-      <FilterGallery />
-      <About />
-      <Export />
-      <Properties />
+      <Modals />
       <Drop />
       <Loading />
       <Recording />

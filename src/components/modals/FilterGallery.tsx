@@ -15,14 +15,10 @@ export const FilterGallery: React.FC = observer(() => {
     [category]
   );
 
-  if (!projectStore.showFilterGallery) {
-    return null;
-  }
-
   return (
     <Modal
       title="Filter gallery"
-      onDismiss={() => (projectStore.showFilterGallery = false)}
+      onDismiss={() => (projectStore.modal = undefined)}
     >
       <div className="filter-gallery">
         <div className="categories">

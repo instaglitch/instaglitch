@@ -27,12 +27,8 @@ export const Export: React.FC = observer(() => {
     return max * projectStore.exportScale;
   }, [projectStore.currentProject, projectStore.exportScale]);
 
-  if (!projectStore.showExport) {
-    return null;
-  }
-
   return (
-    <Modal title="Export" onDismiss={() => (projectStore.showExport = false)}>
+    <Modal title="Export" onDismiss={() => (projectStore.modal = undefined)}>
       <div className="info">
         <VarUI
           values={data}

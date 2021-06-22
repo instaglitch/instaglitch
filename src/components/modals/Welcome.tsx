@@ -24,7 +24,7 @@ export const Welcome: React.FC = observer(() => {
           <BsBoxArrowInUp />
           <span>Import from computer</span>
         </button>
-        <button onClick={() => (projectStore.showWebcam = true)}>
+        <button onClick={() => (projectStore.modal = 'webcam')}>
           <BsCamera />
           <span>Webcam</span>
         </button>

@@ -27,13 +27,13 @@ export const Menu: React.FC = observer(() => {
         </button>
       </li>
       <li>
-        <button onClick={() => (projectStore.showWebcam = true)}>
+        <button onClick={() => (projectStore.modal = 'webcam')}>
           <BsCamera />
           <span>Webcam</span>
         </button>
       </li>
       <li>
-        <button onClick={() => (projectStore.showExport = true)}>
+        <button onClick={() => (projectStore.modal = 'export')}>
           <BsDownload />
           <span>Export</span>
         </button>
@@ -47,13 +47,13 @@ export const Menu: React.FC = observer(() => {
         </li>
       )}
       <li>
-        <button onClick={() => (projectStore.showProperties = true)}>
+        <button onClick={() => (projectStore.modal = 'properties')}>
           <BsFillGearFill />
           <span>Properties</span>
         </button>
       </li>
       <li>
-        <button onClick={() => (projectStore.showAbout = true)}>
+        <button onClick={() => (projectStore.modal = 'about')}>
           <BsInfoSquare />
           <span>About</span>
         </button>
