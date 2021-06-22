@@ -567,6 +567,29 @@ a {
   }
 }
 
+.recording {
+  background: #11111a;
+  padding: 20px;
+  text-align: center;
+}
+
+.progressbar {
+  margin: 5px 0;
+  height: 20px;
+  background: #353542;
+  position: relative;
+  border-radius: 0.2rem;
+  overflow: hidden;
+
+  .progressbar-inside {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: #77f;
+  }
+}
+
 @media screen and (max-width: 1200px) {
   body {
     overflow: auto;

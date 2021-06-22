@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { v4 as uuid } from 'uuid';
+import { webmFixDuration } from 'webm-fix-duration';
 import {
   GlueCanvas,
   glueIsSourceLoaded,
@@ -21,7 +22,6 @@ import { createFilterLayer } from './filters/functions';
 import { getY } from './components/timeline/Utils';
 import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
-import { webmFixDuration } from 'webm-fix-duration';
 
 declare class ClipboardItem {
   constructor(data: any);
@@ -90,6 +90,11 @@ class ProjectStore {
   fileInputMode: FileInputMode = FileInputMode.NEW;
   lastFrameTime: number = new Date().getTime();
   mediaRecorder: any = undefined;
+  recordingStart = 0;
+  recordingDuration = 10;
+  recordingVideoBitrate = 2500000;
+  recordingCancel = false;
+  recording = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -508,7 +513,12 @@ class ProjectStore {
     if (this.currentProject.playing && this.currentProject.animated) {
       this.currentProject.time += (time - this.lastFrameTime) / 1000;
 
-      if (this.mediaRecorder && this.currentProject.time > 10) {
+      if (
+        this.mediaRecorder &&
+        (this.currentProject.time >
+          this.recordingStart + this.recordingDuration ||
+          this.recordingCancel)
+      ) {
         try {
           this.mediaRecorder.stop();
         } catch {}
@@ -595,18 +605,21 @@ class ProjectStore {
       return;
     }
 
-    this.loading = true;
+    this.recording = true;
+    this.recordingCancel = false;
 
     const blobs: Blob[] = [];
     const stream: MediaStream = (this.canvas as any).captureStream(60);
-    const mediaRecorder = getMediaRecorder(stream);
+    const mediaRecorder = getMediaRecorder(stream, {
+      videoBitsPerSecond: this.recordingVideoBitrate,
+    });
 
     if (!mediaRecorder) {
       return;
     }
 
     this.lastFrameTime = new Date().getTime();
-    this.setTime(0);
+    this.setTime(this.recordingStart);
     this.startPlayback();
 
     mediaRecorder.start(100);
@@ -621,10 +634,20 @@ class ProjectStore {
     mediaRecorder.onstop = async () => {
       this.stopPlayback();
 
+      if (this.recordingCancel) {
+        this.recordingCancel = false;
+        this.mediaRecorder = undefined;
+        this.recording = false;
+        return;
+      }
+
       let buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
       try {
         if (buffer.type.includes('video/webm')) {
-          buffer = await webmFixDuration(buffer, 10000);
+          buffer = await webmFixDuration(
+            buffer,
+            this.recordingDuration * 10000
+          );
         }
       } catch {}
       const url = window.URL.createObjectURL(buffer);
@@ -642,7 +665,7 @@ class ProjectStore {
       element.style.display = 'none';
       element.click();
       this.mediaRecorder = undefined;
-      this.loading = false;
+      this.recording = false;
     };
   }
 }

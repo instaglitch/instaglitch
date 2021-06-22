@@ -108,7 +108,10 @@ export function supportsMediaRecorder() {
   return !!(window as any)['MediaRecorder'];
 }
 
-export function getMediaRecorder(stream: MediaStream) {
+export function getMediaRecorder(
+  stream: MediaStream,
+  options: MediaRecorderOptions = {}
+) {
   if (!supportsMediaRecorder()) {
     return undefined;
   }
@@ -117,7 +120,7 @@ export function getMediaRecorder(stream: MediaStream) {
     const suppportedTypes = getSupportedMimeTypes();
     return new MediaRecorder(stream, {
       mimeType: suppportedTypes[0],
-      videoBitsPerSecond: 25000000,
+      ...options,
     });
   } catch {
     return undefined;

@@ -20,6 +20,7 @@ import { Loading } from './components/overlays/Loading';
 import { Drop } from './components/overlays/Drop';
 import { Properties } from './components/modals/Properties';
 import { Timeline } from './components/timeline/Timeline';
+import { Recording } from './components/overlays/Recording';
 
 const webglAvailable = glueIsWebGLAvailable();
 
@@ -53,6 +54,7 @@ export const App: React.FC = () => {
       <Properties />
       <Drop />
       <Loading />
+      <Recording />
       <div className="ui v-stack">
         <Menu />
         <div className="workspace flex h-stack">
