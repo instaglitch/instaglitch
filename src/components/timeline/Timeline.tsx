@@ -56,12 +56,32 @@ export const Timeline: React.FC = observer(() => {
     setWidth(rect.width);
   }, [setWidth]);
 
+  const togglePlayback = useCallback(
+    () => projectStore.togglePlayback(),
+    [projectStore]
+  );
+
   useEffect(() => {
     resize();
     window.addEventListener('resize', resize);
 
-    return () => window.removeEventListener('resize', resize);
-  }, [resize, animated, selectedLayer]);
+    const keyDown = (e: KeyboardEvent) => {
+      if (e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePlayback();
+      }
+    };
+
+    if (animated) {
+      window.addEventListener('keydown', keyDown);
+    }
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('keydown', keyDown);
+    };
+  }, [resize, animated, selectedLayer, togglePlayback]);
 
   useEffect(() => {
     if (playing && typeof time !== 'undefined') {
@@ -87,15 +107,7 @@ export const Timeline: React.FC = observer(() => {
   return (
     <div className="panel timeline-wrapper">
       <div className="playback-controls">
-        <button
-          onClick={() => {
-            if (!currentProject.playing) {
-              projectStore.startPlayback();
-            } else {
-              projectStore.stopPlayback();
-            }
-          }}
-        >
+        <button onClick={togglePlayback}>
           {currentProject.playing ? <BsPauseFill /> : <BsPlayFill />}
         </button>
         <button

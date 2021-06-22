@@ -538,6 +538,14 @@ class ProjectStore {
     }, 'image/png');
   }
 
+  togglePlayback() {
+    if (!this.currentProject?.playing) {
+      this.startPlayback();
+    } else {
+      this.stopPlayback();
+    }
+  }
+
   startPlayback() {
     if (!this.currentProject) {
       return;
@@ -593,7 +601,7 @@ class ProjectStore {
     }
 
     this.requestPreviewRender();
-    setTimeout(() => this.requestPreviewRender(), 100);
+    setTimeout(() => this.requestPreviewRender(), 200);
   }
 
   recordVideo() {
