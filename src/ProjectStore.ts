@@ -168,7 +168,13 @@ class ProjectStore {
         },
       ];
 
-      if (source instanceof HTMLVideoElement && source.duration) {
+      if (source instanceof HTMLVideoElement) {
+        if (!source.duration) {
+          this.error = 'Corrupted video file.';
+          this.loading = false;
+          return;
+        }
+
         project.clips[sourceLayer.id][0].end = source.duration;
         project.clips[sourceLayer.id][0].absoluteStart = 0;
         project.clips[sourceLayer.id][0].duration = source.duration;
@@ -209,6 +215,18 @@ class ProjectStore {
         return;
       }
 
+      if (source instanceof HTMLVideoElement) {
+        if (!source.duration) {
+          this.error = 'Corrupted video file.';
+          this.loading = false;
+          return;
+        }
+
+        this.currentProject.clips[sourceLayer.id][0].end = source.duration;
+        this.currentProject.clips[sourceLayer.id][0].absoluteStart = 0;
+        this.currentProject.clips[sourceLayer.id][0].duration = source.duration;
+      }
+
       this.currentProject.layers = [sourceLayer, ...this.currentProject.layers];
       this.currentProject.selectedLayer = sourceLayer.id;
       this.currentProject.clips[sourceLayer.id] = [
@@ -218,12 +236,6 @@ class ProjectStore {
           end: this.maxClipEnd,
         },
       ];
-
-      if (source instanceof HTMLVideoElement && source.duration) {
-        this.currentProject.clips[sourceLayer.id][0].end = source.duration;
-        this.currentProject.clips[sourceLayer.id][0].absoluteStart = 0;
-        this.currentProject.clips[sourceLayer.id][0].duration = source.duration;
-      }
 
       this.loading = false;
       this.requestPreviewRender();
