@@ -76,6 +76,7 @@ class ProjectStore {
   projects: Project[] = [];
   loading = false;
   modal: string | undefined = undefined;
+  error: string | undefined = undefined;
   glueCanvas = new GlueCanvas();
   canvas = this.glueCanvas.canvas;
   glue = this.glueCanvas.glue;

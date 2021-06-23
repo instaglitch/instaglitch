@@ -9,9 +9,14 @@ import { About } from './About';
 import { Properties } from './Properties';
 import { Welcome } from './Welcome';
 import { Recording } from './Recording';
+import { Error } from './Error';
 
 export const Modals: React.FC = observer(() => {
   const projectStore = useProjectStore();
+
+  if (projectStore.error) {
+    return <Error />;
+  }
 
   switch (projectStore.modal) {
     case 'filterGallery':

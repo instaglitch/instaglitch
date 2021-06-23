@@ -224,6 +224,7 @@ button {
   width: 600px;
 
   .actions,
+  .action,
   .info {
     padding: 20px;
   }
@@ -237,6 +238,19 @@ button {
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+  }
+
+  .action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50%;
     }
   }
 
