@@ -24,7 +24,7 @@ export const Preview: React.FC = observer(() => {
       return;
     }
 
-    const move = (pageX: number, pageY: number) => {
+    const move = (clientX: number, clientY: number) => {
       if (!initialPositionRef.current || !initialValueRef.current) {
         return;
       }
@@ -37,11 +37,11 @@ export const Preview: React.FC = observer(() => {
       const initialCanvasX = width * (valueX + 0.5);
       const initialCanvasY = height * (valueY + 0.5);
 
-      const canvasPageX = x - initialCanvasX;
-      const canvasPageY = y - initialCanvasY;
+      const canvasClientX = x - initialCanvasX;
+      const canvasClientY = y - initialCanvasY;
 
-      const newCanvasX = pageX - canvasPageX;
-      const newCanvasY = pageY - canvasPageY;
+      const newCanvasX = clientX - canvasClientX;
+      const newCanvasY = clientY - canvasClientY;
 
       const newValueX = newCanvasX / width - 0.5;
       const newValueY = newCanvasY / height - 0.5;
@@ -54,7 +54,7 @@ export const Preview: React.FC = observer(() => {
       e.preventDefault();
       e.stopPropagation();
 
-      move(e.pageX, e.pageY);
+      move(e.clientX, e.clientY);
     };
     const handleUp = () => {
       disable();
@@ -70,7 +70,7 @@ export const Preview: React.FC = observer(() => {
         return;
       }
 
-      move(touch.pageX, touch.pageY);
+      move(touch.clientX, touch.clientY);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -117,7 +117,7 @@ export const Preview: React.FC = observer(() => {
             e.preventDefault();
             e.stopPropagation();
 
-            initialPositionRef.current = [e.pageX, e.pageY];
+            initialPositionRef.current = [e.clientX, e.clientY];
             initialValueRef.current = [x, y];
 
             setMoving(setting.key);
@@ -132,7 +132,7 @@ export const Preview: React.FC = observer(() => {
             e.preventDefault();
             e.stopPropagation();
 
-            initialPositionRef.current = [touch.pageX, touch.pageY];
+            initialPositionRef.current = [touch.clientX, touch.clientY];
             initialValueRef.current = [x, y];
 
             setMoving(setting.key);

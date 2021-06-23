@@ -321,8 +321,8 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
                   e.preventDefault();
                   startDragging({
                     i: part.i,
-                    initX: e.pageX,
-                    initY: e.pageY,
+                    initX: e.clientX,
+                    initY: e.clientY,
                     moving: 'exponent',
                     part,
                   });
@@ -336,8 +336,8 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
                   startDragging({
                     i: part.i,
-                    initX: touch.pageX,
-                    initY: touch.pageY,
+                    initX: touch.clientX,
+                    initY: touch.clientY,
                     moving: 'exponent',
                     part,
                   });
@@ -357,8 +357,8 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
               e.preventDefault();
               startDragging({
                 i: part.i,
-                initX: e.pageX,
-                initY: e.pageY,
+                initX: e.clientX,
+                initY: e.clientY,
                 moving: 'start',
                 part,
               });
@@ -372,8 +372,8 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
               startDragging({
                 i: part.i,
-                initX: touch.pageX,
-                initY: touch.pageY,
+                initX: touch.clientX,
+                initY: touch.clientY,
                 moving: 'start',
                 part,
               });

@@ -107,8 +107,8 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
             startDragging({
               type: 'timeline',
-              initX: e.pageX,
-              initY: e.pageY,
+              initX: e.clientX,
+              initY: e.clientY,
               initMinX: minX,
               initPPS: pixelsPerSecond,
             });
@@ -124,8 +124,8 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
             startDragging({
               type: 'timeline',
-              initX: touch.pageX,
-              initY: touch.pageY,
+              initX: touch.clientX,
+              initY: touch.clientY,
               initMinX: minX,
               initPPS: pixelsPerSecond,
             });
@@ -149,8 +149,8 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
               startDragging({
                 type: 'marker',
-                initX: e.pageX,
-                initY: e.pageY,
+                initX: e.clientX,
+                initY: e.clientY,
                 initMinX: time,
                 initPPS: pixelsPerSecond,
               });
@@ -166,8 +166,8 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
 
               startDragging({
                 type: 'marker',
-                initX: touch.pageX,
-                initY: touch.pageY,
+                initX: touch.clientX,
+                initY: touch.clientY,
                 initMinX: time,
                 initPPS: pixelsPerSecond,
               });
