@@ -19,7 +19,27 @@
       "step": 1,
       "minValue": 2,
       "maxValue": 10
+    },
+    {
+      "id": "blur_start",
+      "defaultValue": 1,
+      "key": "iBlurStart",
+      "name": "Blur start",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    },
+    {
+      "id": "blur_width",
+      "defaultValue": 0.1,
+      "key": "iBlurWidth",
+      "name": "Blur width",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 2
     }
   ],
-  "fragmentShader": "void main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  vec2 offset = vec2(iOffset.x + 0.5, 0.5 - iOffset.y);\n  \n  const int samples = 10;\n  float blurStart = 1.0;\n  float blurWidth = 0.1;\n\n  p -= offset;\n  float precompute = blurWidth * (1.0 / float(iSamples - 1));\n\n  vec4 color = vec4(0.0);\n  for(int i = 0; i < samples; i++)\n  {\n    if (i > iSamples) {\n      break;\n    }\n    \n    float scale = blurStart + (float(i)* precompute);\n    color += texture2D(iTexture, p * scale + offset);\n  }\n\n\n  color /= float(iSamples);\n  gl_FragColor = color;\n}"
+  "fragmentShader": "@use wrap\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n  vec2 offset = vec2(iOffset.x + 0.5, 0.5 - iOffset.y);\n  \n  const int samples = 10;\n\n  p -= offset;\n  float precompute = iBlurWidth * (1.0 / float(iSamples - 1));\n\n  vec4 color = vec4(0.0);\n  for(int i = 0; i < samples; i++)\n  {\n    if (i > iSamples) {\n      break;\n    }\n    \n    float scale = iBlurStart + (float(i) * precompute);\n    color += texture2D(iTexture, mirroredRepeat(p * scale + offset));\n  }\n\n\n  color /= float(iSamples);\n  gl_FragColor = color;\n}"
 }
