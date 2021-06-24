@@ -1,0 +1,15 @@
+{
+  "id": "gaussian_blur",
+  "name": "Gaussian blur",
+  "settings": [
+    {
+      "id": "direction",
+      "defaultValue": [0, -0.1],
+      "key": "iDirection",
+      "name": "Direction",
+      "type": "offset",
+      "color": "#FFFFFF"
+    }
+  ],
+  "fragmentShader": "void main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution;\n\n  vec4 color = vec4(0.0);\n  vec2 off1 = vec2(1.3846153846) * iDirection * 16.0 / iResolution;\n  vec2 off2 = vec2(3.2307692308) * iDirection * 16.0 / iResolution;\n  color += texture2D(iTexture, p) * 0.2270270270;\n  color += texture2D(iTexture, p + off1) * 0.3162162162;\n  color += texture2D(iTexture, p - off1) * 0.3162162162;\n  color += texture2D(iTexture, p + off2) * 0.0702702703;\n  color += texture2D(iTexture, p - off2) * 0.0702702703;\n  \n  gl_FragColor = color;\n}"
+}
