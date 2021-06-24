@@ -506,6 +506,12 @@ a {
     z-index: 4;
   }
 
+  .timeline-item-wrapper {
+    & > svg {
+      position: absolute;
+    }
+  }
+
   .timeline-info {
     display: flex;
     align-items: center;
