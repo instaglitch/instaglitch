@@ -1,0 +1,35 @@
+{
+  "id": "stretch",
+  "name": "Stretch",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": [0, 0],
+      "key": "iOffset",
+      "name": "Offset",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "radius",
+      "defaultValue": 0.2,
+      "key": "iRadius",
+      "name": "Radius",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0.01,
+      "maxValue": 1
+    },
+    {
+      "id": "intensity",
+      "defaultValue": 5,
+      "key": "iIntensity",
+      "name": "Intensity",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -2,
+      "maxValue": 10
+    }
+  ],
+  "fragmentShader": "@use wrap\n@use math\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution.x;\n  vec2 offset = vec2(iOffset.x + 0.5, 0.5 - iOffset.y);\n  \n  p-=offset;\n  \n  float d = length(p);\n  if (d >= iRadius) {\n    d -= iRadius;\n    d /= pow(2.0, iIntensity);\n    d += iRadius;\n    \n    float angle = atan2(p);\n    p.x = d * cos(angle);\n    p.y = d * sin(angle);\n  }\n  \n  p += offset;\n  \n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n  gl_FragColor.a = 1.0;\n}"
+}

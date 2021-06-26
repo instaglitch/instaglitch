@@ -7,6 +7,7 @@ import pixelate_polar from './pixelate_polar.json';
 import radial_blur from './radial_blur.json';
 import radial_blur_rgb_shift from './radial_blur_rgb_shift.json';
 import gaussian_blur from './gaussian_blur.json';
+import stretch from './stretch.json';
 
 export const filtersDistort = [
   fisheye,
@@ -18,4 +19,5 @@ export const filtersDistort = [
   radial_blur,
   radial_blur_rgb_shift,
   gaussian_blur,
+  stretch,
 ];

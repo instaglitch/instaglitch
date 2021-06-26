@@ -12,7 +12,7 @@
     },
     {
       "id": "angle",
-      "defaultValue": 0,
+      "defaultValue": 0.3,
       "key": "iAngle",
       "name": "Angle",
       "type": "angle"
