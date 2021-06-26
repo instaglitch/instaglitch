@@ -1,31 +1,45 @@
 import { LayerType, TLayer } from './types';
 
-export const truncate = (str: string, maxLength = 25) => {
+export const truncate = (str: string, maxLength = 32) => {
   if (str.length < maxLength) {
     return str;
   }
 
   const split = str.split('.');
-  if (split.length < 0) {
+  if (split.length === 0) {
     return '';
   }
 
-  let extension = split.pop() as string;
-  const name = split.join('.');
-  if (extension.length > 4) {
-    extension = 'jpg';
-  }
+  if (split.length > 1) {
+    let extension = split.pop() as string;
+    const name = split.join('.');
+    if (extension.length > 4) {
+      extension = 'jpg';
+    }
 
-  if (name.length > maxLength - 5) {
-    const maxPartLength = Math.floor((maxLength - 5) / 2);
+    if (name.length > maxLength - 5) {
+      const maxPartLength = Math.floor((maxLength - 5) / 2);
 
-    return (
-      name.substr(0, maxPartLength) +
-      '...' +
-      name.substr(name.length - maxPartLength) +
-      '.' +
-      extension
-    );
+      return (
+        name.substr(0, maxPartLength) +
+        '...' +
+        name.substr(name.length - maxPartLength) +
+        '.' +
+        extension
+      );
+    }
+  } else {
+    const name = str;
+
+    if (name.length > maxLength) {
+      const maxPartLength = Math.floor(maxLength / 2);
+
+      return (
+        name.substr(0, maxPartLength) +
+        '...' +
+        name.substr(name.length - maxPartLength)
+      );
+    }
   }
 };
 
