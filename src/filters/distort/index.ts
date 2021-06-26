@@ -8,6 +8,7 @@ import radial_blur from './radial_blur.json';
 import radial_blur_rgb_shift from './radial_blur_rgb_shift.json';
 import gaussian_blur from './gaussian_blur.json';
 import stretch from './stretch.json';
+import melt from './melt.json';
 
 export const filtersDistort = [
   fisheye,
@@ -20,4 +21,5 @@ export const filtersDistort = [
   radial_blur_rgb_shift,
   gaussian_blur,
   stretch,
+  melt,
 ];

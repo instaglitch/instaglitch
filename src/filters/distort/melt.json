@@ -1,0 +1,35 @@
+{
+  "id": "melt",
+  "name": "Melt",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": [0, 0],
+      "key": "iOffset",
+      "name": "Offset",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "scale",
+      "defaultValue": 0.15,
+      "key": "iScale",
+      "name": "Scale",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    },
+    {
+      "id": "amount",
+      "defaultValue": 0.05,
+      "key": "iAmount",
+      "name": "Amount",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "@use noise\n@use wrap\n\nvoid main() {\n  vec2 p = gl_FragCoord.xy / iResolution;\n  p -= 0.5;\n  \n  vec2 offset = vec2(-1.0 * iOffset.x, iOffset.y);\n\n  float noise = snoise(p * 4.0 * iScale + offset)\n    + snoise(p * 16.0 * iScale + offset)\n    + snoise(p * 32.0 * iScale + offset);\n  \n  p += 0.5 + iAmount * noise;\n  gl_FragColor = texture2D(iTexture, mirroredRepeat(p));\n}"
+}
