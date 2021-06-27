@@ -1,0 +1,43 @@
+{
+  "id": "mandelbrot",
+  "name": "Fractal (Mandelbrot)",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": [0, 0],
+      "key": "iOffset",
+      "name": "Offset",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "position",
+      "defaultValue": [0, 0],
+      "key": "iPosition",
+      "name": "Camera position",
+      "type": "offset",
+      "color": "#FFFFFF"
+    },
+    {
+      "id": "scale",
+      "defaultValue": 0.33,
+      "key": "iScale",
+      "name": "Scale",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 5
+    },
+    {
+      "id": "iterations",
+      "defaultValue": 2,
+      "key": "iIterations",
+      "name": "Iterations",
+      "type": "integer",
+      "step": 1,
+      "minValue": 2,
+      "maxValue": 10
+    }
+  ],
+  "fragmentShader": "@use math\n@use wrap\n\nvoid main()\n{\n  vec2 p = gl_FragCoord.xy / iResolution.xy;\n  p += vec2(-1.0 * iPosition.x - 0.77, iPosition.y - 0.5);\n  p /= iScale;\n\n  vec2 z = PI/100.0 * p + iOffset;\n  vec2 c = p;\n\n  const float maxIters = 10.0;\n  float iters = float(iIterations);\n  for (float n = 0.0; n < maxIters; ++n) {\n    if (n > iters) {\n      break;\n    }\n    \n    c = z;\n    z.x = c.x * c.x - c.y * c.y + p.x;\n    z.y = 2.0 * c.x * c.y + p.y;\n    \n    float l = length(z);\n    float k = l * l / 10000.0;\n    z = (z + k * p)/(k + 1.0);\n  }\n  \n  gl_FragColor = texture2D(iTexture, mirroredRepeat(z));\n}"
+}
