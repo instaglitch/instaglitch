@@ -3,6 +3,7 @@ import wave from './wave.json';
 import swirl from './swirl.json';
 import fractal_julia from './fractal_julia.json';
 import fractal_mandelbrot from './fractal_mandelbrot.json';
+import inverted_circle from './inverted_circle.json';
 import pixelate from './pixelate.json';
 import pixelate_polar from './pixelate_polar.json';
 import radial_blur from './radial_blur.json';
@@ -17,6 +18,7 @@ export const filtersDistort = [
   swirl,
   fractal_mandelbrot,
   fractal_julia,
+  inverted_circle,
   pixelate,
   pixelate_polar,
   radial_blur,
