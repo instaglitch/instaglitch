@@ -619,6 +619,50 @@ a {
   }
 }
 
+.scrollarea {
+  position: relative;
+
+  &-bar-track-x {
+    position: absolute;
+    right: 0;
+    width: 12px;
+    top: 0;
+    bottom: 0;
+    z-index: 9999;
+
+    .scrollarea-bar-x {
+      position: absolute;
+      right: 2px;
+      width: 7px;
+      height: 20px;
+      border-radius: 5px;
+      background: #11111a;
+      opacity: 0.5;
+      transition: 0.1s opacity, width ease-in-out;
+      cursor: pointer;
+    }
+
+    &:hover {
+      .scrollarea-bar-x {
+        width: 10px;
+        opacity: 1;
+      }
+    }
+  }
+
+  &-content {
+    overflow: auto;
+
+    /* Hide scrollbars */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+
+    &::-webkit-scrollbar {
+      display: none; /* Safari and Chrome */
+    }
+  }
+}
+
 @media screen and (max-width: 1200px) {
   body {
     overflow: auto;

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/bs';
 import { observer } from 'mobx-react-lite';
 
+import { ScrollArea } from '../common/ScrollArea';
 import { useProjectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
 import { ClipEditor } from './ClipEditor';
@@ -147,7 +148,7 @@ export const Timeline: React.FC = observer(() => {
           />
         </div>
       </div>
-      <div className="timeline-with-background">
+      <ScrollArea className="timeline-with-background">
         <div className="timeline">
           {currentProject.layers.map(layer => {
             const settings =
@@ -335,7 +336,7 @@ export const Timeline: React.FC = observer(() => {
           pixelsPerSecond={PPS}
           time={currentProject.time}
         />
-      </div>
+      </ScrollArea>
     </div>
   );
 });
