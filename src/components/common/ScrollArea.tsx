@@ -11,32 +11,48 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 }) => {
   const areaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
   const barXRef = useRef<HTMLDivElement>(null);
   const barTrackXRef = useRef<HTMLDivElement>(null);
+
+  const barYRef = useRef<HTMLDivElement>(null);
+  const barTrackYRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const area = areaRef.current;
     const content = contentRef.current;
     const barX = barXRef.current;
     const barTrackX = barTrackXRef.current;
+    const barY = barYRef.current;
+    const barTrackY = barTrackYRef.current;
 
-    if (!area || !content || !barX || !barTrackX) {
+    if (!area || !content || !barX || !barTrackX || !barY || !barTrackY) {
       return;
     }
 
     const recalculateBarX = () => {
       const areaRect = area.getBoundingClientRect();
       const height = Math.min(1.0, areaRect.height / content.scrollHeight);
-      const scrollTop = content.scrollTop;
 
       barX.style.height = height * 100 + '%';
-      barX.style.top = (scrollTop / content.scrollHeight) * 100 + '%';
+      barX.style.top = (content.scrollTop / content.scrollHeight) * 100 + '%';
 
       barTrackX.style.display = height === 1 ? 'none' : 'block';
     };
 
+    const recalculateBarY = () => {
+      const areaRect = area.getBoundingClientRect();
+      const width = Math.min(1.0, areaRect.width / content.scrollWidth);
+
+      barY.style.width = width * 100 + '%';
+      barY.style.left = (content.scrollLeft / content.scrollWidth) * 100 + '%';
+
+      barTrackY.style.display = width === 1 ? 'none' : 'block';
+    };
+
     const onScroll = () => {
       recalculateBarX();
+      recalculateBarY();
     };
 
     let dragging: 'x' | 'y' | undefined = undefined;
@@ -54,17 +70,23 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
       if (bar === 'x') {
         barX.classList.add('scrollarea-bar-active');
+      } else {
+        barY.classList.add('scrollarea-bar-active');
       }
     };
 
     const onMoveDrag = (x: number, y: number) => {
       if (!dragging) return;
 
+      const areaRect = area.getBoundingClientRect();
       if (dragging === 'x') {
-        const areaRect = area.getBoundingClientRect();
         const diff = y - initY;
         content.scrollTop =
           initScrollTop + (diff / areaRect.height) * content.scrollHeight;
+      } else {
+        const diff = x - initX;
+        content.scrollLeft =
+          initScrollLeft + (diff / areaRect.width) * content.scrollWidth;
       }
     };
 
@@ -72,6 +94,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       dragging = undefined;
 
       barX.classList.remove('scrollarea-bar-active');
+      barY.classList.remove('scrollarea-bar-active');
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -116,11 +139,33 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       onStartDrag('x', touch.clientX, touch.clientY);
     };
 
+    const onMouseDownY = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      onStartDrag('y', e.clientX, e.clientY);
+    };
+
+    const onTouchStartY = (e: TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const touch = e.touches[0];
+      if (!touch) {
+        return;
+      }
+
+      onStartDrag('y', touch.clientX, touch.clientY);
+    };
+
     onScroll();
     content.addEventListener('scroll', onScroll);
 
     barX.addEventListener('mousedown', onMouseDownX);
     barX.addEventListener('touchstart', onTouchStartX);
+
+    barY.addEventListener('mousedown', onMouseDownY);
+    barY.addEventListener('touchstart', onTouchStartY);
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', onEndDrag);
@@ -134,6 +179,9 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
       barX.removeEventListener('mousedown', onMouseDownX);
       barX.removeEventListener('touchstart', onTouchStartX);
+
+      barY.addEventListener('mousedown', onMouseDownY);
+      barY.addEventListener('touchstart', onTouchStartY);
 
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', onEndDrag);
@@ -151,6 +199,9 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       </div>
       <div className="scrollarea-bar-track-x" ref={barTrackXRef}>
         <div className="scrollarea-bar-x" ref={barXRef}></div>
+      </div>
+      <div className="scrollarea-bar-track-y" ref={barTrackYRef}>
+        <div className="scrollarea-bar-y" ref={barYRef}></div>
       </div>
     </div>
   );

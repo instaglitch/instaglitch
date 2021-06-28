@@ -634,7 +634,6 @@ a {
       position: absolute;
       right: 2px;
       width: 7px;
-      height: 20px;
       border-radius: 5px;
       background: #11111a;
       opacity: 0.5;
@@ -645,6 +644,32 @@ a {
     &:hover .scrollarea-bar-x,
     .scrollarea-bar-active {
       width: 10px;
+      opacity: 1;
+    }
+  }
+
+  &-bar-track-y {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 12px;
+    bottom: 0;
+    z-index: 9999;
+
+    .scrollarea-bar-y {
+      position: absolute;
+      bottom: 2px;
+      height: 7px;
+      border-radius: 5px;
+      background: #11111a;
+      opacity: 0.5;
+      transition: 0.1s opacity, height ease-in-out;
+      cursor: pointer;
+    }
+
+    &:hover .scrollarea-bar-y,
+    .scrollarea-bar-active {
+      height: 10px;
       opacity: 1;
     }
   }
