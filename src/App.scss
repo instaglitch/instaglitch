@@ -642,11 +642,10 @@ a {
       cursor: pointer;
     }
 
-    &:hover {
-      .scrollarea-bar-x {
-        width: 10px;
-        opacity: 1;
-      }
+    &:hover .scrollarea-bar-x,
+    .scrollarea-bar-active {
+      width: 10px;
+      opacity: 1;
     }
   }
 
