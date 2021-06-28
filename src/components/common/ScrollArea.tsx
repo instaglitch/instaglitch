@@ -12,13 +12,15 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
   const areaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const barXRef = useRef<HTMLDivElement>(null);
+  const barTrackXRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const area = areaRef.current;
     const content = contentRef.current;
     const barX = barXRef.current;
+    const barTrackX = barTrackXRef.current;
 
-    if (!area || !content || !barX) {
+    if (!area || !content || !barX || !barTrackX) {
       return;
     }
 
@@ -29,6 +31,8 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
       barX.style.height = height * 100 + '%';
       barX.style.top = (scrollTop / content.scrollHeight) * 100 + '%';
+
+      barTrackX.style.display = height === 1 ? 'none' : 'block';
     };
 
     const onScroll = () => {
@@ -145,7 +149,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       <div className="scrollarea-content" ref={contentRef}>
         {children}
       </div>
-      <div className="scrollarea-bar-track-x">
+      <div className="scrollarea-bar-track-x" ref={barTrackXRef}>
         <div className="scrollarea-bar-x" ref={barXRef}></div>
       </div>
     </div>
