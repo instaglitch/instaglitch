@@ -22,7 +22,7 @@ export const Welcome: React.FC = observer(() => {
       <div className="actions">
         <button onClick={() => projectStore.openFilePicker()}>
           <BsBoxArrowInUp />
-          <span>Import from computer</span>
+          <span>Import file</span>
         </button>
         <button onClick={() => (projectStore.modal = 'webcam')}>
           <BsCamera />
