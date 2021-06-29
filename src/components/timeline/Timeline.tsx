@@ -87,7 +87,7 @@ export const Timeline: React.FC = observer(() => {
     resize();
     window.addEventListener('resize', resize);
 
-    const keyDown = (e: KeyboardEvent) => {
+    const keyUp = (e: KeyboardEvent) => {
       if (e.key === ' ') {
         e.preventDefault();
         e.stopPropagation();
@@ -96,12 +96,12 @@ export const Timeline: React.FC = observer(() => {
     };
 
     if (animated) {
-      window.addEventListener('keydown', keyDown);
+      window.addEventListener('keyup', keyUp);
     }
 
     return () => {
       window.removeEventListener('resize', resize);
-      window.removeEventListener('keydown', keyDown);
+      window.removeEventListener('keyup', keyUp);
     };
   }, [resize, animated, selectedLayer, togglePlayback]);
 
