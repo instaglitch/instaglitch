@@ -18,6 +18,7 @@ import { defaultPPS } from './Utils';
 import { layerName, supportsMediaRecorder, truncate } from '../../Utils';
 import { TimeBackground } from './TimeBackground';
 import { sourceSettings } from '../../sourceSettings';
+import { TimelineItem } from './TimelineItem';
 
 const canRecord = supportsMediaRecorder();
 
@@ -213,17 +214,25 @@ export const Timeline: React.FC = observer(() => {
                     })}
                 </div>
                 <div>
-                  <ClipEditor
+                  <TimelineItem
                     height={layerHeight}
                     minX={minX}
                     maxX={maxX}
+                    onUpdate={minX => setMinX(minX)}
                     pixelsPerSecond={PPS}
-                    clips={currentProject.clips[layer.id] ?? []}
-                    onChange={clips => {
-                      currentProject.clips[layer.id] = [...clips];
-                      projectStore.requestPreviewRender();
-                    }}
-                  />
+                  >
+                    <ClipEditor
+                      height={layerHeight}
+                      minX={minX}
+                      maxX={maxX}
+                      pixelsPerSecond={PPS}
+                      clips={currentProject.clips[layer.id] ?? []}
+                      onChange={clips => {
+                        currentProject.clips[layer.id] = [...clips];
+                        projectStore.requestPreviewRender();
+                      }}
+                    />
+                  </TimelineItem>
                   {selectedLayer === layer.id &&
                     settings?.map(setting => {
                       if (!supportedTypes.includes(setting.type)) {
@@ -233,54 +242,70 @@ export const Timeline: React.FC = observer(() => {
                       if (setting.type === FilterSettingType.OFFSET) {
                         return (
                           <React.Fragment key={setting.key}>
-                            <CurveEditor
+                            <TimelineItem
                               height={propertyHeight}
                               minX={minX}
                               maxX={maxX}
+                              onUpdate={minX => setMinX(minX)}
                               pixelsPerSecond={PPS}
-                              minY={-1}
-                              maxY={1}
-                              previewValue={layer.settings[setting.key][0]}
-                              points={
-                                currentProject.points[layer.id]?.[
-                                  setting.key + '_x'
-                                ] ?? []
-                              }
-                              onChange={points => {
-                                if (!currentProject.points[layer.id]) {
-                                  currentProject.points[layer.id] = {};
+                            >
+                              <CurveEditor
+                                height={propertyHeight}
+                                minX={minX}
+                                maxX={maxX}
+                                pixelsPerSecond={PPS}
+                                minY={-1}
+                                maxY={1}
+                                previewValue={layer.settings[setting.key][0]}
+                                points={
+                                  currentProject.points[layer.id]?.[
+                                    setting.key + '_x'
+                                  ] ?? []
                                 }
+                                onChange={points => {
+                                  if (!currentProject.points[layer.id]) {
+                                    currentProject.points[layer.id] = {};
+                                  }
 
-                                currentProject.points[layer.id][
-                                  setting.key + '_x'
-                                ] = points;
-                                projectStore.requestPreviewRender();
-                              }}
-                            />
-                            <CurveEditor
+                                  currentProject.points[layer.id][
+                                    setting.key + '_x'
+                                  ] = points;
+                                  projectStore.requestPreviewRender();
+                                }}
+                              />
+                            </TimelineItem>
+                            <TimelineItem
                               height={propertyHeight}
                               minX={minX}
                               maxX={maxX}
+                              onUpdate={minX => setMinX(minX)}
                               pixelsPerSecond={PPS}
-                              minY={-1}
-                              maxY={1}
-                              previewValue={layer.settings[setting.key][1]}
-                              points={
-                                currentProject.points[layer.id]?.[
-                                  setting.key + '_y'
-                                ] ?? []
-                              }
-                              onChange={points => {
-                                if (!currentProject.points[layer.id]) {
-                                  currentProject.points[layer.id] = {};
+                            >
+                              <CurveEditor
+                                height={propertyHeight}
+                                minX={minX}
+                                maxX={maxX}
+                                pixelsPerSecond={PPS}
+                                minY={-1}
+                                maxY={1}
+                                previewValue={layer.settings[setting.key][1]}
+                                points={
+                                  currentProject.points[layer.id]?.[
+                                    setting.key + '_y'
+                                  ] ?? []
                                 }
+                                onChange={points => {
+                                  if (!currentProject.points[layer.id]) {
+                                    currentProject.points[layer.id] = {};
+                                  }
 
-                                currentProject.points[layer.id][
-                                  setting.key + '_y'
-                                ] = points;
-                                projectStore.requestPreviewRender();
-                              }}
-                            />
+                                  currentProject.points[layer.id][
+                                    setting.key + '_y'
+                                  ] = points;
+                                  projectStore.requestPreviewRender();
+                                }}
+                              />
+                            </TimelineItem>
                           </React.Fragment>
                         );
                       }
@@ -299,29 +324,38 @@ export const Timeline: React.FC = observer(() => {
                           : undefined;
 
                       return (
-                        <CurveEditor
-                          key={setting.key}
+                        <TimelineItem
                           height={propertyHeight}
                           minX={minX}
                           maxX={maxX}
+                          onUpdate={minX => setMinX(minX)}
                           pixelsPerSecond={PPS}
-                          minY={minValue}
-                          maxY={maxValue}
-                          step={step}
-                          previewValue={layer.settings[setting.key]}
-                          points={
-                            currentProject.points[layer.id]?.[setting.key] ?? []
-                          }
-                          onChange={points => {
-                            if (!currentProject.points[layer.id]) {
-                              currentProject.points[layer.id] = {};
+                          key={setting.key}
+                        >
+                          <CurveEditor
+                            height={propertyHeight}
+                            minX={minX}
+                            maxX={maxX}
+                            pixelsPerSecond={PPS}
+                            minY={minValue}
+                            maxY={maxValue}
+                            step={step}
+                            previewValue={layer.settings[setting.key]}
+                            points={
+                              currentProject.points[layer.id]?.[setting.key] ??
+                              []
                             }
+                            onChange={points => {
+                              if (!currentProject.points[layer.id]) {
+                                currentProject.points[layer.id] = {};
+                              }
 
-                            currentProject.points[layer.id][setting.key] =
-                              points;
-                            projectStore.requestPreviewRender();
-                          }}
-                        />
+                              currentProject.points[layer.id][setting.key] =
+                                points;
+                              projectStore.requestPreviewRender();
+                            }}
+                          />
+                        </TimelineItem>
                       );
                     })}
                 </div>

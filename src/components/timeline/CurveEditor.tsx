@@ -252,143 +252,149 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
   }
 
   return (
-    <div className="timeline-item-wrapper" style={{ height: height + 'px' }}>
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        style={{ width: width + 'px', height: height + 'px' }}
-        xmlns="http://www.w3.org/2000/svg"
-        className="curve-editor"
-        onDoubleClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      style={{ width: width + 'px', height: height + 'px' }}
+      xmlns="http://www.w3.org/2000/svg"
+      className="curve-editor"
+      onDoubleClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
 
-          const rect = e.currentTarget.getBoundingClientRect();
-          const chartX = e.clientX - rect.left;
-          const chartY = e.clientY - rect.top;
-          const fnX = chartToFn(chartX, width, minX, maxX);
-          let fnY = chartToFn(height - chartY, height, minY, maxY);
-          fnY = roundValue(fnY, minY, maxY, step);
+        const rect = e.currentTarget.getBoundingClientRect();
+        const chartX = e.clientX - rect.left;
+        const chartY = e.clientY - rect.top;
+        const fnX = chartToFn(chartX, width, minX, maxX);
+        let fnY = chartToFn(height - chartY, height, minY, maxY);
+        fnY = roundValue(fnY, minY, maxY, step);
 
-          let insertAt: number | undefined = undefined;
-          if (points.length > 0) {
-            for (let i = 0; i < points.length; i++) {
-              if (points[i].x >= fnX) {
-                insertAt = i;
-                break;
-              }
+        let insertAt: number | undefined = undefined;
+        if (points.length > 0) {
+          for (let i = 0; i < points.length; i++) {
+            if (points[i].x >= fnX) {
+              insertAt = i;
+              break;
             }
           }
+        }
 
-          const newCurve = [...points];
+        const newCurve = [...points];
 
-          if (typeof insertAt === 'undefined') {
-            newCurve.push({
-              id: uuid(),
-              exponent: 1,
-              x: fnX,
-              y: fnY,
+        if (typeof insertAt === 'undefined') {
+          newCurve.push({
+            id: uuid(),
+            exponent: 1,
+            x: fnX,
+            y: fnY,
+          });
+        } else {
+          newCurve.splice(insertAt, 0, {
+            id: uuid(),
+            exponent: 1,
+            x: fnX,
+            y: fnY,
+          });
+        }
+
+        onChange(newCurve);
+      }}
+    >
+      <path
+        className="fill-path"
+        d={fillPath}
+        stroke="transparent"
+        fill="#7777ff50"
+        strokeWidth={2}
+      />
+      {parts.map(
+        part =>
+          !!part.path && (
+            <path
+              key={part.id}
+              className="curve"
+              d={part.path}
+              stroke="#77f"
+              fill="none"
+              strokeWidth={2}
+              onMouseDown={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                startDragging({
+                  i: part.i,
+                  initX: e.clientX,
+                  initY: e.clientY,
+                  moving: 'exponent',
+                  part,
+                });
+              }}
+              onTouchStart={(e: React.TouchEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const touch = e.touches[0];
+                if (!touch) {
+                  return;
+                }
+
+                startDragging({
+                  i: part.i,
+                  initX: touch.clientX,
+                  initY: touch.clientY,
+                  moving: 'exponent',
+                  part,
+                });
+              }}
+            />
+          )
+      )}
+      {parts.map(part => (
+        <circle
+          key={part.id}
+          cx={part.start[0]}
+          cy={part.start[1]}
+          r="5"
+          fill="#77f"
+          className="curve-point"
+          onMouseDown={(e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            startDragging({
+              i: part.i,
+              initX: e.clientX,
+              initY: e.clientY,
+              moving: 'start',
+              part,
             });
-          } else {
-            newCurve.splice(insertAt, 0, {
-              id: uuid(),
-              exponent: 1,
-              x: fnX,
-              y: fnY,
-            });
-          }
+          }}
+          onTouchStart={(e: React.TouchEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-          onChange(newCurve);
-        }}
-      >
-        <path
-          className="fill-path"
-          d={fillPath}
-          stroke="transparent"
-          fill="#7777ff50"
-          strokeWidth={2}
+            const touch = e.touches[0];
+            if (!touch) {
+              return;
+            }
+
+            startDragging({
+              i: part.i,
+              initX: touch.clientX,
+              initY: touch.clientY,
+              moving: 'start',
+              part,
+            });
+          }}
+          onDoubleClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const newPoints = [...points];
+            newPoints.splice(part.i, 1);
+            onChange(newPoints);
+          }}
         />
-        {parts.map(
-          part =>
-            !!part.path && (
-              <path
-                key={part.id}
-                className="curve"
-                d={part.path}
-                stroke="#77f"
-                fill="none"
-                strokeWidth={2}
-                onMouseDown={(e: React.MouseEvent) => {
-                  e.preventDefault();
-                  startDragging({
-                    i: part.i,
-                    initX: e.clientX,
-                    initY: e.clientY,
-                    moving: 'exponent',
-                    part,
-                  });
-                }}
-                onTouchStart={(e: React.TouchEvent) => {
-                  e.preventDefault();
-                  const touch = e.touches[0];
-                  if (!touch) {
-                    return;
-                  }
-
-                  startDragging({
-                    i: part.i,
-                    initX: touch.clientX,
-                    initY: touch.clientY,
-                    moving: 'exponent',
-                    part,
-                  });
-                }}
-              />
-            )
-        )}
-        {parts.map(part => (
-          <circle
-            key={part.id}
-            cx={part.start[0]}
-            cy={part.start[1]}
-            r="5"
-            fill="#77f"
-            className="curve-point"
-            onMouseDown={(e: React.MouseEvent) => {
-              e.preventDefault();
-              startDragging({
-                i: part.i,
-                initX: e.clientX,
-                initY: e.clientY,
-                moving: 'start',
-                part,
-              });
-            }}
-            onTouchStart={(e: React.TouchEvent) => {
-              e.preventDefault();
-              const touch = e.touches[0];
-              if (!touch) {
-                return;
-              }
-
-              startDragging({
-                i: part.i,
-                initX: touch.clientX,
-                initY: touch.clientY,
-                moving: 'start',
-                part,
-              });
-            }}
-            onDoubleClick={e => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              const newPoints = [...points];
-              newPoints.splice(part.i, 1);
-              onChange(newPoints);
-            }}
-          />
-        ))}
-      </svg>
-    </div>
+      ))}
+    </svg>
   );
 };
