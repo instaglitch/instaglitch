@@ -1,5 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
+
+import { TimelineContext } from './TimelineContext';
 
 interface DragState {
   initX: number;
@@ -7,27 +9,22 @@ interface DragState {
 }
 
 export interface TimelineItemProps {
-  pixelsPerSecond: number;
   height: number;
-  minX: number;
-  maxX: number;
-  onUpdate: (minX: number) => void;
 }
 
 export const TimelineItem: React.FC<TimelineItemProps> = ({
-  pixelsPerSecond,
   height,
-  minX,
-  onUpdate,
   children,
 }) => {
+  const { minX, PPS, setMinX } = useContext(TimelineContext);
+
   const updatePosition = useCallback(
     (x: number, y: number, dragState: DragState) => {
-      const deltaX = (x - dragState.initX) / pixelsPerSecond;
+      const deltaX = (x - dragState.initX) / PPS;
 
-      onUpdate(Math.max(0, dragState.initMinX - deltaX));
+      setMinX(Math.max(0, dragState.initMinX - deltaX));
     },
-    [onUpdate, pixelsPerSecond]
+    [setMinX, PPS]
   );
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);
@@ -38,18 +35,12 @@ export const TimelineItem: React.FC<TimelineItemProps> = ({
         className="timeline-item-wrapper"
         style={{ height: height + 'px' }}
         onMouseDown={(e: React.MouseEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-
           startDragging({
             initX: e.clientX,
             initMinX: minX,
           });
         }}
         onTouchStart={(e: React.TouchEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-
           const touch = e.touches[0];
           if (!touch) {
             return;

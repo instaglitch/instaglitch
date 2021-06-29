@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 import { v4 as uuid } from 'uuid';
 
 import { AutomationPoint } from '../../types';
+import { TimelineContext } from './TimelineContext';
 
 import {
   getExponentAfterDelta,
@@ -53,10 +54,7 @@ interface DragState {
 }
 
 export interface CurveEditorProps {
-  pixelsPerSecond: number;
   height: number;
-  minX: number;
-  maxX: number;
   minY: number;
   maxY: number;
   points: AutomationPoint[];
@@ -67,10 +65,7 @@ export interface CurveEditorProps {
 }
 
 export const CurveEditor: React.FC<CurveEditorProps> = ({
-  pixelsPerSecond,
   height,
-  minX,
-  maxX,
   minY,
   maxY,
   points,
@@ -79,10 +74,9 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
   isBoolean,
   previewValue,
 }) => {
-  const width = useMemo(
-    () => (maxX - minX) * pixelsPerSecond,
-    [pixelsPerSecond, minX, maxX]
-  );
+  const { minX, maxX, PPS } = useContext(TimelineContext);
+
+  const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const updatePosition = useCallback(
     (x: number, y: number, dragState: DragState) => {
@@ -103,7 +97,7 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
       } else {
         const unitY = height / (maxY - minY);
 
-        const deltaX = (x - dragState.initX) / pixelsPerSecond;
+        const deltaX = (x - dragState.initX) / PPS;
         const deltaY = (dragState.initY - y) / unitY;
 
         let newX = dragState.part.xy[0] + deltaX;
@@ -131,7 +125,7 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
         onChange([...points]);
       }
     },
-    [onChange, points, height, minY, maxY, pixelsPerSecond, step]
+    [onChange, points, height, minY, maxY, PPS, step]
   );
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);

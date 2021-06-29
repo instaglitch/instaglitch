@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 import { v4 as uuid } from 'uuid';
 
 import { AutomationClip } from '../../types';
+import { TimelineContext } from './TimelineContext';
 import { chartToFn, fnToChart } from './Utils';
 
 interface DragState {
@@ -13,31 +14,24 @@ interface DragState {
 }
 
 export interface ClipEditorProps {
-  pixelsPerSecond: number;
   height: number;
-  minX: number;
-  maxX: number;
   clips: AutomationClip[];
   onChange: (clips: AutomationClip[]) => void;
 }
 
 export const ClipEditor: React.FC<ClipEditorProps> = ({
-  pixelsPerSecond,
   height,
-  minX,
-  maxX,
   clips,
   onChange,
 }) => {
-  const width = useMemo(
-    () => (maxX - minX) * pixelsPerSecond,
-    [pixelsPerSecond, minX, maxX]
-  );
+  const { minX, maxX, PPS } = useContext(TimelineContext);
+
+  const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const updatePosition = useCallback(
     (x: number, y: number, dragState: DragState) => {
       const clip = dragState.clip;
-      const delta = (x - dragState.initX) / pixelsPerSecond;
+      const delta = (x - dragState.initX) / PPS;
       const i = dragState.i;
 
       const hasAbsolute =
@@ -106,7 +100,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
 
       onChange(clips);
     },
-    [onChange, clips, pixelsPerSecond]
+    [onChange, clips, PPS]
   );
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);

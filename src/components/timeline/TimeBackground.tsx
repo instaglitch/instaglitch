@@ -1,30 +1,20 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 
 import { fnToChart, getResolution } from './Utils';
+import { TimelineContext } from './TimelineContext';
 
 export interface TimeBackgroundProps {
-  pixelsPerSecond: number;
   height: number;
-  minX: number;
-  maxX: number;
-  time: number;
 }
 
-export const TimeBackground: React.FC<TimeBackgroundProps> = ({
-  pixelsPerSecond,
-  height,
-  minX,
-  maxX,
-  time,
-}) => {
-  const width = useMemo(
-    () => (maxX - minX) * pixelsPerSecond,
-    [pixelsPerSecond, minX, maxX]
-  );
+export const TimeBackground: React.FC<TimeBackgroundProps> = ({ height }) => {
+  const { minX, maxX, PPS, time } = useContext(TimelineContext);
+
+  const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const ticks: [number, boolean][] = [];
 
-  const { tickResolution, labelResolution } = getResolution(pixelsPerSecond);
+  const { tickResolution, labelResolution } = getResolution(PPS);
   for (let x = Math.ceil(minX); x <= Math.floor(maxX); x++) {
     const chartX = fnToChart(x, width, minX, maxX);
 

@@ -1,5 +1,7 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
+
+import { TimelineContext } from './TimelineContext';
 
 import {
   getExponentAfterDelta,
@@ -22,28 +24,14 @@ interface DragState {
 }
 
 export interface TimeDisplayProps {
-  pixelsPerSecond: number;
   height: number;
-  minX: number;
-  maxX: number;
-  time: number;
-  onUpdate: (PPS: number, minX: number) => void;
-  onUpdateTime: (time: number) => void;
 }
 
-export const TimeDisplay: React.FC<TimeDisplayProps> = ({
-  pixelsPerSecond,
-  height,
-  minX,
-  maxX,
-  onUpdate,
-  time,
-  onUpdateTime,
-}) => {
-  const width = useMemo(
-    () => (maxX - minX) * pixelsPerSecond,
-    [pixelsPerSecond, minX, maxX]
-  );
+export const TimeDisplay: React.FC<TimeDisplayProps> = ({ height }) => {
+  const { minX, maxX, setMinX, setPPS, PPS, time, setTime } =
+    useContext(TimelineContext);
+
+  const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const labels: [number, string][] = [];
   const ticks: [number, boolean][] = [];
@@ -54,21 +42,22 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
         const deltaX = (x - dragState.initX) / dragState.initPPS;
         const newTime = Math.max(dragState.initMinX + deltaX, 0);
 
-        onUpdateTime(newTime);
+        setTime(newTime);
       } else {
         const deltaY = (y - dragState.initY) / height;
         const PPS = getExponentAfterDelta(dragState.initPPS, deltaY, 0.1, 40);
         const deltaX = (x - dragState.initX) / PPS;
 
-        onUpdate(PPS, Math.max(0, dragState.initMinX - deltaX));
+        setPPS(PPS);
+        setMinX(Math.max(0, dragState.initMinX - deltaX));
       }
     },
-    [height, onUpdate, onUpdateTime]
+    [height, setPPS, setMinX, setTime]
   );
 
   const { startDragging } = usePointerDrag<DragState>(updatePosition);
 
-  const { tickResolution, labelResolution } = getResolution(pixelsPerSecond);
+  const { tickResolution, labelResolution } = getResolution(PPS);
   for (let x = Math.ceil(minX); x <= Math.floor(maxX); x++) {
     const chartX = fnToChart(x, width, minX, maxX);
 
@@ -92,14 +81,15 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
           className="time-display"
           onDoubleClick={e => {
             e.preventDefault();
-            onUpdate(defaultPPS, 0);
+            setPPS(defaultPPS);
+            setMinX(0);
           }}
           onClick={e => {
             e.preventDefault();
             const rect = e.currentTarget.getBoundingClientRect();
             const chartX = e.clientX - rect.left;
             const fnX = chartToFn(chartX, width, minX, maxX);
-            onUpdateTime(fnX);
+            setTime(fnX);
           }}
           onMouseDown={(e: React.MouseEvent) => {
             e.preventDefault();
@@ -110,7 +100,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
               initX: e.clientX,
               initY: e.clientY,
               initMinX: minX,
-              initPPS: pixelsPerSecond,
+              initPPS: PPS,
             });
           }}
           onTouchStart={(e: React.TouchEvent) => {
@@ -127,7 +117,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
               initX: touch.clientX,
               initY: touch.clientY,
               initMinX: minX,
-              initPPS: pixelsPerSecond,
+              initPPS: PPS,
             });
           }}
         >
@@ -152,7 +142,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
                 initX: e.clientX,
                 initY: e.clientY,
                 initMinX: time,
-                initPPS: pixelsPerSecond,
+                initPPS: PPS,
               });
             }}
             onTouchStart={(e: React.TouchEvent) => {
@@ -169,7 +159,7 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({
                 initX: touch.clientX,
                 initY: touch.clientY,
                 initMinX: time,
-                initPPS: pixelsPerSecond,
+                initPPS: PPS,
               });
             }}
           />
