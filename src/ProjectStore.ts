@@ -649,10 +649,7 @@ class ProjectStore {
       let buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
       try {
         if (buffer.type.includes('video/webm')) {
-          buffer = await webmFixDuration(
-            buffer,
-            this.recordingDuration * 10000
-          );
+          buffer = await webmFixDuration(buffer, this.recordingDuration * 1000);
         }
       } catch {}
       const url = window.URL.createObjectURL(buffer);
