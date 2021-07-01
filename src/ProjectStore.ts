@@ -98,7 +98,7 @@ class ProjectStore {
     start: 0,
     duration: 10,
     framerate: 60,
-    videoBitrate: 2500000,
+    videoBitrate: 6000000,
   };
   recordingCancel = false;
   recording = false;

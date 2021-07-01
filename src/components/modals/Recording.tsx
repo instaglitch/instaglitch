@@ -55,6 +55,24 @@ export const Recording: React.FC = observer(() => {
               ]}
               label="Framerate"
             />
+            <VarSelect
+              path="videoBitrate"
+              options={[
+                {
+                  key: 1500000,
+                  label: 'Low',
+                },
+                {
+                  key: 6000000,
+                  label: 'Medium',
+                },
+                {
+                  key: 24000000,
+                  label: 'High',
+                },
+              ]}
+              label="Video quality"
+            />
           </VarCategory>
         </VarUI>
       </div>
