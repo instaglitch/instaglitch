@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { VarUI, VarCategory, VarSlider } from 'react-var-ui';
+import { VarUI, VarCategory, VarSlider, VarSelect } from 'react-var-ui';
 import { toJS } from 'mobx';
 
 import { useProjectStore } from '../../ProjectStore';
@@ -32,6 +32,28 @@ export const Recording: React.FC = observer(() => {
               }
               step={0.1}
               label="Duration (seconds)"
+            />
+            <VarSelect
+              path="framerate"
+              options={[
+                {
+                  key: 24,
+                  label: '24 FPS',
+                },
+                {
+                  key: 25,
+                  label: '25 FPS',
+                },
+                {
+                  key: 30,
+                  label: '30 FPS',
+                },
+                {
+                  key: 60,
+                  label: '60 FPS',
+                },
+              ]}
+              label="Framerate"
             />
           </VarCategory>
         </VarUI>
