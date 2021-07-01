@@ -7,8 +7,7 @@ export const Recording: React.FC = observer(() => {
   const projectStore = useProjectStore();
 
   const time = projectStore.currentProject?.time;
-  const start = projectStore.recordingStart;
-  const duration = projectStore.recordingDuration;
+  const { start, duration } = projectStore.recordingSettings;
 
   const percentDone = useMemo(() => {
     if (!time) {

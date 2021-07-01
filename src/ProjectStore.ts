@@ -71,6 +71,13 @@ export enum FileInputMode {
   ADD,
 }
 
+export interface RecordingSettings {
+  start: number;
+  duration: number;
+  videoBitrate: number;
+  framerate: number;
+}
+
 class ProjectStore {
   currentProjectId?: string = undefined;
   projects: Project[] = [];
@@ -87,9 +94,12 @@ class ProjectStore {
   fileInputMode: FileInputMode = FileInputMode.NEW;
   lastFrameTime: number = new Date().getTime();
   mediaRecorder: any = undefined;
-  recordingStart = 0;
-  recordingDuration = 10;
-  recordingVideoBitrate = 2500000;
+  recordingSettings: RecordingSettings = {
+    start: 0,
+    duration: 10,
+    framerate: 60,
+    videoBitrate: 2500000,
+  };
   recordingCancel = false;
   recording = false;
 
@@ -512,7 +522,7 @@ class ProjectStore {
       if (
         this.mediaRecorder &&
         (this.currentProject.time >
-          this.recordingStart + this.recordingDuration ||
+          this.recordingSettings.start + this.recordingSettings.duration ||
           this.recordingCancel)
       ) {
         try {
@@ -613,9 +623,11 @@ class ProjectStore {
     this.recordingCancel = false;
 
     const blobs: Blob[] = [];
-    const stream: MediaStream = (this.canvas as any).captureStream(60);
+    const stream: MediaStream = (this.canvas as any).captureStream(
+      this.recordingSettings.framerate
+    );
     const mediaRecorder = getMediaRecorder(stream, {
-      videoBitsPerSecond: this.recordingVideoBitrate,
+      videoBitsPerSecond: this.recordingSettings.videoBitrate,
     });
 
     if (!mediaRecorder) {
@@ -623,7 +635,7 @@ class ProjectStore {
     }
 
     this.lastFrameTime = new Date().getTime();
-    this.setTime(this.recordingStart);
+    this.setTime(this.recordingSettings.start);
     this.startPlayback();
 
     mediaRecorder.start(100);
@@ -649,7 +661,10 @@ class ProjectStore {
       let buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
       try {
         if (buffer.type.includes('video/webm')) {
-          buffer = await webmFixDuration(buffer, this.recordingDuration * 1000);
+          buffer = await webmFixDuration(
+            buffer,
+            this.recordingSettings.duration * 1000
+          );
         }
       } catch {}
       const url = window.URL.createObjectURL(buffer);

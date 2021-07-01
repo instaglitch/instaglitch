@@ -1,6 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { VarUI, VarCategory, VarSlider } from 'react-var-ui';
+import { toJS } from 'mobx';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
@@ -8,23 +9,12 @@ import { Modal } from '../common/Modal';
 export const Recording: React.FC = observer(() => {
   const projectStore = useProjectStore();
 
-  const data = useMemo(
-    () => ({
-      start: projectStore.recordingStart,
-      duration: projectStore.recordingDuration,
-    }),
-    [projectStore.recordingStart, projectStore.recordingDuration]
-  );
-
   return (
     <Modal title="Recording" onDismiss={() => (projectStore.modal = undefined)}>
       <div className="info">
         <VarUI
-          values={data}
-          updateValues={data => {
-            projectStore.recordingStart = data.start;
-            projectStore.recordingDuration = data.duration;
-          }}
+          values={toJS(projectStore.recordingSettings)}
+          updateValues={data => (projectStore.recordingSettings = data)}
         >
           <VarCategory label="Export settings">
             <VarSlider
@@ -37,7 +27,9 @@ export const Recording: React.FC = observer(() => {
             <VarSlider
               path="duration"
               min={5}
-              max={projectStore.maxClipEnd - projectStore.recordingStart}
+              max={
+                projectStore.maxClipEnd - projectStore.recordingSettings.start
+              }
               step={0.1}
               label="Duration (seconds)"
             />
