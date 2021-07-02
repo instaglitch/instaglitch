@@ -3,11 +3,15 @@ import React, { useEffect, useRef } from 'react';
 
 export interface ScrollAreaProps {
   className?: string;
+  hideScrollbarX?: boolean;
+  hideScrollbarY?: boolean;
 }
 
 export const ScrollArea: React.FC<ScrollAreaProps> = ({
   className,
   children,
+  hideScrollbarX,
+  hideScrollbarY,
 }) => {
   const areaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -37,7 +41,8 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       barX.style.height = height * 100 + '%';
       barX.style.top = (content.scrollTop / content.scrollHeight) * 100 + '%';
 
-      barTrackX.style.display = height === 1 ? 'none' : 'block';
+      barTrackX.style.display =
+        hideScrollbarX || height <= 1 ? 'none' : 'block';
     };
 
     const recalculateBarY = () => {
@@ -47,7 +52,7 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
       barY.style.width = width * 100 + '%';
       barY.style.left = (content.scrollLeft / content.scrollWidth) * 100 + '%';
 
-      barTrackY.style.display = width === 1 ? 'none' : 'block';
+      barTrackY.style.display = hideScrollbarY || width <= 1 ? 'none' : 'block';
     };
 
     const onScroll = () => {
