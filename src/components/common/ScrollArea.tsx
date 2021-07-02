@@ -36,23 +36,23 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
     const recalculateBarX = () => {
       const areaRect = area.getBoundingClientRect();
-      const height = Math.min(1.0, areaRect.height / content.scrollHeight);
+      const width = Math.min(1.0, areaRect.width / content.scrollWidth);
 
-      barX.style.height = height * 100 + '%';
-      barX.style.top = (content.scrollTop / content.scrollHeight) * 100 + '%';
+      barX.style.width = width * 100 + '%';
+      barX.style.left = (content.scrollLeft / content.scrollWidth) * 100 + '%';
 
-      barTrackX.style.display =
-        hideScrollbarX || height <= 1 ? 'none' : 'block';
+      barTrackX.style.display = hideScrollbarX || width >= 1 ? 'none' : 'block';
     };
 
     const recalculateBarY = () => {
       const areaRect = area.getBoundingClientRect();
-      const width = Math.min(1.0, areaRect.width / content.scrollWidth);
+      const height = Math.min(1.0, areaRect.height / content.scrollHeight);
 
-      barY.style.width = width * 100 + '%';
-      barY.style.left = (content.scrollLeft / content.scrollWidth) * 100 + '%';
+      barY.style.height = height * 100 + '%';
+      barY.style.top = (content.scrollTop / content.scrollHeight) * 100 + '%';
 
-      barTrackY.style.display = hideScrollbarY || width <= 1 ? 'none' : 'block';
+      barTrackY.style.display =
+        hideScrollbarY || height >= 1 ? 'none' : 'block';
     };
 
     const onScroll = () => {
@@ -85,13 +85,13 @@ export const ScrollArea: React.FC<ScrollAreaProps> = ({
 
       const areaRect = area.getBoundingClientRect();
       if (dragging === 'x') {
-        const diff = y - initY;
-        content.scrollTop =
-          initScrollTop + (diff / areaRect.height) * content.scrollHeight;
-      } else {
         const diff = x - initX;
         content.scrollLeft =
           initScrollLeft + (diff / areaRect.width) * content.scrollWidth;
+      } else {
+        const diff = y - initY;
+        content.scrollTop =
+          initScrollTop + (diff / areaRect.height) * content.scrollHeight;
       }
     };
 
