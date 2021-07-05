@@ -12,9 +12,9 @@ import {
   BsFillCaretDownFill,
   BsFillCaretLeftFill,
 } from 'react-icons/bs';
+import { ScrollArea } from 'react-nano-scrollbar';
 import { observer } from 'mobx-react-lite';
 
-import { ScrollArea } from '../common/ScrollArea';
 import { useProjectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
 import { ClipEditor } from './ClipEditor';

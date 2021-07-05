@@ -26,6 +26,7 @@
     "react-color": "^2.19.3",
     "react-dom": "^17.0.2",
     "react-icons": "^4.2.0",
+    "react-nano-scrollbar": "^0.0.2",
     "react-scripts": "4.0.3",
     "react-use-pointer-drag": "^0.0.2",
     "react-var-ui": "^1.0.6",
