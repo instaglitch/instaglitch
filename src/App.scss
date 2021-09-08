@@ -344,6 +344,13 @@ a {
   z-index: 0;
 }
 
+.preview-canvas-wrapper {
+  font-size: 0;
+  background: white
+    url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAxSURBVDhPY2RgYBABYnzgDT5JxlEDGIZJGBBIBvjTCSgMCAG8CW3UAAZwQiIEaBuIACBfCLFwf0bOAAAAAElFTkSuQmCC')
+    center center;
+}
+
 .offset-mark {
   position: absolute;
   z-index: 999;
