@@ -21,5 +21,5 @@ export const PreviewCanvas: React.FC = observer(() => {
     }
   }, [projectStore.canvas]);
 
-  return <div ref={divRef} className="preview-canvas-wrapper" />;
+  return <div ref={divRef} />;
 });

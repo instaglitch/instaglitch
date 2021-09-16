@@ -129,6 +129,9 @@ button {
       max-width: 100%;
       max-height: calc(100vh - 100px);
       box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
+      background: white
+        url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAxSURBVDhPY2RgYBABYnzgDT5JxlEDGIZJGBBIBvjTCSgMCAG8CW3UAAZwQiIEaBuIACBfCLFwf0bOAAAAAElFTkSuQmCC')
+        center center;
     }
 
     .animation-open {
@@ -342,13 +345,6 @@ a {
 .preview-wrap {
   position: relative;
   z-index: 0;
-}
-
-.preview-canvas-wrapper {
-  font-size: 0;
-  background: white
-    url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAxSURBVDhPY2RgYBABYnzgDT5JxlEDGIZJGBBIBvjTCSgMCAG8CW3UAAZwQiIEaBuIACBfCLFwf0bOAAAAAElFTkSuQmCC')
-    center center;
 }
 
 .offset-mark {
