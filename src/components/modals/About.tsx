@@ -11,7 +11,13 @@ export const About: React.FC = observer(() => {
   return (
     <Modal title={<Logo />} onDismiss={() => (projectStore.modal = undefined)}>
       <div className="info">Instaglitch Beta.</div>
-      <div className="info">(c) 2021. All copyright reserved.</div>
+      <div className="info">
+        Source code:{' '}
+        <a href="https://github.com/instaglitch/instaglitch">GitHub</a>.{' '}
+        <a href="https://twitter.com/matsz_dev">
+          Follow me on Twitter for updates.
+        </a>
+      </div>
     </Modal>
   );
 });
