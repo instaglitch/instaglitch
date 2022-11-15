@@ -6,6 +6,7 @@ export interface ModalProps {
   className?: string;
   title?: React.ReactNode;
   onDismiss?: () => void;
+  children?: React.ReactNode;
 }
 
 export const Modal: React.FC<ModalProps> = ({

@@ -10,6 +10,7 @@ interface DragState {
 
 export interface TimelineItemProps {
   height: number;
+  children?: React.ReactNode;
 }
 
 export const TimelineItem: React.FC<TimelineItemProps> = ({

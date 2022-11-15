@@ -49,39 +49,6 @@ export const layerName = (layer: TLayer) => {
     : layer.filter.name;
 };
 
-interface MediaRecorderOptions {
-  mimeType?: string;
-  audioBitsPerSecond?: number;
-  videoBitsPerSecond?: number;
-  bitsPerSecond?: number;
-}
-
-interface MediaRecorderDataAvailableEvent extends Event {
-  data: Blob;
-}
-
-declare class MediaRecorder {
-  constructor(stream: MediaStream, options?: MediaRecorderOptions);
-
-  static isTypeSupported(type: string): boolean;
-  pause(): void;
-  requestData(): void;
-  resume(): void;
-  start(timeslice?: number): void;
-  stop(): void;
-
-  readonly stream: MediaStream;
-  readonly state: 'recording' | 'inactive' | 'paused';
-  readonly mimeType: string;
-
-  onstop: (e: Event) => void;
-  onstart: (e: Event) => void;
-  onresume: (e: Event) => void;
-  onpause: (e: Event) => void;
-  onerror: (e: Event) => void;
-  ondataavailable: (e: MediaRecorderDataAvailableEvent) => void;
-}
-
 function getSupportedMimeTypes() {
   const VIDEO_TYPES = ['mp4', 'webm', 'ogg', 'x-matroska'];
   const VIDEO_CODECS = [
