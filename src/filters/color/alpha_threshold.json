@@ -1,0 +1,25 @@
+{
+  "id": "alpha_threshold",
+  "name": "Alpha threshold",
+  "settings": [
+    {
+      "id": "threshold",
+      "defaultValue": 0.5,
+      "key": "iThreshold",
+      "name": "Alpha threshold",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1,
+      "description": ""
+    },
+    {
+      "id": "preserve",
+      "defaultValue": true,
+      "key": "iPreserve",
+      "name": "Preserve original value",
+      "type": "boolean"
+    }
+  ],
+  "fragmentShader": "@use wrap\n\nvoid main()\n{\n  vec2 uv = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, uv);\n  if (gl_FragColor.a > iThreshold) {\n    if (!iPreserve) {\n      gl_FragColor.a = 1.0;\n    }\n  } else {\n    gl_FragColor.a = 0.0;\n  }\n}"
+}

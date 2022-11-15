@@ -1,0 +1,81 @@
+{
+  "id": "offset_slice",
+  "name": "Offset slice",
+  "settings": [
+    {
+      "id": "position",
+      "defaultValue": 0.5,
+      "key": "iPosition",
+      "name": "Position",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1,
+      "description": ""
+    },
+    {
+      "id": "offset",
+      "defaultValue": 0.1,
+      "key": "iOffset",
+      "name": "Slice offset",
+      "type": "float",
+      "step": 0.01,
+      "minValue": -1,
+      "maxValue": 1
+    },
+    {
+      "id": "orientation",
+      "key": "iOrientation",
+      "name": "Orientation",
+      "type": "select",
+      "selectValues": [
+        {
+          "id": "horizontal",
+          "name": "Horizontal",
+          "value": 0
+        },
+        {
+          "id": "vertical",
+          "name": "Vertical",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "reverse",
+      "defaultValue": false,
+      "key": "iReverse",
+      "name": "Reverse",
+      "type": "boolean"
+    },
+    {
+      "id": "edges",
+      "key": "iEdges",
+      "name": "Edges",
+      "type": "select",
+      "selectValues": [
+        {
+          "id": "stretch",
+          "name": "Stretch",
+          "value": 0
+        },
+        {
+          "id": "repeat",
+          "name": "Repeat",
+          "value": 1
+        },
+        {
+          "id": "mirrored_repeat",
+          "name": "Mirorred repeat",
+          "value": 2
+        },
+        {
+          "id": "clip",
+          "name": "Clip",
+          "value": 3
+        }
+      ]
+    }
+  ],
+  "fragmentShader": "@use wrap\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / iResolution;\n  \n  if (iOrientation == 0) {\n    if (iReverse) {\n      if (uv.y > iPosition) {\n        uv = vec2(uv.x - iOffset, uv.y);\n      }\n    } else {\n      if (uv.y < iPosition) {\n        uv = vec2(uv.x - iOffset, uv.y);\n      }\n    }\n  } else {\n    if (iReverse) {\n      if (uv.x < iPosition) {\n        uv = vec2(uv.x, uv.y + iOffset);\n      }\n    } else {\n      if (uv.x > iPosition) {\n        uv = vec2(uv.x, uv.y + iOffset);\n      }\n    }\n  }\n  \n  if (iEdges == 1) {\n    uv = repeat(uv);\n  } else if (iEdges == 2) {\n    uv = mirroredRepeat(uv);\n  }\n  \n  gl_FragColor = texture2D(iTexture, uv);\n  if (iEdges == 3) {\n    gl_FragColor *= clip(uv);\n  }\n}\n  "
+}

@@ -9,6 +9,8 @@ import hsl_offset_clip from './hsl_offset_clip.json';
 import colorize from './colorize.json';
 import duotone from './duotone.json';
 import posterize from './posterize.json';
+import alpha_mix from './alpha_mix.json';
+import alpha_threshold from './alpha_threshold.json';
 
 export const filtersColor = [
   rgb,
@@ -22,4 +24,6 @@ export const filtersColor = [
   colorize,
   duotone,
   posterize,
+  alpha_mix,
+  alpha_threshold,
 ];

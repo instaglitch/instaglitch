@@ -12,6 +12,7 @@ import gaussian_blur from './gaussian_blur.json';
 import stretch from './stretch.json';
 import melt from './melt.json';
 import ascii from './ascii.json';
+import offset_slice from './offset_slice.json';
 
 export const filtersDistort = [
   fisheye,
@@ -28,4 +29,5 @@ export const filtersDistort = [
   stretch,
   melt,
   ascii,
+  offset_slice,
 ];
