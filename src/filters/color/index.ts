@@ -11,6 +11,7 @@ import duotone from './duotone.json';
 import posterize from './posterize.json';
 import alpha_mix from './alpha_mix.json';
 import alpha_threshold from './alpha_threshold.json';
+import chroma_key from './chroma_key.json';
 
 export const filtersColor = [
   rgb,
@@ -26,4 +27,5 @@ export const filtersColor = [
   posterize,
   alpha_mix,
   alpha_threshold,
+  chroma_key,
 ];

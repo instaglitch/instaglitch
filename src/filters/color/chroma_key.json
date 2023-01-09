@@ -1,0 +1,34 @@
+{
+  "id": "chroma_key",
+  "name": "Chroma Key",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": "#00ff00",
+      "key": "iColor",
+      "name": "Background color",
+      "type": "color"
+    },
+    {
+      "id": "angle",
+      "defaultValue": 0.33,
+      "key": "iSimilarity",
+      "name": "Similarity",
+      "type": "float",
+      "minValue": 0.01,
+      "maxValue": 1,
+      "step": 0.01
+    },
+    {
+      "id": "radius",
+      "defaultValue": 0.1,
+      "key": "iSmoothness",
+      "name": "Smoothness",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0.01,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "const float uv_w = 0.501961;\nconst vec3 uv_cb = vec3(-0.100644, -0.338572,  0.439216);\nconst vec3 uv_cr = vec3(0.439216, -0.398942, -0.040274);\n\nvec2 rgb2uv(vec3 rgb) {\n  return vec2(\n    dot(rgb, uv_cb) + uv_w,\n    dot(rgb, uv_cr) + uv_w\n  );\n}\n\nvoid main() {\n  vec2 uv = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, uv);\n  \n  float distance = length(rgb2uv(iColor.rgb) - rgb2uv(gl_FragColor.rgb));\n  gl_FragColor.a *= pow((distance - iSimilarity) / iSmoothness, 1.5);\n}"
+}
