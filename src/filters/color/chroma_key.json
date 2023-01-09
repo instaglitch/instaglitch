@@ -10,7 +10,7 @@
       "type": "color"
     },
     {
-      "id": "angle",
+      "id": "similarity",
       "defaultValue": 0.33,
       "key": "iSimilarity",
       "name": "Similarity",
@@ -20,7 +20,7 @@
       "step": 0.01
     },
     {
-      "id": "radius",
+      "id": "smoothness",
       "defaultValue": 0.1,
       "key": "iSmoothness",
       "name": "Smoothness",

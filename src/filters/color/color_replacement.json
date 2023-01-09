@@ -1,0 +1,41 @@
+{
+  "id": "color_replacement",
+  "name": "Color Replacement",
+  "settings": [
+    {
+      "id": "offset",
+      "defaultValue": "#00ff00",
+      "key": "iSourceColor",
+      "name": "Source color",
+      "type": "color"
+    },
+    {
+      "id": "target_color",
+      "defaultValue": "transparent",
+      "key": "iTargetColor",
+      "name": "Target color",
+      "type": "color"
+    },
+    {
+      "id": "similarity",
+      "defaultValue": 0.33,
+      "key": "iSimilarity",
+      "name": "Similarity",
+      "type": "float",
+      "minValue": 0.01,
+      "maxValue": 1,
+      "step": 0.01
+    },
+    {
+      "id": "smoothness",
+      "defaultValue": 0.5,
+      "key": "iSmoothness",
+      "name": "Smoothness",
+      "type": "float",
+      "step": 0.01,
+      "minValue": 0,
+      "maxValue": 1
+    }
+  ],
+  "fragmentShader": "void main() {\n  vec2 uv = gl_FragCoord.xy / iResolution;\n  gl_FragColor = texture2D(iTexture, uv);\n  \n  float distance = length(iSourceColor.rgb - gl_FragColor.rgb);\n  float smooth = 1.0 - smoothstep(iSimilarity - iSmoothness, iSimilarity, distance);\n  gl_FragColor = mix(gl_FragColor, iTargetColor, smooth);\n}"
+}
