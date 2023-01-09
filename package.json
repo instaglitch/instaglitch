@@ -29,7 +29,7 @@
     "react-nano-scrollbar": "^0.0.4",
     "react-scripts": "^5.0.1",
     "react-use-pointer-drag": "^0.0.2",
-    "react-var-ui": "^1.2.1",
+    "react-var-ui": "^1.2.2",
     "sass": "^1.56.1",
     "typescript": "^4.8.4",
     "uuid": "^9.0.0",

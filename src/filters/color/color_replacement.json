@@ -11,10 +11,11 @@
     },
     {
       "id": "target_color",
-      "defaultValue": "transparent",
+      "defaultValue": "#00000000",
       "key": "iTargetColor",
       "name": "Target color",
-      "type": "color"
+      "type": "color",
+      "alpha": true
     },
     {
       "id": "similarity",

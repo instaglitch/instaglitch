@@ -99,6 +99,7 @@ export const LayerSettings: React.FC = observer(() => {
                         key={setting.id}
                         defaultValue={setting.defaultValue}
                         disabled={disabled}
+                        alpha={setting.alpha}
                       />
                     );
                   case FilterSettingType.BOOLEAN:
