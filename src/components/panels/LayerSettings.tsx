@@ -147,6 +147,19 @@ export const LayerSettings: React.FC = observer(() => {
                         disabled={disabled}
                       />
                     );
+                  case FilterSettingType.CHANNEL:
+                      return projectStore.currentProject && (
+                        <VarSelect
+                          path={setting.key}
+                          label={name}
+                          key={setting.id}
+                          options={
+                           projectStore.currentProject.layers.filter(x=>x.type==LayerType.SOURCE).map(value => ({label: value.name! || "Source", key: value.id})) || []
+                          }
+                          defaultValue={setting.defaultValue}
+                          disabled={disabled}
+                        />
+                      );
                 }
 
                 return null;

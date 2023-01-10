@@ -20,6 +20,7 @@ export enum FilterSettingType {
   BOOLEAN = 'boolean',
   SELECT = 'select',
   ANGLE = 'angle',
+  CHANNEL = 'channel'
 }
 
 export interface FilterSettingSelectValue {
@@ -56,6 +57,7 @@ export interface FilterLayer extends Layer {
   id: string;
   type: LayerType.FILTER;
   readonly filter: Filter;
+  readonly name?: string;
 }
 
 export interface SourceLayer extends Layer {
