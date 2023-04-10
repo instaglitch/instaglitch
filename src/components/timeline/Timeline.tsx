@@ -163,9 +163,9 @@ export const Timeline: React.FC = observer(() => {
           <div className="timeline">
             {currentProject.layers.map(layer => {
               const settings =
-                layer.type === LayerType.SOURCE
-                  ? sourceSettings
-                  : layer.filter.settings;
+                layer.type === LayerType.FILTER
+                  ? layer.filter.settings
+                  : sourceSettings;
               const name = layerName(layer);
 
               return (

@@ -44,9 +44,14 @@ export const truncate = (str: string, maxLength = 32) => {
 };
 
 export const layerName = (layer: TLayer) => {
-  return layer.type === LayerType.SOURCE
-    ? layer.name || 'Source'
-    : layer.filter.name;
+  switch (layer.type) {
+    case LayerType.SOURCE:
+      return layer.name || 'Source';
+    case LayerType.GROUP:
+      return layer.name || 'Group';
+    case LayerType.FILTER:
+      return layer.filter.name;
+  }
 };
 
 function getSupportedMimeTypes() {

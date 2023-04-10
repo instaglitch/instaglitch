@@ -3,6 +3,7 @@ import { GlueSourceType } from 'fxglue';
 export enum LayerType {
   SOURCE,
   FILTER,
+  GROUP,
 }
 
 export interface Layer {
@@ -10,6 +11,7 @@ export interface Layer {
   type: LayerType;
   visible: boolean;
   settings: Record<string, any>;
+  parentId?: string;
 }
 
 export enum FilterSettingType {
@@ -65,7 +67,14 @@ export interface SourceLayer extends Layer {
   name?: string;
 }
 
-export type TLayer = FilterLayer | SourceLayer;
+export interface GroupLayer extends Layer {
+  id: string;
+  type: LayerType.GROUP;
+  name?: string;
+  isCollapsed: boolean;
+}
+
+export type TLayer = GroupLayer | FilterLayer | SourceLayer;
 
 export interface Project {
   id: string;

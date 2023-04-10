@@ -32,7 +32,7 @@ export const LayerSettings: React.FC = observer(() => {
   }
 
   const settings =
-    layer.type === LayerType.SOURCE ? sourceSettings : layer.filter.settings;
+    layer.type === LayerType.FILTER ? layer.filter.settings : sourceSettings;
 
   return (
     <div className="subpanel">

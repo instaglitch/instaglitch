@@ -155,27 +155,64 @@ button {
 .layers {
   max-height: 400px;
   overflow-y: scroll;
+}
 
-  .layer {
-    padding: 10px;
-    border-bottom: 1px solid #33333a;
-    display: flex;
-    align-items: center;
+.layer {
+  padding: 10px;
+  border-bottom: 1px solid #33333a;
+  display: flex;
+  align-items: center;
+  --depth: 0;
+  padding-left: calc(10px + 10px * var(--depth));
+  position: relative;
 
-    svg {
-      margin-right: 5px;
+  .layer-indicator {
+    position: absolute;
+    border-top: 3px solid #6969ff;
+    --depth: 0;
+    left: calc(15px + 10px * var(--depth));
+    right: 0;
+    z-index: 9999999;
+    top: 0;
+
+    &:before {
+      display: block;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: -0.5rem;
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 0.8rem;
+      background: #6969ff;
     }
+  }
 
-    &.selected {
-      background: #33333a;
+  &.ghost {
+    button,
+    svg,
+    span {
+      opacity: 0;
     }
+  }
 
-    button {
-      line-height: 0;
-      padding: 5px;
-      background: none;
-      margin-right: 10px;
-    }
+  &.clone {
+    opacity: 0.3;
+  }
+
+  svg {
+    margin-right: 5px;
+  }
+
+  &.selected {
+    background: #33333a;
+  }
+
+  button {
+    line-height: 0;
+    padding: 5px;
+    background: none;
+    margin-right: 10px;
   }
 }
 
@@ -323,10 +360,6 @@ button {
 
 a {
   color: #aaa;
-}
-
-.panel {
-  z-index: 1000;
 }
 
 .webgl-error {

@@ -18,33 +18,17 @@ import {
   TLayer,
   FilterSetting,
 } from './types';
-import { createFilterLayer } from './filters/functions';
+import {
+  createFilterLayer,
+  createGroupLayer,
+  createSourceLayer,
+} from './filters/functions';
 import { getY } from './components/timeline/Utils';
 import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
 
 declare class ClipboardItem {
   constructor(data: any);
-}
-
-function createSourceLayer(source: GlueSourceType): SourceLayer {
-  if (source instanceof HTMLVideoElement) {
-    source.muted = true;
-  }
-
-  const settings: Record<string, any> = {};
-
-  for (const setting of sourceSettings) {
-    settings[setting.key] = setting.defaultValue;
-  }
-
-  return {
-    id: uuid(),
-    type: LayerType.SOURCE,
-    source,
-    visible: true,
-    settings,
-  };
 }
 
 function createSource(url: string, type: 'image' | 'video') {
@@ -204,11 +188,28 @@ class ProjectStore {
     } else {
       if (source instanceof HTMLImageElement) {
         source.onload = onload;
-      } else {
+      } else if (source instanceof HTMLVideoElement) {
         source.addEventListener('loadeddata', onload);
         source.load();
       }
     }
+  }
+
+  addLayer(layer: TLayer) {
+    if (!this.currentProject) {
+      return;
+    }
+
+    this.currentProject.layers = [layer, ...this.currentProject.layers];
+    this.currentProject.selectedLayer = layer.id;
+    this.currentProject.clips[layer.id] = [
+      {
+        id: uuid(),
+        start: 0,
+        end: this.maxClipEnd,
+      },
+    ];
+    this.requestPreviewRender();
   }
 
   addSourceLayer(url: string, type: 'image' | 'video', name?: string) {
@@ -237,18 +238,8 @@ class ProjectStore {
         this.currentProject.clips[sourceLayer.id][0].duration = source.duration;
       }
 
-      this.currentProject.layers = [sourceLayer, ...this.currentProject.layers];
-      this.currentProject.selectedLayer = sourceLayer.id;
-      this.currentProject.clips[sourceLayer.id] = [
-        {
-          id: uuid(),
-          start: 0,
-          end: this.maxClipEnd,
-        },
-      ];
-
       this.loading = false;
-      this.requestPreviewRender();
+      this.addLayer(sourceLayer);
     };
 
     if (glueIsSourceLoaded(source)) {
@@ -288,17 +279,17 @@ class ProjectStore {
     }
 
     const layer = createFilterLayer(filter);
-    this.currentProject.layers = [layer, ...this.currentProject.layers];
-    this.currentProject.selectedLayer = layer.id;
-    this.currentProject.clips[layer.id] = [
-      {
-        id: uuid(),
-        start: 0,
-        end: this.maxClipEnd,
-      },
-    ];
-    this.requestPreviewRender();
+    this.addLayer(layer);
     this.modal = undefined;
+  }
+
+  addGroup() {
+    if (!this.currentProject) {
+      return;
+    }
+
+    const layer = createGroupLayer();
+    this.addLayer(layer);
   }
 
   removeCurrentLayer() {
@@ -391,6 +382,21 @@ class ProjectStore {
       return false;
     }
 
+    if (
+      layer.type === LayerType.GROUP &&
+      !this.currentProject.layers.filter(item => item.parentId === layer.id)
+        .length
+    ) {
+      return false;
+    }
+
+    if (
+      typeof layer.settings['opacity'] === 'number' &&
+      layer.settings['opacity'] <= 0.01
+    ) {
+      return false;
+    }
+
     const clips = this.currentProject.clips[layer.id];
     if (!this.currentProject.animated || !clips) {
       return layer.visible;
@@ -439,6 +445,109 @@ class ProjectStore {
     return this.currentProject.time;
   }
 
+  renderLayers(layers: TLayer[], scale = 1) {
+    if (!this.currentProject) {
+      return;
+    }
+
+    const glue = this.glue;
+
+    for (const layer of layers) {
+      if (!this.isLayerVisible(layer)) {
+        continue;
+      }
+
+      switch (layer.type) {
+        case LayerType.FILTER: {
+          if (!glue.hasProgram(layer.filter.id)) {
+            glue.registerProgram(
+              layer.filter.id,
+              layer.filter.fragmentShader,
+              layer.filter.vertexShader
+            );
+          }
+
+          if (layer.filter.settings) {
+            for (const setting of layer.filter.settings) {
+              glue
+                .program(layer.filter.id)
+                ?.uniforms.set(
+                  setting.key,
+                  this.getLayerSetting(layer, setting)
+                );
+            }
+          }
+
+          glue.program(layer.filter.id)?.apply();
+          break;
+        }
+        case LayerType.SOURCE: {
+          if (!glue.hasTexture(layer.id)) {
+            if (!glueIsSourceLoaded(layer.source)) {
+              continue;
+            }
+
+            glue.registerTexture(layer.id, layer.source);
+          }
+
+          if (layer.source instanceof HTMLVideoElement) {
+            try {
+              const time = this.getVideoTime(layer);
+              if (Math.abs(layer.source.currentTime - time) > 1) {
+                layer.source.currentTime = time;
+              }
+              if (!glueIsSourceLoaded(layer.source)) {
+                continue;
+              }
+              glue.texture(layer.id)?.update(layer.source);
+            } catch {}
+          }
+
+          const [width, height] = glueGetSourceDimensions(layer.source);
+
+          const settings: Record<string, any> = {};
+          for (const setting of sourceSettings) {
+            settings[setting.key] = this.getLayerSetting(layer, setting);
+          }
+
+          glue.texture(layer.id)?.draw({
+            x: width * settings.offset[0] * scale,
+            y: height * settings.offset[1] * scale,
+            width: width * scale * settings.scale,
+            height: height * scale * settings.scale,
+            opacity: settings.opacity,
+            mode: settings.mode,
+            angle: settings.angle,
+          });
+          break;
+        }
+        case LayerType.GROUP: {
+          const layers = this.currentProject.layers
+            .filter(item => item.parentId === layer.id)
+            .reverse();
+          glue.begin();
+          this.renderLayers(layers, scale);
+          const settings: Record<string, any> = {};
+          for (const setting of sourceSettings) {
+            settings[setting.key] = this.getLayerSetting(layer, setting);
+          }
+
+          const { width, height } = this.currentProject;
+          glue.end({
+            x: width * settings.offset[0] * scale,
+            y: height * settings.offset[1] * scale,
+            width: width * scale * settings.scale,
+            height: height * scale * settings.scale,
+            opacity: settings.opacity,
+            mode: settings.mode,
+            angle: settings.angle,
+          });
+          break;
+        }
+      }
+    }
+  }
+
   renderCurrentProject(maxSize = 800) {
     if (!this.currentProject) {
       return;
@@ -449,70 +558,11 @@ class ProjectStore {
     this.glueCanvas.setSize(width * scale, height * scale);
 
     const layers = this.currentProject.layers
-      .filter(layer => this.isLayerVisible(layer))
+      .filter(item => !item.parentId)
       .reverse();
 
     const glue = this.glue;
-
-    for (const layer of layers) {
-      if (layer.type === LayerType.FILTER) {
-        if (!glue.hasProgram(layer.filter.id)) {
-          glue.registerProgram(
-            layer.filter.id,
-            layer.filter.fragmentShader,
-            layer.filter.vertexShader
-          );
-        }
-
-        if (layer.filter.settings) {
-          for (const setting of layer.filter.settings) {
-            glue
-              .program(layer.filter.id)
-              ?.uniforms.set(setting.key, this.getLayerSetting(layer, setting));
-          }
-        }
-
-        glue.program(layer.filter.id)?.apply();
-      } else {
-        if (!glue.hasTexture(layer.id)) {
-          if (!glueIsSourceLoaded(layer.source)) {
-            continue;
-          }
-
-          glue.registerTexture(layer.id, layer.source);
-        }
-
-        if (layer.source instanceof HTMLVideoElement) {
-          try {
-            const time = this.getVideoTime(layer);
-            if (Math.abs(layer.source.currentTime - time) > 1) {
-              layer.source.currentTime = time;
-            }
-            if (!glueIsSourceLoaded(layer.source)) {
-              continue;
-            }
-            glue.texture(layer.id)?.update(layer.source);
-          } catch {}
-        }
-
-        const [width, height] = glueGetSourceDimensions(layer.source);
-
-        const settings: Record<string, any> = {};
-        for (const setting of sourceSettings) {
-          settings[setting.key] = this.getLayerSetting(layer, setting);
-        }
-
-        glue.texture(layer.id)?.draw({
-          x: width * settings.offset[0] * scale,
-          y: height * settings.offset[1] * scale,
-          width: width * scale * settings.scale,
-          height: height * scale * settings.scale,
-          opacity: settings.opacity,
-          mode: settings.mode,
-        });
-      }
-    }
-
+    this.renderLayers(layers, scale);
     glue.render();
 
     const time = new Date().getTime();
