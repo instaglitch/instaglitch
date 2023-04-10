@@ -2,27 +2,38 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
-} from 'react-beautiful-dnd';
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { BsX } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
 import { Project } from '../../types';
 import { truncate } from '../../Utils';
 
-function reorder<T>(list: T[], startIndex: number, endIndex: number) {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-}
-
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   const projectStore = useProjectStore();
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: project.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
     <div
@@ -34,6 +45,10 @@ const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
         projectStore.renderCurrentProject();
       }}
       title={project.filename}
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
     >
       {truncate(project.filename)}
       <button
@@ -48,70 +63,61 @@ const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   );
 });
 
-const TabList: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-  const projects = projectStore.projects;
-
-  if (projects.length === 0) {
-    return null;
-  }
-
-  return (
-    <>
-      {projects.map((project, index) => (
-        <Draggable key={project.id} draggableId={project.id} index={index}>
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.draggableProps}
-              {...provided.dragHandleProps}
-            >
-              <Tab project={project} />
-            </div>
-          )}
-        </Draggable>
-      ))}
-    </>
-  );
-});
+const activationConstraint = {
+  distance: 15,
+};
 
 export const Tabs: React.FC = observer(() => {
   const projectStore = useProjectStore();
   const projects = projectStore.projects;
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint }),
+    useSensor(TouchSensor, { activationConstraint }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   if (projects.length === 0) {
     return null;
   }
 
-  const onDragEnd = (result: DropResult) => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = projectStore.projects.findIndex(
+        project => project.id === active.id
+      );
+      const newIndex = projectStore.projects.findIndex(
+        project => project.id === over.id
+      );
+
+      projectStore.projects = arrayMove(
+        projectStore.projects,
+        oldIndex,
+        newIndex
+      );
     }
-
-    const items = reorder(
-      projects,
-      result.source.index,
-      result.destination.index
-    );
-
-    projectStore.projects = items;
-  };
+  }
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable" direction="horizontal">
-        {(provided, snapshot) => (
-          <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-            className="panel tabs"
-          >
-            <TabList />
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div className="panel tabs">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={projects}
+          strategy={horizontalListSortingStrategy}
+        >
+          {projects.map(project => (
+            <Tab key={project.id} project={project} />
+          ))}
+        </SortableContext>
+      </DndContext>
+    </div>
   );
 });
