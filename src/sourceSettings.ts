@@ -30,6 +30,13 @@ export const sourceSettings: FilterSetting[] = [
     maxValue: 5,
   },
   {
+    id: 'angle',
+    defaultValue: 0,
+    key: 'angle',
+    name: 'Rotation',
+    type: FilterSettingType.ANGLE,
+  },
+  {
     id: 'mode',
     defaultValue: GlueBlendMode.NORMAL,
     key: 'mode',
@@ -37,64 +44,145 @@ export const sourceSettings: FilterSetting[] = [
     type: FilterSettingType.SELECT,
     selectValues: [
       {
-        key: GlueBlendMode.NORMAL,
+        key: 'normal',
         label: 'Normal',
+        value: GlueBlendMode.NORMAL,
       },
       {
-        key: GlueBlendMode.MULTIPLY,
-        label: 'Multiply',
+        key: 'dissolve',
+        label: 'Dissolve',
+        value: GlueBlendMode.DISSOLVE,
       },
+
       {
-        key: GlueBlendMode.SCREEN,
-        label: 'Screen',
-      },
-      {
-        key: GlueBlendMode.OVERLAY,
-        label: 'Overlay',
-      },
-      {
-        key: GlueBlendMode.HARD_LIGHT,
-        label: 'Hard light',
-      },
-      {
-        key: GlueBlendMode.SOFT_LIGHT,
-        label: 'Soft light',
-      },
-      {
-        key: GlueBlendMode.DARKEN,
+        key: 'darken',
         label: 'Darken',
+        value: GlueBlendMode.DARKEN,
       },
       {
-        key: GlueBlendMode.LIGHTEN,
-        label: 'Lighten',
+        key: 'multiply',
+        label: 'Multiply',
+        value: GlueBlendMode.MULTIPLY,
       },
       {
-        key: GlueBlendMode.COLOR_DODGE,
-        label: 'Color dodge',
-      },
-      {
-        key: GlueBlendMode.COLOR_BURN,
+        key: 'color_burn',
         label: 'Color burn',
+        value: GlueBlendMode.COLOR_BURN,
       },
       {
-        key: GlueBlendMode.EXCLUSION,
+        key: 'linear_burn',
+        label: 'Linear burn',
+        value: GlueBlendMode.LINEAR_BURN,
+      },
+
+      {
+        key: 'lighten',
+        label: 'Lighten',
+        value: GlueBlendMode.LIGHTEN,
+      },
+      {
+        key: 'screen',
+        label: 'Screen',
+        value: GlueBlendMode.SCREEN,
+      },
+      {
+        key: 'color_dodge',
+        label: 'Color dodge',
+        value: GlueBlendMode.COLOR_DODGE,
+      },
+      {
+        key: 'linear_dodge',
+        label: 'Linear dodge (Add)',
+        value: GlueBlendMode.LINEAR_DODGE,
+      },
+
+      {
+        key: 'overlay',
+        label: 'Overlay',
+        value: GlueBlendMode.OVERLAY,
+      },
+      {
+        key: 'soft_light',
+        label: 'Soft light',
+        value: GlueBlendMode.SOFT_LIGHT,
+      },
+      {
+        key: 'hard_light',
+        label: 'Hard light',
+        value: GlueBlendMode.HARD_LIGHT,
+      },
+      {
+        key: 'vivid_light',
+        label: 'Vivid light',
+        value: GlueBlendMode.VIVID_LIGHT,
+      },
+      {
+        key: 'linear_light',
+        label: 'Linear light',
+        value: GlueBlendMode.LINEAR_LIGHT,
+      },
+      {
+        key: 'pin_light',
+        label: 'Pin light',
+        value: GlueBlendMode.PIN_LIGHT,
+      },
+      {
+        key: 'hard_mix',
+        label: 'Hard mix',
+        value: GlueBlendMode.HARD_MIX,
+      },
+
+      {
+        key: 'difference',
+        label: 'Difference',
+        value: GlueBlendMode.DIFFERENCE,
+      },
+      {
+        key: 'exclusion',
         label: 'Exclusion',
+        value: GlueBlendMode.EXCLUSION,
       },
       {
-        key: GlueBlendMode.HUE,
+        key: 'subtract',
+        label: 'Subtract',
+        value: GlueBlendMode.SUBTRACT,
+      },
+      {
+        key: 'divide',
+        label: 'Divide',
+        value: GlueBlendMode.DIVIDE,
+      },
+
+      {
+        key: 'hue',
         label: 'Hue',
+        value: GlueBlendMode.HUE,
       },
       {
-        key: GlueBlendMode.SATURATION,
+        key: 'saturation',
         label: 'Saturation',
+        value: GlueBlendMode.SATURATION,
       },
       {
-        key: GlueBlendMode.COLOR,
+        key: 'color',
         label: 'Color',
+        value: GlueBlendMode.COLOR,
       },
       {
-        key: GlueBlendMode.LUMINOSITY,
+        key: 'luminosity',
         label: 'Luminosity',
+        value: GlueBlendMode.LUMINOSITY,
+      },
+
+      {
+        key: 'darker_color',
+        label: 'Darker color',
+        value: GlueBlendMode.DARKER_COLOR,
+      },
+      {
+        key: 'lighter_color',
+        label: 'Lighter color',
+        value: GlueBlendMode.LIGHTER_COLOR,
       },
     ],
   },
