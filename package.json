@@ -2,7 +2,6 @@
   "name": "instaglitch",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
   "dependencies": {
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
@@ -27,7 +26,6 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.6.0",
     "react-nano-scrollbar": "^0.0.4",
-    "react-scripts": "^5.0.1",
     "react-use-pointer-drag": "^0.0.2",
     "react-var-ui": "^1.2.2",
     "sass": "^1.56.1",
@@ -37,10 +35,9 @@
     "webm-fix-duration": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "vite",
+    "build": "tsc && vite build",
+    "analyze": "vite-bundle-visualizer"
   },
   "eslintConfig": {
     "extends": [
@@ -69,5 +66,10 @@
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ]
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.4",
+    "vite": "^4.4.9",
+    "vite-bundle-visualizer": "^0.10.0"
   }
 }
