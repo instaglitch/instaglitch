@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 import { v4 as uuid } from 'uuid';
 
@@ -47,8 +47,6 @@ interface CurvePart {
 
 interface DragState {
   moving: 'start' | 'exponent';
-  initX: number;
-  initY: number;
   i: number;
   part: CurvePart;
 }
@@ -78,17 +76,17 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
   const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
-  const updatePosition = useCallback(
-    (x: number, y: number, dragState: DragState) => {
-      const i = dragState.i;
+  const { dragProps } = usePointerDrag<DragState>({
+    onMove: ({ deltaX, deltaY, state }) => {
+      const i = state.i;
 
-      if (dragState.moving === 'exponent') {
+      if (state.moving === 'exponent') {
         const yDiff =
-          dragState.part.end && dragState.part.end[1] > dragState.part.start[1]
-            ? dragState.initY - y
-            : y - dragState.initY;
+          state.part.end && state.part.end[1] > state.part.start[1]
+            ? -deltaY
+            : deltaY;
         const exponent = getExponentAfterDelta(
-          dragState.part.exponent,
+          state.part.exponent,
           (yDiff / height) * 50
         );
 
@@ -97,13 +95,10 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
       } else {
         const unitY = height / (maxY - minY);
 
-        const deltaX = (x - dragState.initX) / PPS;
-        const deltaY = (dragState.initY - y) / unitY;
+        let newX = state.part.xy[0] + deltaX / PPS;
+        let newY = state.part.xy[1] - deltaY / unitY;
 
-        let newX = dragState.part.xy[0] + deltaX;
-        let newY = dragState.part.xy[1] + deltaY;
-
-        if (dragState.i > 0) {
+        if (state.i > 0) {
           if (newX < points[i - 1].x) {
             newX = points[i - 1].x;
           }
@@ -119,16 +114,13 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
         newY = roundValue(newY, minY, maxY, step);
 
-        points[dragState.i].x = newX;
-        points[dragState.i].y = newY;
+        points[state.i].x = newX;
+        points[state.i].y = newY;
 
         onChange([...points]);
       }
     },
-    [onChange, points, height, minY, maxY, PPS, step]
-  );
-
-  const { startDragging } = usePointerDrag<DragState>(updatePosition);
+  });
 
   const parts: CurvePart[] = [];
   let fillPath = '';
@@ -310,35 +302,11 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
               stroke="#77f"
               fill="none"
               strokeWidth={2}
-              onMouseDown={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                startDragging({
-                  i: part.i,
-                  initX: e.clientX,
-                  initY: e.clientY,
-                  moving: 'exponent',
-                  part,
-                });
-              }}
-              onTouchStart={(e: React.TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const touch = e.touches[0];
-                if (!touch) {
-                  return;
-                }
-
-                startDragging({
-                  i: part.i,
-                  initX: touch.clientX,
-                  initY: touch.clientY,
-                  moving: 'exponent',
-                  part,
-                });
-              }}
+              {...dragProps({
+                i: part.i,
+                moving: 'exponent',
+                part,
+              })}
             />
           )
       )}
@@ -350,35 +318,11 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
           r="5"
           fill="#77f"
           className="curve-point"
-          onMouseDown={(e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            startDragging({
-              i: part.i,
-              initX: e.clientX,
-              initY: e.clientY,
-              moving: 'start',
-              part,
-            });
-          }}
-          onTouchStart={(e: React.TouchEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const touch = e.touches[0];
-            if (!touch) {
-              return;
-            }
-
-            startDragging({
-              i: part.i,
-              initX: touch.clientX,
-              initY: touch.clientY,
-              moving: 'start',
-              part,
-            });
-          }}
+          {...dragProps({
+            i: part.i,
+            moving: 'start',
+            part,
+          })}
           onDoubleClick={e => {
             e.preventDefault();
             e.stopPropagation();

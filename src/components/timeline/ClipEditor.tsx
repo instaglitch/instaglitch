@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 import { v4 as uuid } from 'uuid';
 
@@ -8,7 +8,6 @@ import { chartToFn, fnToChart } from './Utils';
 
 interface DragState {
   moving: 'start' | 'block' | 'end';
-  initX: number;
   clip: AutomationClip;
   i: number;
 }
@@ -28,11 +27,11 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
 
   const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
-  const updatePosition = useCallback(
-    (x: number, y: number, dragState: DragState) => {
-      const clip = dragState.clip;
-      const delta = (x - dragState.initX) / PPS;
-      const i = dragState.i;
+  const { dragProps } = usePointerDrag<DragState>({
+    onMove: ({ deltaX, state }) => {
+      const clip = state.clip;
+      const delta = deltaX / PPS;
+      const i = state.i;
 
       const hasAbsolute =
         typeof clip.absoluteStart === 'number' &&
@@ -41,10 +40,10 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
       let newStart = clip.start;
       let newEnd = clip.end;
 
-      if (dragState.moving !== 'start') {
+      if (state.moving !== 'start') {
         newEnd += delta;
       }
-      if (dragState.moving !== 'end') {
+      if (state.moving !== 'end') {
         newStart += delta;
       }
 
@@ -77,15 +76,15 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
         ...clip,
       };
 
-      if (dragState.moving !== 'start') {
+      if (state.moving !== 'start') {
         newClip.end = newEnd;
       }
-      if (dragState.moving !== 'end') {
+      if (state.moving !== 'end') {
         newClip.start = newStart;
       }
 
       if (hasAbsolute) {
-        if (dragState.moving !== 'start') {
+        if (state.moving !== 'start') {
           newClip.absoluteStart! += newStart - clip.start;
         }
 
@@ -100,10 +99,7 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
 
       onChange(clips);
     },
-    [onChange, clips, PPS]
-  );
-
-  const { startDragging } = usePointerDrag<DragState>(updatePosition);
+  });
 
   return (
     <svg
@@ -182,33 +178,11 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
               height={height - 20}
               stroke="#77f"
               fill="#77f"
-              onMouseDown={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                startDragging({
-                  moving: 'block',
-                  initX: e.clientX,
-                  clip,
-                  i,
-                });
-              }}
-              onTouchStart={(e: React.TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const touch = e.touches[0];
-                if (!touch) {
-                  return;
-                }
-
-                startDragging({
-                  moving: 'block',
-                  initX: touch.clientX,
-                  clip,
-                  i,
-                });
-              }}
+              {...dragProps({
+                moving: 'block',
+                clip,
+                i,
+              })}
             />
             <path
               className="clip-start"
@@ -216,33 +190,11 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
               stroke="#77f"
               fill="none"
               strokeWidth={2}
-              onMouseDown={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                startDragging({
-                  moving: 'start',
-                  initX: e.clientX,
-                  clip,
-                  i,
-                });
-              }}
-              onTouchStart={(e: React.TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const touch = e.touches[0];
-                if (!touch) {
-                  return;
-                }
-
-                startDragging({
-                  moving: 'start',
-                  initX: touch.clientX,
-                  clip,
-                  i,
-                });
-              }}
+              {...dragProps({
+                moving: 'start',
+                clip,
+                i,
+              })}
             />
             <path
               className="clip-end"
@@ -250,33 +202,11 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
               stroke="#77f"
               fill="none"
               strokeWidth={2}
-              onMouseDown={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                startDragging({
-                  moving: 'end',
-                  initX: e.clientX,
-                  clip,
-                  i,
-                });
-              }}
-              onTouchStart={(e: React.TouchEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const touch = e.touches[0];
-                if (!touch) {
-                  return;
-                }
-
-                startDragging({
-                  moving: 'end',
-                  initX: touch.clientX,
-                  clip,
-                  i,
-                });
-              }}
+              {...dragProps({
+                moving: 'end',
+                clip,
+                i,
+              })}
             />
           </React.Fragment>
         );

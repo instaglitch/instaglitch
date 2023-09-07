@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
 
 import { TimelineContext } from './TimelineContext';
@@ -17,8 +17,6 @@ function timeDisplay(s: number) {
 
 interface DragState {
   type: 'timeline' | 'marker';
-  initX: number;
-  initY: number;
   initMinX: number;
   initPPS: number;
 }
@@ -36,26 +34,25 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({ height }) => {
   const labels: [number, string][] = [];
   const ticks: [number, boolean][] = [];
 
-  const updatePosition = useCallback(
-    (x: number, y: number, dragState: DragState) => {
-      if (dragState.type === 'marker') {
-        const deltaX = (x - dragState.initX) / dragState.initPPS;
-        const newTime = Math.max(dragState.initMinX + deltaX, 0);
+  const { dragProps } = usePointerDrag<DragState>({
+    onMove: ({ deltaX, deltaY, state }) => {
+      if (state.type === 'marker') {
+        const newTime = Math.max(state.initMinX + deltaX / state.initPPS, 0);
 
         setTime(newTime);
       } else {
-        const deltaY = (y - dragState.initY) / height;
-        const PPS = getExponentAfterDelta(dragState.initPPS, deltaY, 0.1, 40);
-        const deltaX = (x - dragState.initX) / PPS;
+        const PPS = getExponentAfterDelta(
+          state.initPPS,
+          deltaY / height,
+          0.1,
+          40
+        );
 
         setPPS(PPS);
-        setMinX(Math.max(0, dragState.initMinX - deltaX));
+        setMinX(Math.max(0, state.initMinX - deltaX / PPS));
       }
     },
-    [height, setPPS, setMinX, setTime]
-  );
-
-  const { startDragging } = usePointerDrag<DragState>(updatePosition);
+  });
 
   const { tickResolution, labelResolution } = getResolution(PPS);
   for (let x = Math.ceil(minX); x <= Math.floor(maxX); x++) {
@@ -91,35 +88,11 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({ height }) => {
             const fnX = chartToFn(chartX, width, minX, maxX);
             setTime(fnX);
           }}
-          onMouseDown={(e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            startDragging({
-              type: 'timeline',
-              initX: e.clientX,
-              initY: e.clientY,
-              initMinX: minX,
-              initPPS: PPS,
-            });
-          }}
-          onTouchStart={(e: React.TouchEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const touch = e.touches[0];
-            if (!touch) {
-              return;
-            }
-
-            startDragging({
-              type: 'timeline',
-              initX: touch.clientX,
-              initY: touch.clientY,
-              initMinX: minX,
-              initPPS: PPS,
-            });
-          }}
+          {...dragProps({
+            type: 'timeline',
+            initMinX: minX,
+            initPPS: PPS,
+          })}
         >
           <polygon
             points={`${timeX},${height - 20} ${timeX - 7},0 ${timeX + 7},0`}
@@ -133,35 +106,11 @@ export const TimeDisplay: React.FC<TimeDisplayProps> = ({ height }) => {
             width={20}
             height={height}
             fill="transparent"
-            onMouseDown={(e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              startDragging({
-                type: 'marker',
-                initX: e.clientX,
-                initY: e.clientY,
-                initMinX: time,
-                initPPS: PPS,
-              });
-            }}
-            onTouchStart={(e: React.TouchEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              const touch = e.touches[0];
-              if (!touch) {
-                return;
-              }
-
-              startDragging({
-                type: 'marker',
-                initX: touch.clientX,
-                initY: touch.clientY,
-                initMinX: time,
-                initPPS: PPS,
-              });
-            }}
+            {...dragProps({
+              type: 'marker',
+              initMinX: time,
+              initPPS: PPS,
+            })}
           />
           {ticks.map(([x, bold]) => (
             <path
