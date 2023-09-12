@@ -26,6 +26,16 @@
   border: 3px solid transparent;
 }
 
+:root {
+  --color-bg: #11111a;
+  --color-bg-panel: #22222a;
+  --color-bg-interactive: #33333a;
+  --color-bg-interactive-hover: #44444a;
+  --color-accent: #77f;
+  --color-fg-soft: #aaa;
+  --color-fg: #ddd;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -33,14 +43,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #11111a;
-  color: #ddd;
+  background: var(--color-bg);
+  color: var(--color-fg);
   overflow: hidden;
   user-select: none;
 }
 
 .panel {
-  background: #22222a;
+  background: var(--color-bg-panel);
 }
 
 .menu {
@@ -49,7 +59,7 @@ body {
   display: flex;
   align-items: center;
   margin: 0;
-  border-bottom: 2px solid #11111a;
+  border-bottom: 2px solid var(--color-bg);
 
   li {
     margin-right: 10px;
@@ -67,7 +77,7 @@ body {
 }
 
 .side {
-  border-left: 2px solid #11111a;
+  border-left: 2px solid var(--color-bg);
   width: 400px;
   overflow-y: auto;
 }
@@ -78,14 +88,14 @@ body {
   padding-left: 5px;
 
   .tab {
-    background: #33333a;
+    background: var(--color-bg-interactive);
     padding: 0 5px;
     margin-right: 5px;
     display: inline-flex;
     align-items: center;
 
     &.selected {
-      background: #44444a;
+      background: var(--color-bg-interactive-hover);
     }
 
     button {
@@ -98,8 +108,8 @@ body {
 
 button {
   border: none;
-  background: #33333a;
-  color: #ddd;
+  background: var(--color-bg-interactive);
+  color: var(--color-fg);
   border-radius: 4px;
   padding: 5px 10px;
   cursor: pointer;
@@ -109,7 +119,7 @@ button {
 
   &:not(:disabled):hover,
   &:not(:disabled).selected {
-    background: #44444a;
+    background: var(--color-bg-interactive-hover);
   }
 
   &:disabled {
@@ -184,7 +194,7 @@ button {
 
 .layer {
   padding: 10px;
-  border-bottom: 1px solid #33333a;
+  border-bottom: 1px solid var(--color-bg-interactive);
   display: flex;
   align-items: center;
   --depth: 0;
@@ -193,7 +203,7 @@ button {
 
   .layer-indicator {
     position: absolute;
-    border-top: 3px solid #6969ff;
+    border-top: 3px solid var(--color-accent);
     --depth: 0;
     left: calc(15px + 10px * var(--depth));
     right: 0;
@@ -209,7 +219,7 @@ button {
       width: 0.8rem;
       height: 0.8rem;
       border-radius: 0.8rem;
-      background: #6969ff;
+      background: var(--color-accent);
     }
   }
 
@@ -230,7 +240,7 @@ button {
   }
 
   &.selected {
-    background: #33333a;
+    background: var(--color-bg-interactive);
   }
 
   button {
@@ -276,7 +286,7 @@ button {
 }
 
 .modal {
-  background: #22222a;
+  background: var(--color-bg-panel);
   box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.3);
   width: 600px;
 
@@ -312,7 +322,7 @@ button {
   }
 
   .info:not(:last-child) {
-    border-bottom: 1px solid #11111a;
+    border-bottom: 1px solid var(--color-bg);
   }
 
   & > .title {
@@ -322,7 +332,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #11111a;
+    background: var(--color-bg);
 
     .close {
       background: none;
@@ -341,7 +351,7 @@ button {
   align-items: center;
 
   .badge {
-    background: black;
+    background: var(--color-accent);
     padding: 0.3em 0.5em;
     border-radius: 5px;
     font-size: 0.6em;
@@ -384,7 +394,7 @@ button {
 }
 
 a {
-  color: #aaa;
+  color: var(--color-fg-soft);
 }
 
 .webgl-error {
@@ -403,7 +413,7 @@ a {
   left: calc(50% - 5px);
   width: 10px;
   height: 10px;
-  border: 2px solid white;
+  border: 2px solid var(--color-fg);
   border-radius: 50%;
   cursor: move;
 }
@@ -477,7 +487,7 @@ a {
 
   .curve-point {
     &:hover {
-      stroke: #77f;
+      stroke: var(--color-accent);
       stroke-width: 2px;
       cursor: pointer;
     }
@@ -541,8 +551,8 @@ a {
 .timeline {
   display: grid;
   grid-template-columns: 200px 1fr;
-  background: #22222a;
-  color: white;
+  background: var(--color-bg-panel);
+  color: var(--color-fg);
   position: relative;
   user-select: none;
   overflow-y: auto;
@@ -554,7 +564,7 @@ a {
 
   .timeline-item-wrapper,
   .timeline-info {
-    border-bottom: 1px solid #33333a;
+    border-bottom: 1px solid var(--color-bg-interactive);
     position: relative;
     z-index: 4;
   }
@@ -568,7 +578,7 @@ a {
   .timeline-info {
     display: flex;
     align-items: center;
-    border-right: 2px solid #33333a;
+    border-right: 2px solid var(--color-bg-interactive);
     justify-content: space-between;
     padding-right: 5px;
     overflow: hidden;
@@ -581,12 +591,12 @@ a {
     }
 
     &-layer {
-      border-left: 5px solid #77f;
+      border-left: 5px solid var(--color-accent);
       cursor: pointer;
     }
 
     &-property {
-      border-left: 10px solid #77f;
+      border-left: 10px solid var(--color-accent);
     }
   }
 
@@ -618,13 +628,13 @@ a {
 .time-display-head {
   position: absolute;
   width: 2px;
-  background: #77f;
+  background: var(--color-accent);
   bottom: 0;
   top: 0;
 }
 
 .timeline-wrapper {
-  background: #22222a;
+  background: var(--color-bg-panel);
   height: 300px;
   max-height: 300px;
   display: flex;
@@ -651,7 +661,7 @@ a {
 }
 
 .recording {
-  background: #22222a;
+  background: var(--color-bg-panel);
   padding: 20px;
   text-align: center;
 }
@@ -659,7 +669,7 @@ a {
 .progressbar {
   margin: 5px 0;
   height: 20px;
-  background: #353542;
+  background: var(--color-bg-interactive);
   position: relative;
   border-radius: 0.2rem;
   overflow: hidden;
@@ -669,7 +679,7 @@ a {
     top: 0;
     bottom: 0;
     left: 0;
-    background: #77f;
+    background: var(--color-accent);
   }
 }
 
