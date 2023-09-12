@@ -91,7 +91,7 @@ function getSupportedMimeTypes() {
 }
 
 export function supportsMediaRecorder() {
-  return !!(window as any)['MediaRecorder'];
+  return 'MediaRecorder' in window;
 }
 
 export function getMediaRecorder(

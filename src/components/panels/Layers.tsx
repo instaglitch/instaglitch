@@ -51,12 +51,6 @@ const Layer: React.FC<{
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: layer.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    '--depth': depth,
-  };
-
   const name = layerName(layer);
   return (
     <div
@@ -67,7 +61,11 @@ const Layer: React.FC<{
         ghost: isGhost,
       })}
       ref={setNodeRef}
-      style={style}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        '--depth': depth,
+      }}
       {...attributes}
       {...listeners}
       onClick={() => (project.selectedLayer = layer.id)}
@@ -80,7 +78,7 @@ const Layer: React.FC<{
       {isGhost && (
         <div
           className="layer-indicator"
-          style={{ '--depth': projectedDepth } as any}
+          style={{ '--depth': projectedDepth }}
         ></div>
       )}
       <button
@@ -220,7 +218,7 @@ export const Layers: React.FC = observer(() => {
         const parent = visibleItems.find(item => item.id === projectedParentId);
 
         if (parent) {
-          item.parentId = projectedParentId as any;
+          item.parentId = projectedParentId as string;
         } else {
           item.parentId = undefined;
         }

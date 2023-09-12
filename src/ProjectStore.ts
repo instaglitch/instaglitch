@@ -12,10 +12,6 @@ import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
 import { Project } from './Project';
 
-declare class ClipboardItem {
-  constructor(data: any);
-}
-
 function calculateScale(width: number, height: number, maxSize: number) {
   if (maxSize) {
     return Math.min(Math.min(maxSize / width, maxSize / height), 1);
@@ -295,8 +291,8 @@ class ProjectStore {
 
     this.canvas.toBlob(async blob => {
       try {
-        const clipboardItemInput = new ClipboardItem({ 'image/png': blob });
-        await (navigator.clipboard as any).write([clipboardItemInput]);
+        const clipboardItemInput = new ClipboardItem({ 'image/png': blob! });
+        await navigator.clipboard.write([clipboardItemInput]);
       } catch {}
     }, 'image/png');
   }
@@ -307,7 +303,7 @@ class ProjectStore {
       return;
     }
 
-    if (!(this.canvas as any).captureStream) {
+    if (!this.canvas.captureStream) {
       return;
     }
 
@@ -315,7 +311,7 @@ class ProjectStore {
     this.recordingCancel = false;
 
     const blobs: Blob[] = [];
-    const stream: MediaStream = (this.canvas as any).captureStream(
+    const stream: MediaStream = this.canvas.captureStream(
       this.recordingSettings.framerate
     );
     const mediaRecorder = getMediaRecorder(stream, {

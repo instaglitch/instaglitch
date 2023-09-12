@@ -12,7 +12,7 @@ import {
 import { projectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
 
-const copyToClipboardAvailable = !!(window as any)['ClipboardItem'];
+const copyToClipboardAvailable = 'ClipboardItem' in window;
 
 export const Menu: React.FC = observer(() => {
   return (
