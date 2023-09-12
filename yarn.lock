@@ -1749,11 +1749,6 @@ react-is@^18.0.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.2.0.tgz#199431eeaaa2e09f86427efbb4f1473edb47609b"
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
-react-nano-scrollbar@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/react-nano-scrollbar/-/react-nano-scrollbar-0.0.4.tgz#aeb0620a9acf9167482345e6eff762feaa8478d3"
-  integrity sha512-6JK3+LHc4w4Fa1sJVevuyPh4/5OaUd/Ouw/g6RokbL0ugkEfSB9QOi6yBGKK4y3aHbqrn3RoPnvcuKoWDLRffw==
-
 react-refresh@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.14.0.tgz#4e02825378a5f227079554d4284889354e5f553e"
@@ -1763,6 +1758,11 @@ react-use-pointer-drag@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/react-use-pointer-drag/-/react-use-pointer-drag-0.1.0.tgz#69fed60ef3603d54358c24c8c53e0c0ae4f7659c"
   integrity sha512-zkQrayL8uKYiTq/1bAFK+WSeFIIf1ScjaJoUQE4PPrMQS0d4hqz6u97xOubr3ljVb2sDqbvJfCe9cVjffSiizw==
+
+react-use-pointer-drag@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/react-use-pointer-drag/-/react-use-pointer-drag-0.1.2.tgz#f5418f8eea6246b8969e93a97790bb995ddd04d5"
+  integrity sha512-Sm53xOun8NEYLFLUvywOSSnzYoxnx79TU2tecOrdhYKkSQyaoxoNvxA1+KtaKxqT/gy2TqxrvrgerkwoeF7S7g==
 
 react-var-ui@^1.3.1:
   version "1.3.1"

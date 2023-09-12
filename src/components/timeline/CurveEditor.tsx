@@ -77,6 +77,10 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
   const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const { dragProps } = usePointerDrag<DragState>({
+    preventDefault: true,
+    stopPropagation: true,
+    pointerDownPreventDefault: true,
+    pointerDownStopPropagation: true,
     onMove: ({ deltaX, deltaY, state }) => {
       const i = state.i;
 

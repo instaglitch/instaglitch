@@ -28,6 +28,10 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
   const width = useMemo(() => (maxX - minX) * PPS, [PPS, minX, maxX]);
 
   const { dragProps } = usePointerDrag<DragState>({
+    preventDefault: true,
+    stopPropagation: true,
+    pointerDownPreventDefault: true,
+    pointerDownStopPropagation: true,
     onMove: ({ deltaX, state }) => {
       const clip = state.clip;
       const delta = deltaX / PPS;
