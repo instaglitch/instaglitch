@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { VarUI, VarCategory, VarSlider } from 'react-var-ui';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const Export: React.FC = observer(() => {

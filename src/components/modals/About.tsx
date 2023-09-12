@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Logo } from '../common/Logo';
 import { Modal } from '../common/Modal';
 

@@ -9,7 +9,7 @@ import {
   BsFillGearFill,
 } from 'react-icons/bs';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Logo } from '../common/Logo';
 
 const copyToClipboardAvailable = 'ClipboardItem' in window;

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { BsImageFill } from 'react-icons/bs';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 
 export const Drop: React.FC = () => {
   const [dropping, setDropping] = useState(false);

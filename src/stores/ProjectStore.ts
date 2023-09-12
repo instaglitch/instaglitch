@@ -6,9 +6,9 @@ import {
   glueGetSourceDimensions,
 } from 'fxglue';
 
-import { LayerType, TLayer } from './types';
-import { getMediaRecorder } from './Utils';
-import { sourceSettings } from './sourceSettings';
+import { LayerType, TLayer } from '../types';
+import { getMediaRecorder } from '../Utils';
+import { sourceSettings } from '../sourceSettings';
 import { Project } from './Project';
 
 function calculateScale(width: number, height: number, maxSize: number) {

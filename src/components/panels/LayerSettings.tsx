@@ -11,7 +11,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { toJS } from 'mobx';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
 import { sourceSettings } from '../../sourceSettings';
 

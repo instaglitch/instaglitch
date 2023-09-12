@@ -21,9 +21,9 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { BsX } from 'react-icons/bs';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { truncate } from '../../Utils';
-import { Project } from '../../Project';
+import { Project } from '../../stores/Project';
 
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =

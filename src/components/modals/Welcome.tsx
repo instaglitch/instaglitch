@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { BsBoxArrowInUp, BsCamera } from 'react-icons/bs';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Logo } from '../common/Logo';
 import { Modal } from '../common/Modal';
 

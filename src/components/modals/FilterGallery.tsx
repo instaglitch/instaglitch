@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { filterCategories } from '../../filters';
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const FilterGallery: React.FC = observer(() => {

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Modal } from '../common/Modal';
 import clsx from 'clsx';
 import { BsArrowReturnLeft, BsCamera, BsBoxArrowInUp } from 'react-icons/bs';

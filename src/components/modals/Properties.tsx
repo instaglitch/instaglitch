@@ -8,7 +8,7 @@ import {
   VarToggle,
 } from 'react-var-ui';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const Properties: React.FC = observer(() => {

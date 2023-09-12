@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 
 export const Recording: React.FC = observer(() => {
   const project = projectStore.currentProject;

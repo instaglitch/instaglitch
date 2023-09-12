@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { projectStore } from '../../ProjectStore';
+import { projectStore } from '../../stores/ProjectStore';
 import { FilterGallery } from './FilterGallery';
 import { Webcam } from './Webcam';
 import { Export } from './Export';

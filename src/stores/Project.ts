@@ -11,13 +11,13 @@ import {
   FilterSetting,
   AutomationPoint,
   AutomationClip,
-} from './types';
+} from '../types';
 import {
   createFilterLayer,
   createGroupLayer,
   createSourceLayer,
-} from './filters/functions';
-import { getY } from './components/timeline/Utils';
+} from '../filters/functions';
+import { getY } from '../components/timeline/Utils';
 
 function createSource(url: string, type: 'image' | 'video') {
   const source =

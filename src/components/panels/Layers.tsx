@@ -35,10 +35,10 @@ import {
   BsFolder2Open,
 } from 'react-icons/bs';
 
-import { FileInputMode, projectStore } from '../../ProjectStore';
+import { FileInputMode, projectStore } from '../../stores/ProjectStore';
 import { LayerType, TLayer } from '../../types';
 import { layerName, truncate } from '../../Utils';
-import { Project } from '../../Project';
+import { Project } from '../../stores/Project';
 
 const Layer: React.FC<{
   project: Project;
