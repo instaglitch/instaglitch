@@ -43,8 +43,8 @@ export class Project {
   id = v4();
   layers: TLayer[] = [];
   selectedLayer: string | undefined = undefined;
-  width = 500;
-  height = 500;
+  width = 0;
+  height = 0;
   animated = false;
   time = 0;
   playing = false;
