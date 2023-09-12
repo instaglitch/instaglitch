@@ -1,5 +1,30 @@
 @import 'react-var-ui/dist/index.css';
-@import 'react-nano-scrollbar/dist/index.css';
+
+/* Firefox */
+* {
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0);
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 16px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  background-clip: content-box;
+  border: 5px solid transparent;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 3px solid transparent;
+}
 
 body {
   margin: 0;
@@ -612,6 +637,7 @@ a {
   display: flex;
   flex-direction: column;
   max-height: 220px;
+  overflow-y: auto;
 }
 
 .playback-controls {

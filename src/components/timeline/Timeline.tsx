@@ -12,7 +12,6 @@ import {
   BsFillCaretDownFill,
   BsFillCaretLeftFill,
 } from 'react-icons/bs';
-import { ScrollArea } from 'react-nano-scrollbar';
 import { observer } from 'mobx-react-lite';
 
 import { useProjectStore } from '../../ProjectStore';
@@ -159,7 +158,7 @@ export const Timeline: React.FC = observer(() => {
             <TimeDisplay height={timeHeight} />
           </div>
         </div>
-        <ScrollArea className="timeline-with-background">
+        <div className="timeline-with-background">
           <div className="timeline">
             {currentProject.layers.map(layer => {
               const settings =
@@ -341,7 +340,7 @@ export const Timeline: React.FC = observer(() => {
             })}
           </div>
           <TimeBackground height={timeHeight} />
-        </ScrollArea>
+        </div>
       </div>
     </TimelineContext.Provider>
   );
