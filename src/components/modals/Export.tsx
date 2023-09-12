@@ -2,12 +2,10 @@ import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { VarUI, VarCategory, VarSlider } from 'react-var-ui';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const Export: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   const data = useMemo(
     () => ({
       quality: projectStore.exportQuality,

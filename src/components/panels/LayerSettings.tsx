@@ -11,12 +11,11 @@ import {
 import { observer } from 'mobx-react-lite';
 import { toJS } from 'mobx';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
 import { sourceSettings } from '../../sourceSettings';
 
 export const LayerSettings: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const project = projectStore.currentProject;
 
   if (!project) {

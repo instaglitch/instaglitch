@@ -14,7 +14,7 @@ import {
 } from 'react-icons/bs';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType } from '../../types';
 import { ClipEditor } from './ClipEditor';
 import { CurveEditor } from './CurveEditor';
@@ -40,7 +40,6 @@ const supportedTypes = [
 ];
 
 export const Timeline: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const project = projectStore.currentProject;
   const animated = project?.animated;
   const time = project?.time;

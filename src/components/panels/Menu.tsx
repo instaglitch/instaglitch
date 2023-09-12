@@ -9,14 +9,12 @@ import {
   BsFillGearFill,
 } from 'react-icons/bs';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
 
 const copyToClipboardAvailable = !!(window as any)['ClipboardItem'];
 
 export const Menu: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   return (
     <ul className="panel menu">
       <Logo />

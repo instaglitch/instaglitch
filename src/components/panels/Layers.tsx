@@ -35,7 +35,7 @@ import {
   BsFolder2Open,
 } from 'react-icons/bs';
 
-import { FileInputMode, useProjectStore } from '../../ProjectStore';
+import { FileInputMode, projectStore } from '../../ProjectStore';
 import { LayerType, TLayer } from '../../types';
 import { layerName, truncate } from '../../Utils';
 import { Project } from '../../Project';
@@ -48,7 +48,6 @@ const Layer: React.FC<{
   depth?: number;
   projectedDepth?: number;
 }> = observer(({ project, layer, isClone, isGhost, depth, projectedDepth }) => {
-  const projectStore = useProjectStore();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: layer.id });
 
@@ -112,8 +111,6 @@ type TreeLayer = TLayer & {
 };
 
 export const Layers: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   const project = projectStore.currentProject;
 
   const sensors = useSensors(
@@ -143,7 +140,7 @@ export const Layers: React.FC = observer(() => {
     }
 
     if (layer.type === LayerType.GROUP) {
-      const children = projectStore.currentProject!.layers.filter(
+      const children = project!.layers.filter(
         item => item.parentId === layer.id
       );
       for (const child of children) {
@@ -163,9 +160,7 @@ export const Layers: React.FC = observer(() => {
     return null;
   }
 
-  for (const layer of projectStore.currentProject.layers.filter(
-    layer => !layer.parentId
-  )) {
+  for (const layer of project.layers.filter(layer => !layer.parentId)) {
     handleItem(layer);
   }
 

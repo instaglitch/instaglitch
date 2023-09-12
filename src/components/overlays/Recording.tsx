@@ -1,11 +1,9 @@
 import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 
 export const Recording: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   const time = projectStore.currentProject?.time;
   const { start, duration } = projectStore.recordingSettings;
 

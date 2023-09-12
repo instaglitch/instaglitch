@@ -376,8 +376,4 @@ class ProjectStore {
   }
 }
 
-const projectStore = new ProjectStore();
-
-const ProjectStoreContext = React.createContext(projectStore);
-
-export const useProjectStore = () => useContext(ProjectStoreContext);
+export const projectStore = new ProjectStore();

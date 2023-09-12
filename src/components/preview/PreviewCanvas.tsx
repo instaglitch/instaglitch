@@ -1,11 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 
 export const PreviewCanvas: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

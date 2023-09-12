@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
 import clsx from 'clsx';
 import { BsArrowReturnLeft, BsCamera, BsBoxArrowInUp } from 'react-icons/bs';
 
 export const Webcam: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);

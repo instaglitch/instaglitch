@@ -2,11 +2,10 @@ import React, { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { filterCategories } from '../../filters';
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const FilterGallery: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const project = projectStore.currentProject;
 
   const [category, setCategory] = useState(filterCategories[0].id);

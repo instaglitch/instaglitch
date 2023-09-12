@@ -2,13 +2,11 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { BsBoxArrowInUp, BsCamera } from 'react-icons/bs';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Logo } from '../common/Logo';
 import { Modal } from '../common/Modal';
 
 export const Welcome: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   if (projectStore.projects.length > 0) {
     return null;
   }

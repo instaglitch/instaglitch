@@ -3,11 +3,10 @@ import { observer } from 'mobx-react-lite';
 import { VarUI, VarCategory, VarSlider, VarSelect } from 'react-var-ui';
 import { toJS } from 'mobx';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const Recording: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const project = projectStore.currentProject;
 
   if (!project) {

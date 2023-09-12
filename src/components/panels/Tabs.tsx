@@ -21,12 +21,11 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { BsX } from 'react-icons/bs';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { truncate } from '../../Utils';
 import { Project } from '../../Project';
 
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
-  const projectStore = useProjectStore();
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: project.id });
 
@@ -68,7 +67,6 @@ const activationConstraint = {
 };
 
 export const Tabs: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const projects = projectStore.projects;
 
   const sensors = useSensors(

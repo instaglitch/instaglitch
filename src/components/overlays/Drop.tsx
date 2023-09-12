@@ -2,11 +2,10 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useState } from 'react';
 import { BsImageFill } from 'react-icons/bs';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 
 export const Drop: React.FC = () => {
   const [dropping, setDropping] = useState(false);
-  const projectStore = useProjectStore();
 
   const onDrop = useCallback(
     (e: DragEvent) => {

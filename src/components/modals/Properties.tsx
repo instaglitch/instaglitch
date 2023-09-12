@@ -8,13 +8,13 @@ import {
   VarToggle,
 } from 'react-var-ui';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { Modal } from '../common/Modal';
 
 export const Properties: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-  const [aspectRatio, setAspectRatio] =
-    useState<[number, number] | undefined>(undefined);
+  const [aspectRatio, setAspectRatio] = useState<[number, number] | undefined>(
+    undefined
+  );
 
   const width = projectStore.currentProject?.width;
   const height = projectStore.currentProject?.height;

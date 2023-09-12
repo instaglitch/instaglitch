@@ -2,13 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { FilterSettingType, LayerType, FilterLayer } from '../../types';
 import { PreviewCanvas } from './PreviewCanvas';
 import { disable, enable } from '../../scrollLock';
 
 export const Preview: React.FC = observer(() => {
-  const projectStore = useProjectStore();
   const project = projectStore.currentProject;
 
   const [moving, setMoving] = useState<string>();

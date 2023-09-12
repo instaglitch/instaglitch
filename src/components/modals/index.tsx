@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useProjectStore } from '../../ProjectStore';
+import { projectStore } from '../../ProjectStore';
 import { FilterGallery } from './FilterGallery';
 import { Webcam } from './Webcam';
 import { Export } from './Export';
@@ -12,8 +12,6 @@ import { Recording } from './Recording';
 import { Error } from './Error';
 
 export const Modals: React.FC = observer(() => {
-  const projectStore = useProjectStore();
-
   if (projectStore.error) {
     return <Error />;
   }
