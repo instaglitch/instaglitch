@@ -25,6 +25,8 @@ function createSource(url: string, type: 'image' | 'video') {
   source.src = url;
   if (source instanceof HTMLVideoElement) {
     source.playsInline = true;
+    source.preload = 'metadata';
+    source.crossOrigin = 'anonymous';
   }
 
   return source;
@@ -126,7 +128,7 @@ export class Project {
         if (source instanceof HTMLImageElement) {
           source.onload = onload;
         } else {
-          source.addEventListener('loadeddata', onload);
+          source.addEventListener('loadedmetadata', onload);
           source.load();
         }
       }
