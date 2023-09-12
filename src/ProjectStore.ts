@@ -1,45 +1,19 @@
 import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
-import { v4 as uuid } from 'uuid';
 import { webmFixDuration } from 'webm-fix-duration';
 import {
   GlueCanvas,
   glueIsSourceLoaded,
   glueGetSourceDimensions,
-  GlueSourceType,
 } from 'fxglue';
 
-import {
-  Filter,
-  FilterSettingType,
-  SourceLayer,
-  LayerType,
-  Project,
-  TLayer,
-  FilterSetting,
-} from './types';
-import {
-  createFilterLayer,
-  createGroupLayer,
-  createSourceLayer,
-} from './filters/functions';
-import { getY } from './components/timeline/Utils';
+import { Filter, SourceLayer, LayerType, TLayer, FilterSetting } from './types';
 import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
+import { Project } from './Project';
 
 declare class ClipboardItem {
   constructor(data: any);
-}
-
-function createSource(url: string, type: 'image' | 'video') {
-  const source =
-    type === 'image' ? new Image() : document.createElement('video');
-  source.src = url;
-  if (source instanceof HTMLVideoElement) {
-    source.playsInline = true;
-  }
-
-  return source;
 }
 
 function calculateScale(width: number, height: number, maxSize: number) {
@@ -65,7 +39,6 @@ export interface RecordingSettings {
 class ProjectStore {
   currentProjectId?: string = undefined;
   projects: Project[] = [];
-  loading = false;
   modal: string | undefined = undefined;
   error: string | undefined = undefined;
   glueCanvas = new GlueCanvas();
@@ -76,7 +49,6 @@ class ProjectStore {
   exportScale = 1.0;
   fileInput = document.createElement('input');
   fileInputMode: FileInputMode = FileInputMode.NEW;
-  lastFrameTime: number = new Date().getTime();
   mediaRecorder: any = undefined;
   recordingSettings: RecordingSettings = {
     start: 0,
@@ -111,198 +83,30 @@ class ProjectStore {
   }
 
   handleFile(file: File, mode: FileInputMode = FileInputMode.NEW) {
-    this.loading = true;
     const url = URL.createObjectURL(file);
     const type = file.type.startsWith('video') ? 'video' : 'image';
     if (mode === FileInputMode.NEW) {
       this.addProjectFromURL(url, type, file.name);
     } else {
-      this.addSourceLayer(url, type, file.name);
+      this.currentProject?.addSourceLayer(url, type, file.name);
     }
   }
 
-  addProjectFromURL(
+  async addProjectFromURL(
     url: string,
     type: 'image' | 'video',
     filename = 'untitled.jpg'
   ) {
-    const source = createSource(url, type);
-    this.addProjectFromSource(source, filename);
-  }
-
-  addProjectFromSource(source: GlueSourceType, filename = 'untitled.jpg') {
-    const sourceLayer = createSourceLayer(source);
-    sourceLayer.name = filename;
-
-    const project: Project = {
-      id: uuid(),
-      filename,
-      layers: [sourceLayer],
-      selectedLayer: sourceLayer.id,
-      width: 0,
-      height: 0,
-      animated: false,
-      time: 0,
-      playing: false,
-      clips: {},
-      points: {},
-    };
-
-    this.loading = true;
-
-    const onload = () => {
-      const [width, height] = glueGetSourceDimensions(source);
-      project.width = width;
-      project.height = height;
-      project.clips[sourceLayer.id] = [
-        {
-          id: uuid(),
-          start: 0,
-          end: 10,
-        },
-      ];
-
-      if (source instanceof HTMLVideoElement) {
-        if (!source.duration) {
-          this.error = 'Corrupted video file.';
-          this.loading = false;
-          return;
-        }
-
-        project.clips[sourceLayer.id][0].end = source.duration;
-        project.clips[sourceLayer.id][0].absoluteStart = 0;
-        project.clips[sourceLayer.id][0].duration = source.duration;
-        project.animated = true;
-      }
-
-      this.currentProjectId = project.id;
-      this.projects.push(project);
-
-      this.loading = false;
-
-      this.requestPreviewRender();
-    };
-
-    if (glueIsSourceLoaded(source)) {
-      onload();
-    } else {
-      if (source instanceof HTMLImageElement) {
-        source.onload = onload;
-      } else if (source instanceof HTMLVideoElement) {
-        source.addEventListener('loadeddata', onload);
-        source.load();
-      }
-    }
-  }
-
-  addLayer(layer: TLayer) {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.layers = [layer, ...this.currentProject.layers];
-    this.currentProject.selectedLayer = layer.id;
-    this.currentProject.clips[layer.id] = [
-      {
-        id: uuid(),
-        start: 0,
-        end: this.maxClipEnd,
-      },
-    ];
+    const project = new Project(filename);
+    project.onRender = () => this.requestPreviewRender();
+    await project.addSourceLayer(url, type, filename);
+    this.currentProjectId = project.id;
+    this.projects.push(project);
     this.requestPreviewRender();
-  }
-
-  addSourceLayer(url: string, type: 'image' | 'video', name?: string) {
-    const source = createSource(url, type);
-
-    const sourceLayer = createSourceLayer(source);
-    sourceLayer.name = name;
-
-    this.loading = true;
-
-    const onload = () => {
-      if (!this.currentProject) {
-        this.loading = false;
-        return;
-      }
-
-      if (source instanceof HTMLVideoElement) {
-        if (!source.duration) {
-          this.error = 'Corrupted video file.';
-          this.loading = false;
-          return;
-        }
-
-        this.currentProject.clips[sourceLayer.id][0].end = source.duration;
-        this.currentProject.clips[sourceLayer.id][0].absoluteStart = 0;
-        this.currentProject.clips[sourceLayer.id][0].duration = source.duration;
-      }
-
-      this.loading = false;
-      this.addLayer(sourceLayer);
-    };
-
-    if (glueIsSourceLoaded(source)) {
-      onload();
-    } else {
-      if (source instanceof HTMLImageElement) {
-        source.onload = onload;
-      } else {
-        source.addEventListener('loadeddata', onload);
-        source.load();
-      }
-    }
-  }
-
-  get maxClipEnd() {
-    if (!this.currentProject) {
-      return 0;
-    }
-
-    let max = 0;
-    for (const clips of Object.values(this.currentProject.clips)) {
-      for (const clip of clips) {
-        max = Math.max(clip.end, max);
-      }
-    }
-
-    return max;
   }
 
   get currentProject() {
     return this.projects.find(project => project.id === this.currentProjectId);
-  }
-
-  addFilter(filter: Filter) {
-    if (!this.currentProject) {
-      return;
-    }
-
-    const layer = createFilterLayer(filter);
-    this.addLayer(layer);
-    this.modal = undefined;
-  }
-
-  addGroup() {
-    if (!this.currentProject) {
-      return;
-    }
-
-    const layer = createGroupLayer();
-    this.addLayer(layer);
-  }
-
-  removeCurrentLayer() {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.layers = this.currentProject.layers.filter(
-      layer => layer.id !== this.currentProject?.selectedLayer
-    );
-    this.currentProject.selectedLayer =
-      this.currentProject.layers[this.currentProject.layers.length - 1]?.id;
-    this.requestPreviewRender();
   }
 
   closeProject(id: string) {
@@ -322,7 +126,6 @@ class ProjectStore {
   }
 
   renderAndSave(maxSize = 0, format = 'image/png', quality = 1.0) {
-    this.loading = true;
     this.renderCurrentProject(maxSize);
     this.gl.flush();
 
@@ -339,121 +142,22 @@ class ProjectStore {
     element.click();
 
     this.requestPreviewRender();
-    this.loading = false;
   }
 
   requestPreviewRender() {
     requestAnimationFrame(() => this.renderCurrentProject());
   }
 
-  getLayerSetting(layer: TLayer, setting: FilterSetting) {
-    if (!this.currentProject) {
-      return setting.defaultValue;
-    }
-
-    let value = layer.settings[setting.key] ?? setting.defaultValue;
-
-    if (this.currentProject.animated) {
-      const points = this.currentProject.points[layer.id]?.[setting.key];
-
-      if (setting.type === FilterSettingType.OFFSET) {
-        value = [...value];
-        const pointsX =
-          this.currentProject.points[layer.id]?.[setting.key + '_x'];
-        const pointsY =
-          this.currentProject.points[layer.id]?.[setting.key + '_y'];
-
-        if (pointsX?.length > 0) {
-          value[0] = getY(this.currentProject.time, pointsX);
-        }
-        if (pointsY?.length > 0) {
-          value[1] = getY(this.currentProject.time, pointsY);
-        }
-      } else if (points?.length > 0) {
-        value = getY(this.currentProject.time, points);
-      }
-    }
-
-    return value;
-  }
-
-  isLayerVisible(layer: TLayer) {
-    if (!this.currentProject) {
-      return false;
-    }
-
-    if (
-      layer.type === LayerType.GROUP &&
-      !this.currentProject.layers.filter(item => item.parentId === layer.id)
-        .length
-    ) {
-      return false;
-    }
-
-    if (
-      typeof layer.settings['opacity'] === 'number' &&
-      layer.settings['opacity'] <= 0.01
-    ) {
-      return false;
-    }
-
-    const clips = this.currentProject.clips[layer.id];
-    if (!this.currentProject.animated || !clips) {
-      return layer.visible;
-    }
-
-    if (!layer.visible) {
-      return false;
-    }
-
-    for (const clip of clips) {
-      if (
-        this.currentProject.time >= clip.start &&
-        this.currentProject.time <= clip.end
-      ) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  getVideoTime(layer: SourceLayer) {
-    if (!this.currentProject || !(layer.source instanceof HTMLVideoElement)) {
-      return 0;
-    }
-
-    const clips = this.currentProject.clips[layer.id];
-    if (!this.currentProject.animated || !clips) {
-      return 0;
-    }
-
-    if (!layer.visible) {
-      return 0;
-    }
-
-    for (const clip of clips) {
-      if (
-        this.currentProject.time >= clip.start &&
-        this.currentProject.time <= clip.end &&
-        typeof clip.absoluteStart === 'number'
-      ) {
-        return this.currentProject.time - clip.absoluteStart;
-      }
-    }
-
-    return this.currentProject.time;
-  }
-
   renderLayers(layers: TLayer[], scale = 1) {
-    if (!this.currentProject) {
+    const project = this.currentProject;
+    if (!project) {
       return;
     }
 
     const glue = this.glue;
 
     for (const layer of layers) {
-      if (!this.isLayerVisible(layer)) {
+      if (!project.isLayerVisible(layer)) {
         continue;
       }
 
@@ -473,7 +177,7 @@ class ProjectStore {
                 .program(layer.filter.id)
                 ?.uniforms.set(
                   setting.key,
-                  this.getLayerSetting(layer, setting)
+                  project.getLayerSetting(layer, setting)
                 );
             }
           }
@@ -492,7 +196,7 @@ class ProjectStore {
 
           if (layer.source instanceof HTMLVideoElement) {
             try {
-              const time = this.getVideoTime(layer);
+              const time = project.getVideoTime(layer);
               if (Math.abs(layer.source.currentTime - time) > 1) {
                 layer.source.currentTime = time;
               }
@@ -507,7 +211,7 @@ class ProjectStore {
 
           const settings: Record<string, any> = {};
           for (const setting of sourceSettings) {
-            settings[setting.key] = this.getLayerSetting(layer, setting);
+            settings[setting.key] = project.getLayerSetting(layer, setting);
           }
 
           glue.texture(layer.id)?.draw({
@@ -522,17 +226,17 @@ class ProjectStore {
           break;
         }
         case LayerType.GROUP: {
-          const layers = this.currentProject.layers
+          const layers = project.layers
             .filter(item => item.parentId === layer.id)
             .reverse();
           glue.begin();
           this.renderLayers(layers, scale);
           const settings: Record<string, any> = {};
           for (const setting of sourceSettings) {
-            settings[setting.key] = this.getLayerSetting(layer, setting);
+            settings[setting.key] = project.getLayerSetting(layer, setting);
           }
 
-          const { width, height } = this.currentProject;
+          const { width, height } = project;
           glue.end({
             x: width * settings.offset[0] * scale,
             y: height * settings.offset[1] * scale,
@@ -549,29 +253,28 @@ class ProjectStore {
   }
 
   renderCurrentProject(maxSize = 800) {
-    if (!this.currentProject) {
+    const project = this.currentProject;
+    if (!project) {
       return;
     }
 
-    const { width, height } = this.currentProject;
+    const { width, height } = project;
     const scale = calculateScale(width, height, maxSize);
     this.glueCanvas.setSize(width * scale, height * scale);
 
-    const layers = this.currentProject.layers
-      .filter(item => !item.parentId)
-      .reverse();
+    const layers = project.layers.filter(item => !item.parentId).reverse();
 
     const glue = this.glue;
     this.renderLayers(layers, scale);
     glue.render();
 
     const time = new Date().getTime();
-    if (this.currentProject.playing && this.currentProject.animated) {
-      this.currentProject.time += (time - this.lastFrameTime) / 1000;
+    if (project.playing && project.animated) {
+      project.time += (time - project.lastFrameTime) / 1000;
 
       if (
         this.mediaRecorder &&
-        (this.currentProject.time >
+        (project.time >
           this.recordingSettings.start + this.recordingSettings.duration ||
           this.recordingCancel)
       ) {
@@ -583,7 +286,7 @@ class ProjectStore {
 
       this.requestPreviewRender();
     }
-    this.lastFrameTime = time;
+    project.lastFrameTime = time;
   }
 
   copyToClipboard() {
@@ -598,73 +301,12 @@ class ProjectStore {
     }, 'image/png');
   }
 
-  togglePlayback() {
-    if (!this.currentProject?.playing) {
-      this.startPlayback();
-    } else {
-      this.stopPlayback();
-    }
-  }
-
-  startPlayback() {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.playing = true;
-    this.lastFrameTime = new Date().getTime();
-    this.requestPreviewRender();
-
-    for (const layer of this.currentProject.layers) {
-      if (layer.type !== LayerType.SOURCE) {
-        continue;
-      }
-
-      if (layer.source instanceof HTMLVideoElement) {
-        layer.source.play();
-      }
-    }
-  }
-
-  stopPlayback() {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.playing = false;
-
-    for (const layer of this.currentProject.layers) {
-      if (layer.type !== LayerType.SOURCE) {
-        continue;
-      }
-
-      if (layer.source instanceof HTMLVideoElement) {
-        layer.source.pause();
-      }
-    }
-  }
-
-  setTime(time: number) {
-    if (!this.currentProject) {
-      return;
-    }
-
-    this.currentProject.time = time;
-    for (const layer of this.currentProject.layers) {
-      if (layer.type !== LayerType.SOURCE) {
-        continue;
-      }
-
-      if (layer.source instanceof HTMLVideoElement) {
-        layer.source.currentTime = this.getVideoTime(layer);
-      }
-    }
-
-    this.requestPreviewRender();
-    setTimeout(() => this.requestPreviewRender(), 200);
-  }
-
   recordVideo() {
+    const project = this.currentProject;
+    if (!project) {
+      return;
+    }
+
     if (!(this.canvas as any).captureStream) {
       return;
     }
@@ -684,9 +326,8 @@ class ProjectStore {
       return;
     }
 
-    this.lastFrameTime = new Date().getTime();
-    this.setTime(this.recordingSettings.start);
-    this.startPlayback();
+    project.setTime(this.recordingSettings.start);
+    project.startPlayback();
 
     mediaRecorder.start(100);
     this.mediaRecorder = mediaRecorder;
@@ -698,7 +339,7 @@ class ProjectStore {
     };
 
     mediaRecorder.onstop = async () => {
-      this.stopPlayback();
+      project.stopPlayback();
       this.recording = false;
       this.mediaRecorder = undefined;
       this.modal = undefined;

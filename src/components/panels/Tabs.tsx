@@ -22,8 +22,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { BsX } from 'react-icons/bs';
 
 import { useProjectStore } from '../../ProjectStore';
-import { Project } from '../../types';
 import { truncate } from '../../Utils';
+import { Project } from '../../Project';
 
 const Tab: React.FC<{ project: Project }> = observer(({ project }) => {
   const projectStore = useProjectStore();

@@ -41,10 +41,10 @@ const supportedTypes = [
 
 export const Timeline: React.FC = observer(() => {
   const projectStore = useProjectStore();
-  const currentProject = projectStore.currentProject;
-  const animated = currentProject?.animated;
-  const time = currentProject?.time;
-  const playing = currentProject?.playing;
+  const project = projectStore.currentProject;
+  const animated = project?.animated;
+  const time = project?.time;
+  const playing = project?.playing;
 
   const resizeDivRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +65,8 @@ export const Timeline: React.FC = observer(() => {
   }, [setWidth]);
 
   const togglePlayback = useCallback(
-    () => projectStore.togglePlayback(),
-    [projectStore]
+    () => project?.togglePlayback(),
+    [project]
   );
 
   const contextValue = useMemo<ITimelineContext>(
@@ -75,11 +75,11 @@ export const Timeline: React.FC = observer(() => {
       maxX,
       setMinX,
       time: time ?? 0,
-      setTime: time => projectStore.setTime(time),
+      setTime: time => project?.setTime(time),
       PPS,
       setPPS,
     }),
-    [minX, maxX, setMinX, time, projectStore, PPS, setPPS]
+    [minX, maxX, setMinX, time, project, PPS, setPPS]
   );
 
   useEffect(() => {
@@ -121,7 +121,7 @@ export const Timeline: React.FC = observer(() => {
     }
   }, [time, playing, setMinX, width, PPS]);
 
-  if (!currentProject || !animated) {
+  if (!project || !animated) {
     return null;
   }
 
@@ -130,12 +130,12 @@ export const Timeline: React.FC = observer(() => {
       <div className="panel timeline-wrapper">
         <div className="playback-controls">
           <button onClick={togglePlayback}>
-            {currentProject.playing ? <BsPauseFill /> : <BsPlayFill />}
+            {project.playing ? <BsPauseFill /> : <BsPlayFill />}
           </button>
           <button
             onClick={() => {
-              projectStore.stopPlayback();
-              projectStore.setTime(0);
+              project.stopPlayback();
+              project.setTime(0);
             }}
           >
             <BsStopFill />
@@ -160,7 +160,7 @@ export const Timeline: React.FC = observer(() => {
         </div>
         <div className="timeline-with-background">
           <div className="timeline">
-            {currentProject.layers.map(layer => {
+            {project.layers.map(layer => {
               const settings =
                 layer.type === LayerType.FILTER
                   ? layer.filter.settings
@@ -226,9 +226,9 @@ export const Timeline: React.FC = observer(() => {
                     <TimelineItem height={layerHeight}>
                       <ClipEditor
                         height={layerHeight}
-                        clips={currentProject.clips[layer.id] ?? []}
+                        clips={project.clips[layer.id] ?? []}
                         onChange={clips => {
-                          currentProject.clips[layer.id] = [...clips];
+                          project.clips[layer.id] = [...clips];
                           projectStore.requestPreviewRender();
                         }}
                       />
@@ -249,16 +249,16 @@ export const Timeline: React.FC = observer(() => {
                                   maxY={1}
                                   previewValue={layer.settings[setting.key][0]}
                                   points={
-                                    currentProject.points[layer.id]?.[
+                                    project.points[layer.id]?.[
                                       setting.key + '_x'
                                     ] ?? []
                                   }
                                   onChange={points => {
-                                    if (!currentProject.points[layer.id]) {
-                                      currentProject.points[layer.id] = {};
+                                    if (!project.points[layer.id]) {
+                                      project.points[layer.id] = {};
                                     }
 
-                                    currentProject.points[layer.id][
+                                    project.points[layer.id][
                                       setting.key + '_x'
                                     ] = points;
                                     projectStore.requestPreviewRender();
@@ -272,16 +272,16 @@ export const Timeline: React.FC = observer(() => {
                                   maxY={1}
                                   previewValue={layer.settings[setting.key][1]}
                                   points={
-                                    currentProject.points[layer.id]?.[
+                                    project.points[layer.id]?.[
                                       setting.key + '_y'
                                     ] ?? []
                                   }
                                   onChange={points => {
-                                    if (!currentProject.points[layer.id]) {
-                                      currentProject.points[layer.id] = {};
+                                    if (!project.points[layer.id]) {
+                                      project.points[layer.id] = {};
                                     }
 
-                                    currentProject.points[layer.id][
+                                    project.points[layer.id][
                                       setting.key + '_y'
                                     ] = points;
                                     projectStore.requestPreviewRender();
@@ -317,17 +317,14 @@ export const Timeline: React.FC = observer(() => {
                               step={step}
                               previewValue={layer.settings[setting.key]}
                               points={
-                                currentProject.points[layer.id]?.[
-                                  setting.key
-                                ] ?? []
+                                project.points[layer.id]?.[setting.key] ?? []
                               }
                               onChange={points => {
-                                if (!currentProject.points[layer.id]) {
-                                  currentProject.points[layer.id] = {};
+                                if (!project.points[layer.id]) {
+                                  project.points[layer.id] = {};
                                 }
 
-                                currentProject.points[layer.id][setting.key] =
-                                  points;
+                                project.points[layer.id][setting.key] = points;
                                 projectStore.requestPreviewRender();
                               }}
                             />

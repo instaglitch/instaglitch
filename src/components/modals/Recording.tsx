@@ -8,6 +8,11 @@ import { Modal } from '../common/Modal';
 
 export const Recording: React.FC = observer(() => {
   const projectStore = useProjectStore();
+  const project = projectStore.currentProject;
+
+  if (!project) {
+    return null;
+  }
 
   return (
     <Modal title="Recording" onDismiss={() => (projectStore.modal = undefined)}>
@@ -20,16 +25,14 @@ export const Recording: React.FC = observer(() => {
             <VarSlider
               path="start"
               min={0}
-              max={projectStore.maxClipEnd - 5}
+              max={project.maxClipEnd - 5}
               step={0.1}
               label="Start (seconds)"
             />
             <VarSlider
               path="duration"
               min={5}
-              max={
-                projectStore.maxClipEnd - projectStore.recordingSettings.start
-              }
+              max={project.maxClipEnd - projectStore.recordingSettings.start}
               step={0.1}
               label="Duration (seconds)"
             />

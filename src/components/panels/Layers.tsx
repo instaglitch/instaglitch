@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { observer } from 'mobx-react-lite';
 import clsx from 'clsx';
 import {
@@ -35,9 +36,9 @@ import {
 } from 'react-icons/bs';
 
 import { FileInputMode, useProjectStore } from '../../ProjectStore';
-import { LayerType, Project, TLayer } from '../../types';
+import { LayerType, TLayer } from '../../types';
 import { layerName, truncate } from '../../Utils';
-import { createPortal } from 'react-dom';
+import { Project } from '../../Project';
 
 const Layer: React.FC<{
   project: Project;
@@ -286,11 +287,11 @@ export const Layers: React.FC = observer(() => {
           <BsPlus />
           <span>File</span>
         </button>
-        <button onClick={() => projectStore.addGroup()}>
+        <button onClick={() => project.addGroup()}>
           <BsPlus />
           <span>Group</span>
         </button>
-        <button onClick={() => projectStore.removeCurrentLayer()}>
+        <button onClick={() => project.removeCurrentLayer()}>
           <BsTrash />
           <span>Delete layer</span>
         </button>

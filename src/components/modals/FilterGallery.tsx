@@ -7,6 +7,7 @@ import { Modal } from '../common/Modal';
 
 export const FilterGallery: React.FC = observer(() => {
   const projectStore = useProjectStore();
+  const project = projectStore.currentProject;
 
   const [category, setCategory] = useState(filterCategories[0].id);
 
@@ -37,7 +38,7 @@ export const FilterGallery: React.FC = observer(() => {
             {currentCategory?.filters.map(filter => (
               <button
                 key={filter.id}
-                onClick={() => projectStore.addFilter(filter)}
+                onClick={() => project?.addFilter(filter)}
               >
                 {filter.name}
               </button>

@@ -76,20 +76,6 @@ export interface GroupLayer extends Layer {
 
 export type TLayer = GroupLayer | FilterLayer | SourceLayer;
 
-export interface Project {
-  id: string;
-  filename: string;
-  layers: TLayer[];
-  selectedLayer: string;
-  width: number;
-  height: number;
-  animated: boolean;
-  time: number;
-  playing: boolean;
-  clips: Record<string, AutomationClip[]>;
-  points: Record<string, Record<string, AutomationPoint[]>>;
-}
-
 export interface AutomationPoint {
   id: string;
   x: number;

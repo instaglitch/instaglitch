@@ -6,7 +6,7 @@ import { useProjectStore } from '../../ProjectStore';
 export const Loading: React.FC = observer(() => {
   const projectStore = useProjectStore();
 
-  if (!projectStore.loading) {
+  if (!projectStore.currentProject?.loading) {
     return null;
   }
 
