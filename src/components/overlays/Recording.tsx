@@ -4,8 +4,12 @@ import { observer } from 'mobx-react-lite';
 import { projectStore } from '../../ProjectStore';
 
 export const Recording: React.FC = observer(() => {
+  const project = projectStore.currentProject;
   const time = projectStore.currentProject?.time;
-  const { start, duration } = projectStore.recordingSettings;
+  const { start, duration } = project?.recordingSettings || {
+    start: 0,
+    duration: 0,
+  };
 
   const percentDone = useMemo(() => {
     if (!time) {

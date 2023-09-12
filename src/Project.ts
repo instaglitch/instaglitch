@@ -32,6 +32,13 @@ function createSource(url: string, type: 'image' | 'video') {
   return source;
 }
 
+export interface RecordingSettings {
+  start: number;
+  duration: number;
+  videoBitrate: number;
+  framerate: number;
+}
+
 export class Project {
   id = v4();
   layers: TLayer[] = [];
@@ -47,6 +54,12 @@ export class Project {
   error: string | undefined = undefined;
   onRender = () => {};
   lastFrameTime: number = new Date().getTime();
+  recordingSettings: RecordingSettings = {
+    start: 0,
+    duration: 10,
+    framerate: 60,
+    videoBitrate: 6000000,
+  };
 
   constructor(public filename: string) {
     makeAutoObservable(this);

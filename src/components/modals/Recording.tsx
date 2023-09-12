@@ -17,8 +17,8 @@ export const Recording: React.FC = observer(() => {
     <Modal title="Recording" onDismiss={() => (projectStore.modal = undefined)}>
       <div className="info">
         <VarUI
-          values={toJS(projectStore.recordingSettings)}
-          updateValues={data => (projectStore.recordingSettings = data)}
+          values={toJS(project.recordingSettings)}
+          updateValues={data => (project.recordingSettings = data)}
         >
           <VarCategory label="Export settings">
             <VarSlider
@@ -31,7 +31,7 @@ export const Recording: React.FC = observer(() => {
             <VarSlider
               path="duration"
               min={5}
-              max={project.maxClipEnd - projectStore.recordingSettings.start}
+              max={project.maxClipEnd - project.recordingSettings.start}
               step={0.1}
               label="Duration (seconds)"
             />

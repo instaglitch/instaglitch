@@ -1,4 +1,3 @@
-import React, { useContext } from 'react';
 import { makeAutoObservable } from 'mobx';
 import { webmFixDuration } from 'webm-fix-duration';
 import {
@@ -7,7 +6,7 @@ import {
   glueGetSourceDimensions,
 } from 'fxglue';
 
-import { Filter, SourceLayer, LayerType, TLayer, FilterSetting } from './types';
+import { LayerType, TLayer } from './types';
 import { getMediaRecorder } from './Utils';
 import { sourceSettings } from './sourceSettings';
 import { Project } from './Project';
@@ -24,14 +23,6 @@ export enum FileInputMode {
   NEW,
   ADD,
 }
-
-export interface RecordingSettings {
-  start: number;
-  duration: number;
-  videoBitrate: number;
-  framerate: number;
-}
-
 class ProjectStore {
   currentProjectId?: string = undefined;
   projects: Project[] = [];
@@ -46,12 +37,6 @@ class ProjectStore {
   fileInput = document.createElement('input');
   fileInputMode: FileInputMode = FileInputMode.NEW;
   mediaRecorder: any = undefined;
-  recordingSettings: RecordingSettings = {
-    start: 0,
-    duration: 10,
-    framerate: 60,
-    videoBitrate: 6000000,
-  };
   recordingCancel = false;
   recording = false;
 
@@ -271,7 +256,8 @@ class ProjectStore {
       if (
         this.mediaRecorder &&
         (project.time >
-          this.recordingSettings.start + this.recordingSettings.duration ||
+          project.recordingSettings.start +
+            project.recordingSettings.duration ||
           this.recordingCancel)
       ) {
         try {
@@ -312,17 +298,17 @@ class ProjectStore {
 
     const blobs: Blob[] = [];
     const stream: MediaStream = this.canvas.captureStream(
-      this.recordingSettings.framerate
+      project.recordingSettings.framerate
     );
     const mediaRecorder = getMediaRecorder(stream, {
-      videoBitsPerSecond: this.recordingSettings.videoBitrate,
+      videoBitsPerSecond: project.recordingSettings.videoBitrate,
     });
 
     if (!mediaRecorder) {
       return;
     }
 
-    project.setTime(this.recordingSettings.start);
+    project.setTime(project.recordingSettings.start);
     project.startPlayback();
 
     mediaRecorder.start(100);
@@ -350,7 +336,7 @@ class ProjectStore {
         if (buffer.type.includes('video/webm')) {
           buffer = await webmFixDuration(
             buffer,
-            this.recordingSettings.duration * 1000
+            project.recordingSettings.duration * 1000
           );
         }
       } catch {}
