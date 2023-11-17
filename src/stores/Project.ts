@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { v4 as uuid, v4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import { glueIsSourceLoaded, glueGetSourceDimensions } from 'fxglue';
 
 import {
@@ -40,7 +40,7 @@ export interface RecordingSettings {
 }
 
 export class Project {
-  id = v4();
+  id = nanoid();
   layers: TLayer[] = [];
   selectedLayer: string | undefined = undefined;
   width = 0;
@@ -116,7 +116,7 @@ export class Project {
 
           this.clips[sourceLayer.id] = [
             {
-              id: uuid(),
+              id: nanoid(),
               start: 0,
               absoluteStart: 0,
               end: source.duration,
@@ -153,7 +153,7 @@ export class Project {
     this.selectedLayer = layer.id;
     this.clips[layer.id] = [
       {
-        id: uuid(),
+        id: nanoid(),
         start: 0,
         end: this.maxClipEnd,
       },

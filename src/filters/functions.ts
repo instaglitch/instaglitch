@@ -1,5 +1,5 @@
 import { GlueSourceType } from 'fxglue';
-import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 
 import { sourceSettings } from '../sourceSettings';
 import {
@@ -20,7 +20,7 @@ export function createFilterLayer(filter: Filter): FilterLayer {
   }
 
   return {
-    id: uuid(),
+    id: nanoid(),
     type: LayerType.FILTER,
     filter: filter,
     settings,
@@ -40,7 +40,7 @@ export function createSourceLayer(source: GlueSourceType): SourceLayer {
   }
 
   return {
-    id: uuid(),
+    id: nanoid(),
     type: LayerType.SOURCE,
     source,
     visible: true,
@@ -56,7 +56,7 @@ export function createGroupLayer(): GroupLayer {
   }
 
   return {
-    id: uuid(),
+    id: nanoid(),
     type: LayerType.GROUP,
     visible: true,
     settings,

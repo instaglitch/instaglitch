@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
-import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 
 import { AutomationClip } from '../../types';
 import { TimelineContext } from './TimelineContext';
@@ -133,13 +133,13 @@ export const ClipEditor: React.FC<ClipEditorProps> = ({
 
         if (typeof insertAt === 'undefined') {
           newClips.push({
-            id: uuid(),
+            id: nanoid(),
             start: fnX,
             end: fnX + 1,
           });
         } else {
           newClips.splice(insertAt, 0, {
-            id: uuid(),
+            id: nanoid(),
             start: fnX,
             end: fnX + 1,
           });

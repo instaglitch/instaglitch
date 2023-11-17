@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { usePointerDrag } from 'react-use-pointer-drag';
-import { v4 as uuid } from 'uuid';
+import { nanoid } from 'nanoid';
 
 import { AutomationPoint } from '../../types';
 import { TimelineContext } from './TimelineContext';
@@ -272,14 +272,14 @@ export const CurveEditor: React.FC<CurveEditorProps> = ({
 
         if (typeof insertAt === 'undefined') {
           newCurve.push({
-            id: uuid(),
+            id: nanoid(),
             exponent: 1,
             x: fnX,
             y: fnY,
           });
         } else {
           newCurve.splice(insertAt, 0, {
-            id: uuid(),
+            id: nanoid(),
             exponent: 1,
             x: fnX,
             y: fnY,
