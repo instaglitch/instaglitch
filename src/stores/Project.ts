@@ -46,6 +46,10 @@ export class Project {
   width = 0;
   height = 0;
   animated = false;
+
+  /**
+   * In seconds!
+   */
   time = 0;
   playing = false;
   clips: Record<string, AutomationClip[]> = {};

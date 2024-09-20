@@ -1,5 +1,5 @@
 import { makeAutoObservable } from 'mobx';
-import { webmFixDuration } from 'webm-fix-duration';
+import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
 import {
   GlueCanvas,
   glueIsSourceLoaded,
@@ -19,6 +19,8 @@ function calculateScale(width: number, height: number, maxSize: number) {
   return 1;
 }
 
+const USEC_PER_SEC = 1000 * 1000;
+
 export enum FileInputMode {
   NEW,
   ADD,
@@ -36,7 +38,6 @@ class ProjectStore {
   exportScale = 1.0;
   fileInput = document.createElement('input');
   fileInputMode: FileInputMode = FileInputMode.NEW;
-  mediaRecorder: any = undefined;
   recordingCancel = false;
   recording = false;
 
@@ -252,20 +253,6 @@ class ProjectStore {
     const time = new Date().getTime();
     if (project.playing && project.animated) {
       project.time += (time - project.lastFrameTime) / 1000;
-
-      if (
-        this.mediaRecorder &&
-        (project.time >
-          project.recordingSettings.start +
-            project.recordingSettings.duration ||
-          this.recordingCancel)
-      ) {
-        try {
-          this.mediaRecorder.stop();
-        } catch {}
-        return;
-      }
-
       this.requestPreviewRender();
     }
     project.lastFrameTime = time;
@@ -283,78 +270,99 @@ class ProjectStore {
     }, 'image/png');
   }
 
-  recordVideo() {
+  async recordVideo() {
     const project = this.currentProject;
     if (!project) {
       return;
     }
 
-    if (!this.canvas.captureStream) {
-      return;
-    }
-
     this.recording = true;
     this.recordingCancel = false;
+    project.stopPlayback();
 
-    const blobs: Blob[] = [];
-    const stream: MediaStream = this.canvas.captureStream(
-      project.recordingSettings.framerate
-    );
-    const mediaRecorder = getMediaRecorder(stream, {
-      videoBitsPerSecond: project.recordingSettings.videoBitrate,
+    const { width, height } = project;
+    const { framerate, videoBitrate, start, duration } =
+      project.recordingSettings;
+
+    let muxer = new Muxer({
+      target: new ArrayBufferTarget(),
+      video: {
+        codec: 'avc',
+        width,
+        height,
+        frameRate: framerate,
+      },
+      fastStart: 'in-memory',
     });
 
-    if (!mediaRecorder) {
+    project.setTime(project.recordingSettings.start);
+    const encoder = new VideoEncoder({
+      output: (chunk, meta) => {
+        muxer.addVideoChunk(chunk, meta);
+      },
+      error: error => {
+        console.error(error);
+      },
+    });
+    encoder.configure({
+      codec: 'avc1.42001f',
+      width,
+      height,
+      bitrate: videoBitrate,
+      framerate,
+    });
+
+    let frameI = 0;
+    const renderAndEncode = (keyFrame = frameI % 15 === 0) => {
+      this.renderCurrentProject();
+      const frame = new VideoFrame(this.canvas, {
+        timestamp: (project.time - start) * USEC_PER_SEC,
+      });
+      encoder.encode(frame, { keyFrame });
+      frame.close();
+      frameI++;
+    };
+
+    const end = start + duration;
+    const frameTime = 1 / framerate;
+    while (project.time < end && !this.recordingCancel) {
+      renderAndEncode();
+      project.setTime(project.time + frameTime);
+    }
+
+    project.setTime(end);
+    renderAndEncode();
+
+    await encoder.flush();
+    encoder.close();
+    muxer.finalize();
+
+    this.recording = false;
+    this.modal = undefined;
+
+    if (this.recordingCancel) {
+      this.recordingCancel = false;
       return;
     }
 
-    project.setTime(project.recordingSettings.start);
-    project.startPlayback();
+    let buffer = new Blob([muxer.target.buffer], { type: 'video/mp4' });
 
-    mediaRecorder.start(100);
-    this.mediaRecorder = mediaRecorder;
+    const url = URL.createObjectURL(buffer);
 
-    mediaRecorder.ondataavailable = e => {
-      if (e.data && e.data.size > 0) {
-        blobs.push(e.data);
-      }
-    };
+    const suffix = '_instaglitch.mp4';
+    const currentFilename = this.currentProject?.filename || 'untitled';
+    const currentName = currentFilename.split('.')[0];
 
-    mediaRecorder.onstop = async () => {
-      project.stopPlayback();
-      this.recording = false;
-      this.mediaRecorder = undefined;
-      this.modal = undefined;
+    const element = document.createElement('a');
+    element.setAttribute('href', url);
+    element.setAttribute('download', currentName + suffix);
 
-      if (this.recordingCancel) {
-        this.recordingCancel = false;
-        return;
-      }
+    element.style.display = 'none';
+    element.click();
 
-      let buffer = new Blob(blobs, { type: mediaRecorder.mimeType });
-      try {
-        if (buffer.type.includes('video/webm')) {
-          buffer = await webmFixDuration(
-            buffer,
-            project.recordingSettings.duration * 1000
-          );
-        }
-      } catch {}
-      const url = window.URL.createObjectURL(buffer);
-
-      const suffix =
-        '_instaglitch.' +
-        (mediaRecorder.mimeType.includes('webm') ? 'webm' : 'mp4');
-      const currentFilename = this.currentProject?.filename || 'untitled';
-      const currentName = currentFilename.split('.')[0];
-
-      const element = document.createElement('a');
-      element.setAttribute('href', url);
-      element.setAttribute('download', currentName + suffix);
-
-      element.style.display = 'none';
-      element.click();
-    };
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 1000);
   }
 }
 
