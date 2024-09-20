@@ -24,13 +24,13 @@ export const Recording: React.FC = observer(() => {
             <VarSlider
               path="start"
               min={0}
-              max={project.maxClipEnd - 5}
+              max={project.maxClipEnd}
               step={0.1}
               label="Start (seconds)"
             />
             <VarSlider
               path="duration"
-              min={5}
+              min={0.1}
               max={project.maxClipEnd - project.recordingSettings.start}
               step={0.1}
               label="Duration (seconds)"

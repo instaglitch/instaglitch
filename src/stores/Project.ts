@@ -57,7 +57,7 @@ export class Project {
   recordingSettings: RecordingSettings = {
     start: 0,
     duration: 10,
-    framerate: 60,
+    framerate: 30,
     videoBitrate: 6000000,
   };
 
@@ -66,7 +66,7 @@ export class Project {
   }
 
   get maxClipEnd() {
-    let max = 0;
+    let max = 10;
     for (const clips of Object.values(this.clips)) {
       for (const clip of clips) {
         max = Math.max(clip.end, max);
@@ -76,10 +76,18 @@ export class Project {
     return max;
   }
 
-  removeCurrentLayer() {
-    this.layers = this.layers.filter(layer => layer.id !== this.selectedLayer);
-    this.selectedLayer = this.layers[this.layers.length - 1]?.id;
+  removeLayer(id: string) {
+    this.layers = this.layers.filter(layer => layer.id !== id);
+    if (this.selectedLayer === id) {
+      this.selectedLayer = this.layers[this.layers.length - 1]?.id;
+    }
     this.onRender();
+  }
+
+  removeCurrentLayer() {
+    if (this.selectedLayer) {
+      this.removeLayer(this.selectedLayer);
+    }
   }
 
   addGroup() {
@@ -151,13 +159,15 @@ export class Project {
   addLayer(layer: TLayer) {
     this.layers = [layer, ...this.layers];
     this.selectedLayer = layer.id;
-    this.clips[layer.id] = [
-      {
-        id: nanoid(),
-        start: 0,
-        end: this.maxClipEnd,
-      },
-    ];
+    if (!this.clips[layer.id]?.length) {
+      this.clips[layer.id] = [
+        {
+          id: nanoid(),
+          start: 0,
+          end: this.maxClipEnd,
+        },
+      ];
+    }
     this.onRender();
   }
 
