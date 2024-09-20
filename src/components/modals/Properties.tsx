@@ -16,9 +16,12 @@ export const Properties: React.FC = observer(() => {
     undefined
   );
 
-  const width = projectStore.currentProject?.width;
-  const height = projectStore.currentProject?.height;
-  const animated = projectStore.currentProject?.animated;
+  const project = projectStore.currentProject;
+  if (!project) {
+    return null;
+  }
+
+  const { width, height, animated } = project;
 
   const data = useMemo(
     () => ({
@@ -38,7 +41,7 @@ export const Properties: React.FC = observer(() => {
       <div className="info">
         <VarUI
           values={data}
-          updateValues={data => {
+          onChange={data => {
             setAspectRatio(data.aspectRatio);
             if (!projectStore.currentProject) {
               return;

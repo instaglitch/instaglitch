@@ -18,7 +18,7 @@ export const Recording: React.FC = observer(() => {
       <div className="info">
         <VarUI
           values={toJS(project.recordingSettings)}
-          updateValues={data => (project.recordingSettings = data)}
+          onChange={data => (project.recordingSettings = data)}
         >
           <VarCategory label="Export settings">
             <VarSlider

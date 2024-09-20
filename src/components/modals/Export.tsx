@@ -30,7 +30,7 @@ export const Export: React.FC = observer(() => {
       <div className="info">
         <VarUI
           values={data}
-          updateValues={data => {
+          onChange={data => {
             projectStore.exportScale = data.scale;
             projectStore.exportQuality = data.quality;
           }}

@@ -43,7 +43,7 @@ export const LayerSettings: React.FC = observer(() => {
           ) : (
             <VarUI
               values={toJS(layer.settings)}
-              updateValues={(data: any) => {
+              onChange={(data: any) => {
                 layer.settings = data;
                 projectStore.requestPreviewRender();
               }}
