@@ -7,7 +7,6 @@ import {
 } from 'fxglue';
 
 import { LayerType, TLayer } from '../types';
-import { getMediaRecorder } from '../Utils';
 import { sourceSettings } from '../sourceSettings';
 import { Project } from './Project';
 
@@ -284,7 +283,7 @@ class ProjectStore {
     const { framerate, videoBitrate, start, duration } =
       project.recordingSettings;
 
-    let muxer = new Muxer({
+    const muxer = new Muxer({
       target: new ArrayBufferTarget(),
       video: {
         codec: 'avc',
@@ -305,7 +304,7 @@ class ProjectStore {
       },
     });
     encoder.configure({
-      codec: 'avc1.42001f',
+      codec: 'avc1.420032',
       width,
       height,
       bitrate: videoBitrate,
@@ -314,7 +313,7 @@ class ProjectStore {
 
     let frameI = 0;
     const renderAndEncode = (keyFrame = frameI % 15 === 0) => {
-      this.renderCurrentProject();
+      this.renderCurrentProject(0);
       const frame = new VideoFrame(this.canvas, {
         timestamp: (project.time - start) * USEC_PER_SEC,
       });
@@ -345,7 +344,7 @@ class ProjectStore {
       return;
     }
 
-    let buffer = new Blob([muxer.target.buffer], { type: 'video/mp4' });
+    const buffer = new Blob([muxer.target.buffer], { type: 'video/mp4' });
 
     const url = URL.createObjectURL(buffer);
 
